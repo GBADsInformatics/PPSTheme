@@ -1,2 +1,3 @@
 # PPSTheme
-A repo for code coming from the GBADs PPS theme 
+
+A space for code made by PPS modellers and analysts in the Global Burden of Animal Diseases (GBADs). For each of your models please follow the best practices set by GBADs Informatics, as articulated in the Data Governance Handbook.

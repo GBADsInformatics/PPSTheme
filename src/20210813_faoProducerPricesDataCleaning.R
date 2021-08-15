@@ -32,10 +32,17 @@ fao_code <- 'PP'
 # Read in Data using FAOSTAT package
 # store in data/temp and remove afterwards
 if (file.exists(tmp_parquet)) {
-  price_df <- arrow::read_parquet(tmp_parquet)
+  price_df <- arrow::read_parquet(
+    tmp_parquet, 
+    col_select = c("area_code", "item", "element", 
+                   "year", "months", "unit", "value")
+    )
+    
 } else {
   # Get the bulk normalized zip
-  price_df <- FAOSTAT::get_faostat_bulk(code = fao_code, tmp_dir)
+  price_df <- FAOSTAT::get_faostat_bulk(code = fao_code, tmp_dir) %>% 
+    select(c("area_code", "item", "element", 
+             "year", "months", "unit", "value"))
   
   # Check the file was stored under the correct name
   if (!file.exists(tmp_file)) {
@@ -45,6 +52,7 @@ if (file.exists(tmp_parquet)) {
   arrow::write_parquet(price_df,tmp_parquet)
 }
 
+## 2 - Select only annual values for prices
 price_df <- price_df %>% # Filter for annual values
   filter(
     months == "Annual value"
@@ -69,32 +77,53 @@ price_df <- price_df %>% # Filter for annual values
   select(
     -item, -unit
   ) 
+
+## 3 - For each item, year take the best available currency
+##  Order: usd > slc > lcu
+
+
+
 # Change element to a factor
-price_df$element <- factor(test_df$element,
+price_df$element <- factor(price_df$element,
                           levels = c('lcu/tonne','slc/tonne','usd/tonne'), 
                           ordered = TRUE)
 
-price_df <- price_df%>% 
-  group_by(iso3c, animal,year) %>% 
+# Extract the best price data available
+price_df <- price_df %>% 
+  group_by(iso3c, animal,year) %>%
   arrange(year) %>% 
   summarise(
     unit = last(element), 
     value = last(value)
-  ) 
-
- #%>% 
-  # pivot_wider(
-  #   names_from = element, 
-  #   values_from = value
-  # )  %>% 
-  #  View()
-  # 
+  ) %>% 
+  ungroup()
 
 
+## 4 - Save to file
+output_file <- file.path(
+  'data', 'output',
+  paste0(format(Sys.Date(),'%Y%m%d'), 
+         '_FAOSTAT_Annual_Meat_Liveweight_Prices_USD_LCU_SLC.')
+)
+
+# Remove earlier versions of this file
+output_dir <- file.path('data', 'output')
+output_files <- list.files(output_dir)
+remove_files <- str_detect(output_files, 
+                           '_FAOSTAT_Annual_Meat_Liveweight_Prices_USD_LCU_SLC')
+file.remove(file.path(output_dir, output_files[remove_files]))
 
 
+# Write to disk
+arrow::write_parquet(price_df,paste0(output_file, 'parquet') )
+readr::write_csv(price_df, file = paste0(output_file, 'csv'))
 
-
+## 5 - Clean up
+## Only remove the temporary zip file for now.
+if (file.exists(tmp_file) && 
+    file.exists(paste0(output_file, 'csv'))) {
+  file.remove(tmp_file)
+}
 
 
 

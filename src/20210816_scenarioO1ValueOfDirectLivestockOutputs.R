@@ -60,7 +60,7 @@ file.remove(file.path(output_dir, output_files[remove_files]))
 output_file <- file.path('data', 'output', paste0(format(Sys.Date(),'%Y%m%d'), 
                   '_Scenario_O1_Value_Of_Direct_Outputs.parquet'))
 
-arrow::write_parquet(o1,paste0(output_file, 'parquet'))
+arrow::write_parquet(o1,output_file)
 
 
 

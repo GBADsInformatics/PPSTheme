@@ -12,3 +12,14 @@ http://www.fao.org/agrovoc/format
 
 ## Directory Structure
 
+```
+📦src
+ ┣ 📜20210811_faoLivestockValueOfProductionDataCleaning.R 
+ ┣ 📜20210813_faoAnimalStockDataCleaning.R
+ ┣ 📜20210813_faoProducerPricesDataCleaning.R
+ ┣ 📜20210816_faoGlobalAquacultureProductionDataCleaning.R
+ ┣ 📜20210816_scenarioAS2ValueOfLivestockBiomass.R
+ ┣ 📜20210816_scenarioO1ValueOfDirectLivestockOutputs.R
+ ┗ 📜FAOSTAT_helper_functions.R
+```
+

@@ -5,3 +5,4 @@
 *.csv
 *.parquet
 *.zip
+docs/dashboard/  # Leave it untracked for now

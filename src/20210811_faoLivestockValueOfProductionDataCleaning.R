@@ -48,6 +48,8 @@ if (file.exists(tmp_parquet)) {
 
 # Subset the data for year > 1991
 # Subset the data for regex of item "meat|milk|eggs"
+# Subset the data for USD -> Will get slightly different ratios 
+# of meat and meat indigenous when allowing LCU and SLC
 livestock_df <- livestock_df %>% 
   rename_with(tolower) %>% 
   rename_with(
@@ -56,7 +58,8 @@ livestock_df <- livestock_df %>%
   filter(
     year > 1991, 
     str_detect(item, "Meat|Milk|Eggs"), 
-    element_code ==  '58'
+    !str_detect(item, 'Total'),
+    element_code ==  '58'  # 1000 USD
     )  %>% 
   select(
     area_code, item, year, unit, value
@@ -69,38 +72,55 @@ livestock_df <- livestock_df %>%
     item, c('item', 'animal'), sep = ','
     ) %>% 
   filter(
-    !str_detect(animal, 'Total')
-    ) %>% 
-  mutate(animal = trimws(str_remove(animal, 'whole fresh'))) 
+    !str_detect(item, "Meat nes")
+  ) %>% 
+  mutate(animal = trimws(str_remove(animal, 'whole fresh'))) %>% 
+  select(
+    iso3c, animal, item, year, unit, value
+  )
 
+## 4 - Recode Meat and Meat Indigenous to Meat
+## Only Geese, duck and rabbit have more indigenous entries
 
+# Extract the meat records and non_meat records
+meat_df <- filter(livestock_df, str_detect(item, "Meat"))
+non_meat_df <- anti_join(livestock_df, meat_df)
 
-
-## 4 - Split item into animal, item
-
-# Todo this - remove whole fresh, total from item
-livestock_df <- livestock_df %>% 
-  separate(
-    item, c('item', 'animal'), sep = ','
-    ) %>% 
-  filter(
-    !str_detect(animal, 'Total')
-    ) %>% 
+meat_df <- meat_df %>% 
+  group_by(iso3c, animal, year, unit) %>% 
+  summarise(
+    value = max(value)
+  ) %>% 
   mutate(
-    animal = trimws(str_remove(animal, 'whole fresh'))
-    ) 
+    item = "Meat"
+  ) %>% 
+  ungroup() %>% 
+  select(
+    names(non_meat_df)
+  )
+  
+# Bind rows
+livestock_df <- bind_rows(meat_df, non_meat_df)
 
-## 4 - Save to file
+## 5 - Save to file
+
+# Remove earlier versions of this file
+output_dir <- file.path('data', 'output')
+output_files <- list.files(output_dir)
+remove_files <- str_detect(output_files, 
+                           '_FAOSTAT_Livestock_ValueOfProduction_USD')
+file.remove(file.path(output_dir, output_files[remove_files]))
+
 output_file <- file.path('data', 'output', paste0(format(Sys.Date(),'%Y%m%d'), 
                               '_FAOSTAT_Livestock_ValueOfProduction_USD.'))
 
 arrow::write_parquet(livestock_df,paste0(output_file, 'parquet') )
 readr::write_csv(livestock_df, file = paste0(output_file, 'csv'))
 
-## 5 - Clean up
+## 6 - Clean up
 if (file.exists(tmp_file) && 
     file.exists(paste0(output_file, 'csv'))) {
-  file.remove(c(tmp_file, tmp_parquet))
+  file.remove(tmp_file)
 }
 
 

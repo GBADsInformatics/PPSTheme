@@ -15,7 +15,7 @@
 # Original calculation code was adapted from Yin Li 
 #########################################################
 
-# Install and load packages -----------------------------------------------
+# 0 - Install and load packages -----------------------------------------------
 
 # Create list of packages needed
 packages = c('FAOSTAT','tidyverse','Hmisc','ggplot2','dplyr')
@@ -31,7 +31,7 @@ package.check <- lapply(
   }
 )
 
-# Functions -----------------------------------------------
+# 1 - Functions -----------------------------------------------
 
 load_FAOSTAT_data <- function(dir_path, fao_code, fao_element){
 # To download data using the FAOSTAT package in R, you must create or specify a folder to store the retrieved data from. Use ?get_faostat_bulk for more information. 
@@ -125,7 +125,7 @@ calc_simple_biomass <- function(fao_df, num_head_col, species_tlu_ratio, unit_bi
 
 }
 
-# Load data  ----------------------------------------------- 
+# 2 - Load data  ----------------------------------------------- 
 
 # Could add as sys args but most use R in RStudio instead of terminal --vanilla version
 dir = '/Users/kassyraymond/PhD/trunk/PPS_Dashboard'
@@ -136,12 +136,12 @@ out_data = '/Users/kassyraymond/PhD/trunk/PPS_Dashboard/20210819_yinBiomassCalc.
 # load data from faostat using the above information
 production_df <- load_FAOSTAT_data(dir, fao_code, fao_element)
 
-# Drop columns and clean ----------------------------------------------- 
+# 3 - Drop columns and clean ----------------------------------------------- 
 
 # drop unneeded data
 prod_df <- select(production_df, -c('item_code', 'element_code','year_code', 'flag', 'element'))
 
-# Scale and analyze  ----------------------------------------------- 
+# 4 - Scale and analyze  ----------------------------------------------- 
 
 # check and scale data to basic unit
 prod_df <- scale_by_head(prod_df, unit, value)

@@ -14,5 +14,6 @@ Description:
 - Scale data to equal units (1000 Heads and No (Number of Animals) to Head - definition of units from FAOSTAT can be found here: http://www.fao.org/faostat/en/#definitions) 
 - Filter datasets by species that have conversion ratios
 - Calculate simple biomass by species using conversion ratios from the sources in the description (FIXME - get URI for these sources from Yin). 
+
 Use: 
 - To use, download the .R file and replace variables `dir` and `out_data` with the path to your project and the name/path of where you would like the output data to be saved, respectively

@@ -10,6 +10,10 @@
 # which converts SLC (Standard Local Currency Units)
 # to current USD. 
 # 
+# FAOSTAT data is incorrect - very wrong prices for Afghani conversion to USD up until ~ 1993
+# there data was sourced from https://unstats.un.org/unsd/snaama/Basic
+# which also has incorrect values. It is most likely that have it the wrong way around somewhere.
+# 
 # Outputs:
 #   - data/output/{date}_FAOSTAT_USD_Exchange_Rates.parquet
 ####################################
@@ -82,7 +86,7 @@ remove_files <- str_detect(output_files,
 file.remove(file.path(output_dir, output_files[remove_files]))
 
 output_file <- file.path('data', 'output', paste0(format(Sys.Date(),'%Y%m%d'), 
-                                                  'FAOSTAT_USD_Exchange_Rates.'))
+                                                  '_FAOSTAT_USD_Exchange_Rates.'))
 
 arrow::write_parquet(exchange_df,paste0(output_file, 'parquet') )
 readr::write_csv(exchange_df, file = paste0(output_file, 'csv'))

@@ -26,7 +26,7 @@ source('src/FAOSTAT_helper_functions.R')
 tmp_dir <- file.path('data', 'temp')
 tmp_file <- file.path(tmp_dir,
                       'Value_of_Production_E_All_Data_(Normalized).zip')
-tmp_parquet <- file.path(tmp_dir, paste0(format(Sys.Date(),'%Y%m%d'), 
+# tmp_parquet <- file.path(tmp_dir, paste0(format(Sys.Date(),'%Y%m%d'), 
                          '_Value_of_Production_E_All_Data.parquet'))
 
 

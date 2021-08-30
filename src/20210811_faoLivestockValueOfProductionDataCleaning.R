@@ -2,7 +2,7 @@
 # Creator: Gabriel Dennis 
 # GitHub: denn173
 # Email: gabriel.dennis@csiro.au
-# Date last edited: 20210813
+# Date last edited: 20210827
 # 
 # This program contains code which reads in FASTOAT data from the 
 # QV table (Value of Agricultural Production) 
@@ -20,46 +20,30 @@ library(stringr)
 library(magrittr)
 source('src/FAOSTAT_helper_functions.R')
 
-## 1 - Subset data and select columns
+## 1 - Read in data 
 
-# Temporary directory path and temporary file names
-tmp_dir <- file.path('data', 'temp')
-tmp_file <- file.path(tmp_dir,
-                      'Value_of_Production_E_All_Data_(Normalized).zip')
-# tmp_parquet <- file.path(tmp_dir, paste0(format(Sys.Date(),'%Y%m%d'), 
-                         '_Value_of_Production_E_All_Data.parquet'))
+vars <- c('area_code',  'item', 'element', 'element_code', 'year', 'unit', 'value')
+code <- 'QV'
+fao_zip_name <- 'Value_of_Production_E_All_Data_(Normalized)'
+
+livestock_df <- read_fao_table(code, fao_zip_name, vars)
 
 
-# Read in Data using FAOSTAT package
-# store in data/temp and remove afterwards
-if (file.exists(tmp_parquet)) {
-  livestock_df <- arrow::read_parquet(tmp_parquet)
-} else {
-  # Get the bulk normalized zip
-  livestock_df <- FAOSTAT::get_faostat_bulk(code = 'QV', tmp_dir)
-  
-  if (!file.exists(tmp_file)) {
-    errorCondition(paste0("File was stored with in different file name, "))
-    }
-  
-  # Save to parquet file
-  arrow::write_parquet(livestock_df,tmp_parquet)
-}
+
+
+## 2 - Subset data and select columns ------------------------------#
 
 # Subset the data for year > 1991
-# Subset the data for regex of item "meat|milk|eggs"
+# Subset the data for regex of item "meat|milk|eggs" -  Remove total
 # Subset the data for USD -> Will get slightly different ratios 
 # of meat and meat indigenous when allowing LCU and SLC
 livestock_df <- livestock_df %>% 
-  rename_with(tolower) %>% 
-  rename_with(
-    ~ str_replace_all(.x, " ", "_")
-    ) %>%
+  mutate(
+    item = tolower(item)
+  ) %>% 
   filter(
-    year > 1991, 
-    str_detect(item, "Meat|Milk|Eggs"), 
-    !str_detect(item, 'Total'),
-    element_code ==  '58'  # 1000 USD
+    year > 1991 & str_detect(item, "meat|milk|eggs") & 
+      !str_detect(item, 'total') &   element_code ==  '58'  # 1000 USD
     )  %>% 
   select(
     area_code, item, year, unit, value
@@ -83,7 +67,7 @@ livestock_df <- livestock_df %>%
 ## Only Geese, duck and rabbit have more indigenous entries
 
 # Extract the meat records and non_meat records
-meat_df <- filter(livestock_df, str_detect(item, "Meat"))
+meat_df <- filter(livestock_df, str_detect(item, "meat"))
 non_meat_df <- anti_join(livestock_df, meat_df)
 
 meat_df <- meat_df %>% 
@@ -92,7 +76,7 @@ meat_df <- meat_df %>%
     value = max(value)
   ) %>% 
   mutate(
-    item = "Meat"
+    item = "meat"
   ) %>% 
   ungroup() %>% 
   select(
@@ -100,7 +84,10 @@ meat_df <- meat_df %>%
   )
   
 # Bind rows
-livestock_df <- bind_rows(meat_df, non_meat_df)
+livestock_df <- bind_rows(meat_df, non_meat_df) %>% drop_na()
+rm(list = c('meat_df', 'non_meat_df'))
+
+
 
 ## 5 - Save to file
 
@@ -118,9 +105,11 @@ arrow::write_parquet(livestock_df,paste0(output_file, 'parquet') )
 readr::write_csv(livestock_df, file = paste0(output_file, 'csv'))
 
 ## 6 - Clean up
+tmp_file <- file.path('data', 'temp',  paste0(fao_zip_name, '.zip'))
 if (file.exists(tmp_file) && 
     file.exists(paste0(output_file, 'csv'))) {
   file.remove(tmp_file)
 }
 
+rm(list = ls())
 

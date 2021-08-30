@@ -2,7 +2,7 @@
 # Creator: Gabriel Dennis 
 # GitHub: denn173
 # Email: gabriel.dennis@csiro.au
-# Date last edited: 20210816
+# Date last edited: 20210827
 # 
 # File Description:  This script calculates Scenario O1
 # the value of direct livestock and Aquaculture outputs in USD. 
@@ -40,14 +40,21 @@ aquaculture_data <- sort(data_file_list[str_detect(data_file_list,
 # Import the data
 livestock_df <- arrow::read_parquet(file.path(data_folder, livestock_data)) %>% 
   mutate(unit = "1000_usd")
+
 aqua_df <- arrow::read_parquet(file.path(data_folder,aquaculture_data )) %>% 
   filter(year >= min(livestock_df$year)) %>% 
-  rename(item = isscaap_group)
+  rename(item = group)
+
+
 
 ## 2 - Match and bind the two tables
 o1 <- livestock_df %>% 
   unite(item, c("animal", "item"), sep = "_",  remove = TRUE) %>% 
-  bind_rows(aqua_df) 
+  bind_rows(aqua_df) %>% 
+  mutate(item = str_remove_all(str_replace_all(item , '\\s', '_'), ','))
+
+
+
 
 ## 3 - Write to file
 # Remove earlier versions of this file
@@ -63,5 +70,6 @@ output_file <- file.path('data', 'output', paste0(format(Sys.Date(),'%Y%m%d'),
 arrow::write_parquet(o1,output_file)
 
 
+rm(list = ls())
 
 

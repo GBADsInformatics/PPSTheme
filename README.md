@@ -4,6 +4,8 @@ A space for code made by PPS modellers and analysts in the Global Burden of Anim
 
 # Code
 
+## Yin's original biomass calculation code
+
 ## Biomass calculations: 
 
 Name of file: `20210818_YinBiomassCalculation.R`

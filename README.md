@@ -6,7 +6,11 @@ A space for code made by PPS modellers and analysts in the Global Burden of Anim
 
 ## Yin's original biomass calculation code
 
-Name of file: `biomass using FAOSTAT 31082021.R`
+Name of file: `20210831_biomassUsingFAOSTAT.R`
+
+Description: 
+
+Use: 
 
 ## Biomass calculations: 
 

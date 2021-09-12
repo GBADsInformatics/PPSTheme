@@ -6,3 +6,7 @@
 *.parquet
 *.zip
 docs/dashboard/  # Leave it untracked for now
+_targets/
+.Rprofile
+*.png
+

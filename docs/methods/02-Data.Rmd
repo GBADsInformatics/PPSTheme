@@ -1,0 +1,779 @@
+
+
+```{r,  setup, include=FALSE}
+knitr::opts_chunk$set(
+	echo = FALSE,
+	message = FALSE,
+	warning = FALSE,
+	cache = TRUE
+)
+library(dplyr)
+library(tidyr)
+library(scales)
+library(magrittr)
+
+source(here::here('src','functions.R'))
+source(here::here('src', 'data_loading_functions.R'))
+source(here::here('src', 'conversion_functions.R'))
+```
+
+<style>
+p.comment {
+background-color: #DBDBDB;
+padding: 10px;
+border: 1px solid black;
+margin-left: 25px;
+border-radius: 5px;
+font-style: italic;
+}
+</style>
+
+
+
+# Data {#data} 
+This chapter documents the current approach taken to estimate each scenario 
+using a variety of different data sources and any issues or gaps which have arisen when using a particular data source
+to estimate different sections of each scenario. 
+In most cases global data will be used, however, for some particularly important countries and regions 
+such as the EN, North America, India, China, Brazil data will be sourced from national statistics
+to validate numbers derived from the more coarser global databases.  
+
+This chapter will be structured using the different scenarios mentioned previously in 
+Chapter \@ref(methodology), where, within each scenario all attempts will be documented 
+and data issues commented on. 
+
+
+## Scenario O1: Direct Value of Animal Outputs {#data-01}
+See Section \@ref(O1) for a description of this scenario. 
+
+### FAO {#data-O1-fao}
+
+The direct value of animal outputs is currently calculated on a global basis for livestock using the [FAOSTAT](http://www.fao.org/faostat/en/#home)
+table Value of Agricultural Production Table ^[http://www.fao.org/faostat/en/#data/QV] for which 
+some rudimentary metadata is available.
+
+The FAO details its methods for calculating the value of gross production as 
+
+>Value of gross production has been compiled by multiplying gross production in physical 
+terms by output prices at farm gate. Thus, value of production measures production in 
+monetary terms at the farm gate level. Since intermediate uses within the agricultural sector 
+(seed and feed) have not been subtracted from production data, this value of production 
+aggregate refers to the notion of "gross production"
+>
+> --- FAOSTAT QV Metadata ^[http://fenixservices.fao.org/faostat/static/documents/QV/QV_e.pdf]
+
+
+
+It is also noted that 
+
+>...livestock value of production is measured in terms of indigenous meat
+>
+> --- FAOSTAT QV Metadata
+
+
+<div class="alert alert-info">
+  <strong>Note:</strong>  This sentence is relatively misleading, it actually refers to the aggregated 
+livestock item reported by the FAO, not livestock as a whole when broken down by output type.
+</div>
+
+
+
+According to a spokesperson for the FAO, when asked about the methodology to compute values for indigenous animals
+and how it differed between countries
+
+>We [FAO] have no official information about the indigenous meat production in countries, and we use the below method to compute it. 
+Indigenous meat production is derived from meat production as follows: production from slaughtered animals plus the meat equivalent of all animals exported alive, minus the meat equivalent of all animals imported alive. This simple formula is the same for all countries. 
+>
+> --- Irina Kovrova Crop, Livestock and Food Statstics Team (Statistics Division ESS) FAO
+
+```{r, load-qc-fao-data}
+
+
+fao_qc <- arrow::read_parquet(here::here('data', 'temp', '20210111_Value_of_Production_E_All_Data_(Normalized).parquet')) %>% 
+    rename_with( function(x) gsub(" ", "_", tolower(x)))
+
+
+# Items to filter for
+#   <chr>                               <dbl> <int>
+#  1 Meat indigenous, ass                 1122  3616
+#  2 Meat indigenous, bird nes            1084  2959
+#  3 Meat indigenous, buffalo              972  7887
+#  4 Meat indigenous, camel               1137  7971
+#  5 Meat indigenous, cattle               944 38053
+#  6 Meat indigenous, chicken             1094 38441
+#  7 Meat indigenous, duck                1070 17981
+#  8 Meat indigenous, geese               1077 11680
+#  9 Meat indigenous, goat                1032 33475
+# 10 Meat indigenous, horse               1120 19013
+# 11 Meat indigenous, mule                1124  1606
+# 12 Meat indigenous, other camelids      1161   931
+# 13 Meat indigenous, pig                 1055 35581
+# 14 Meat indigenous, rabbit              1144 13322
+# 15 Meat indigenous, rodents             1154   270
+# 16 Meat indigenous, sheep               1012 35409
+# 18 Meat indigenous, turkey              1087 16291
+meat_codes <- c(
+1122, 1084,  972, 1137,  944, 1094, 1070, 1077, 1032, 1120, 1124, 1161, 1055, 1144, 1154, 1012,  1087
+)
+
+
+
+
+# "Milk, whole fresh cow"     "Milk, whole fresh buffalo"
+# "Milk, whole fresh sheep"   "Milk, whole fresh goat"
+#  "Milk, whole fresh camel"
+milk_codes <- c(82, 951, 982, 1020, 1130)
+
+fao_qc$element_code <- factor(fao_qc$element_code, c(57, 56, 58, 55, 152))
+
+# "Eggs, hen, in shell"        "Eggs, other bird, in shell"
+egg_codes <- c(1062, 1091)
+item_filter <- c(meat_codes, milk_codes, egg_codes)
+fao_qc <- filter(fao_qc,  item_code %in% item_filter, year >= 1992) %>% 
+    arrange(element_code) %>% 
+    group_by(area_code, year,  item, item_code) %>% 
+    summarise(element_code = first(element_code), element = first(element), .groups = 'drop') %>% 
+    mutate(country_name = countrycode::countrycode(area_code, 'fao', 'country.name.en')) %>% 
+    drop_na(country_name)
+    
+
+```
+
+
+
+Currently the FAOSTAT elements and units  from the QC (Value of Agricultural Production) table which are used  in the calculation of
+O1 are
+```{r,  qc-elements-used}
+DT::datatable(count(fao_qc, element_code, element, item, item_code),
+              caption = 'FAO Elements Used to Calculate (O1)',
+              options = list(scrollX=300), 
+              filter = list(position = 'top', clear = TRUE, plain = FALSE))
+```
+
+Here, the items which are aggregated into each output sector of meat, milk and eggs, are the codes 
+```{r,  qc-unit, cache=FALSE}
+df <- data.frame(Sector = c(rep("Meat", length(meat_codes)), rep("Eggs", length(egg_codes)), rep("Milk", length(milk_codes))), Item_Code = item_filter) 
+
+DT::datatable(df, caption = 'FAO Item Code Aggregation', options = list(scrollX=300))
+
+```
+
+
+<div class="alert alert-info">
+  <strong>Note:</strong> Currently  indigenous meat is used in the calculation of O1
+</div>
+
+
+
+As the production data from the Global Aquaculture Database is all reported in 
+current US dollars all FAOSTAT Value of Production Data has to be converted to current USD
+to be able to add the Aquaculture and Livestock values for each country. This leads 
+to some problems with currency conversions, as the FAO has 
+some relevantly unstructured tables on which currency is the SLC
+reported in their tables ^[https://fenixservices.fao.org/faostat/static/documents/PP/CurrencyTable2015_e.pdf].
+
+
+##### Data Issues {#data-01-fao-issues}
+
+To see if there is an issues 
+
+
+```{r data-01-fao-issues}
+path <- here::here('data', 'temp')
+files <- list.files(path)
+
+vop_yields <- arrow::read_parquet(file.path(path, grep(".*Crops_Livestock_E_All_Data.*.parquet", files, perl=TRUE, value = TRUE))) %>% 
+    filter(year >= 1992, element == 'Production', (stringr::str_detect(item, 'Meat')| item_code %in% c(egg_codes, milk_codes))) %>% 
+    mutate(country_name = countrycode::countrycode(area_code, 'fao', 'country.name.en')) %>% 
+    drop_na(country_name, value) %>% 
+    filter(
+        !(item %in% c('Beef and Buffalo Meat', 'Sheep and Goat Meat','Meat, Total', 'Meat, Poultry', 'Meat nes'))
+    )
+
+fao_qc$item <- stringr::str_remove_all(fao_qc$item, ' indigenous')
+
+missing <- anti_join(select(vop_yields, country_name, year,  item , item_code, unit, value, flag), 
+                        select(fao_qc, country_name, year, item, item_code),
+                        by = c('country_name', 'year', 'item'))
+
+DT::datatable(missing %>%  select(-item_code), 
+              caption = 'Production Items for which the VOP has not been calculated', 
+              filter = list(position = 'top', clear = TRUE, plain = FALSE))
+
+```
+
+
+
+
+
+
+```{r}
+DT::datatable(missing %>%  count(country_name, item), 
+              caption = 'Items not Calculated by Country', 
+              filter = list(position = 'top', clear = TRUE, plain = FALSE))
+
+```
+
+
+```{r}
+DT::datatable(missing %>%  count(item), 
+              caption = 'Items not Calculated', 
+              filter = list(position = 'top', clear = TRUE, plain = FALSE))
+
+```
+
+
+### FAO Fisheries {#data-01-fao_fisheries}
+The direct value of animal outputs is currently calculated on a global basis for aquaculture 
+using the FAO fisheries Global Aquaculture Production Database ^[http://www.fao.org/fishery/statistics/global-aquaculture-production/en]. 
+
+The definitions used in this dataset are as follows 
+
+>Aquaculture:
+is understood to mean the farming of aquatic organisms including fish, molluscs, crustaceans and aquatic plants. Farming implies some form of intervention in the rearing process to enhance production, such as regular stocking, feeding, protection from predators, etc. Farming also implies individual or corporate ownership of the stock being cultivated. For statistical purposes, aquatic organisms which are harvested by an individual of corporate body which has owned them throughout their rearing period contribute to aquaculture while aquatic organisms which are exploitable by public as a common property resource, with or without appropriate licences, are the harvest of fisheries
+
+Likewise, 
+
+>Aquaculture production
+specifically refers to output from aquaculture activities, which are designated for final harvest for consumption. At this time, harvest for ornamental purposes is not included.
+
+
+
+
+The following table shows the number of observations for each country during the 
+period (1992 - Present).   Which shows that Spain reporting the most species in 2016 at 121.  
+
+
+
+```{r,  fisheries-countries}
+
+fao_fisheries <- readr::read_csv(here::here('data', 'raw', '20210716_FAO_Global_Aquaculture_Production/AQUACULTURE_VALUE.csv'), show_col_types = FALSE) %>% 
+    filter(PERIOD >= 1992) %>% 
+    rename(year = PERIOD)
+
+fao_fisheries$country_name <- countrycode::countrycode(as.numeric(fao_fisheries$COUNTRY.UN_CODE),'un', 'un.name.en') 
+   
+fao_fisheries <- fao_fisheries %>% drop_na(country_name)
+    
+DT::datatable(dplyr::count(fao_fisheries, country_name, year),  filter = list(position = 'top', clear = TRUE, plain = FALSE))
+```
+
+
+The values, in current USD dollars reported are topped by China in 2019 reporting 
+over 160 Billion USD in the value of their aquaculture production. 
+
+
+
+
+```{r,  fao-fisheries-products}
+aqua_sums <- fao_fisheries %>% group_by(country_name, year) %>%
+            summarize(`Value ($)` = dollar_format()(round(sum(VALUE)*1000)))
+DT::datatable(aqua_sums, 
+              caption = "Value in USD Per Country Per Year (1992-2019)", options = list(scrollX=300), 
+               filter = list(position = 'top', clear = TRUE, plain = FALSE))
+```
+
+
+To get a better visual representation of this, it can easily be mapped.   
+The following is a Chorepleth map showing the distribution of values for 2015. 
+
+
+```{r, aqua-maps}
+
+library(rgdal)
+library(leaflet)
+
+aqua_2019 <- fao_fisheries %>% 
+    filter(year == 2015) %>% 
+    group_by(COUNTRY.UN_CODE) %>% 
+    summarise(value = sum(VALUE) * 1000, .groups = 'drop') %>% 
+    mutate(COUNTRY.UN_CODE = as.numeric(COUNTRY.UN_CODE))
+   
+
+world_spdf <- readOGR( 
+  dsn= paste0(here::here('data', 'raw', 'shapefiles')) , 
+  layer="TM_WORLD_BORDERS_SIMPL-0.3",
+  verbose=FALSE
+)
+
+world_spdf@data$value <- sapply(world_spdf@data$UN,
+                                function(x) ifelse(x %in% aqua_2019$COUNTRY.UN_CODE, aqua_2019$value[aqua_2019$COUNTRY.UN_CODE == x], NA))
+library(RColorBrewer)
+mytext <- paste(
+    "Country: ", world_spdf@data$NAME,"<br/>", 
+    "Aquaculture Value: ",scales::dollar_format()(round(world_spdf@data$value, 2)), 
+    sep="") %>%
+  lapply(htmltools::HTML)
+
+my_bins <- c(0, 1e6, 1e7, 1e8, 1e9, 10e9, 50e9, Inf)
+
+mypalette <- colorBin( palette="viridis", domain=world_spdf@data$value, na.color="transparent", bins=my_bins)
+leaflet(world_spdf) %>% 
+  addTiles()  %>% 
+  setView( lat=10, lng=0 , zoom=2) %>%
+  addPolygons( 
+    fillColor = ~mypalette(value), 
+    stroke = TRUE, 
+    fillOpacity = 0.9, 
+    color = "white", 
+    weight = 0.3,
+    label = mytext,
+    labelOptions = labelOptions( 
+      style = list("font-weight" = "normal", padding = "3px 8px"), 
+      textsize = "13px", 
+      direction = "auto"
+    )
+  ) %>%
+  addLegend(pal=mypalette, values=~value, opacity=0.9, title = "Values ($USD)", position = "bottomleft" )
+
+  
+```
+
+
+Results from this data is reported in the [FAO Yearbook of Fisher and Aqualculture Statistics](http://www.fao.org/fishery/statistics/yearbook/en).
+
+**TODO: ADD more notes on data issues, both in terms of inconsistencies and issues 
+with the actual reported numbers**
+
+#### Data Issues (Downloaded 2021-07-16)
+
+Different countries have different reporting periods, with some countries reporting over
+financial years rather than calendar year and reported in the end of period calendar year. 
+Other countries report on a dry basis for live weights which have to be converted to wet weights, etc.
+Countries also report aggregated species which are disaggregated in the data.
+Other countries such as Chile report values one secondary markets and not at the point of first sale. 
+Notes on each of these discrepancies per country can be found within the dataset in a html document ^[NOTES_AQUACULTURE_COUNTRY_En.html]
+
+
+
+
+## Scenario O2: Value of Secondary Animal Outputs {#data-O2}
+
+See Section \@ref(O2) for a full description of what is required to calculate 
+this scenario.  
+
+In particular, it requires the values derived from Scenario O1, as 
+well as values for animal outputs such as skin, wool, hides, offal, etc. 
+
+### FAO {#data-O2-fao}
+
+#### Data Issues {#data-O2-fao-issues}
+
+
+For the years 1992-2019 the FAO only reports values for Wool Greasy  in their Value of Agricultural Production 
+tables. 
+
+
+```{r, data-issues-02}
+
+# Data 
+path <- here::here('data', 'temp')
+files <- list.files(path)
+o2 <- arrow::read_parquet(file.path(path, grep(".*Value_of_Production.*.parquet", files, perl=TRUE, value = TRUE))) %>% 
+    mutate(country_name = countrycode::countrycode(area_code, 'fao', 'country.name.en')) %>% 
+    drop_na(country_name)
+
+
+
+DT::datatable(o2 %>% 
+                  filter(year >= 1992, element_code %in% c(56, 57),  str_detect(item, regex('skin|wool|offal|hide', ignore_case = TRUE))) %>% 
+                  group_by(country_name, item, year) %>% 
+                  arrange(desc(element)) %>% 
+                  summarise(element = last(element), .groups = 'drop') %>% 
+                  count(country_name, item, element, year) -> wool, 
+              caption = "FAO Value of Production O2 Commodities Reported  (1992-2019)", 
+              options = list(scrollx=30)
+              )
+
+
+
+```
+
+```{r}
+DT::datatable(wool %>% count(country_name, item , element), caption = "FAO Value of Production 02 Commoditeis Summary of Elements (1992-2019)")
+```
+
+
+This is because it is the only one of these items which has producer
+prices reported ^[http://www.fao.org/faostat/en/#data/PP] in the PP FAOSTAT table.
+
+
+However, according to FAO Metadata 
+for FAO Item Code 1176 (Meat, Total)
+
+>FAO defines meat as the flesh of animals used for food. In production data, meat is normally reported inclusive of bone and exclusive of meat that is unfit for human consumption. As reported by individual countries, meat production data may refer either to commercial production (meat entering marketing channels), inspected production (from animals slaughtered under sanitary inspection), or total production (the total of the above- mentioned categories plus slaughter for personal consumption). All FAO annual production data refer to total production.Country statistics on meat production adhere to one or more of the following concepts: 1. Live weight: the weight of the animal immediately before slaughter. 2. Killed weight: the live weight less the uncollected blood lost during slaughter. 3. Dressed carcass weight: weight minus all parts - edible and inedible - that are removed in dressing the carcass. The concept varies widely from country to country and according to the various species of livestock. Edible parts generally include edible offals (head or head meat, tongue, brains, heart, liver, spleen, stomach or tripes and, in a few countries, other parts such as feet, throat and lungs. Slaughter fats (the unrendered fats that fall in the course of dressing the carcasses) are recorded as either edible or inedible according to country practice. Inedible parts generally include hides and skins (except in the case of pigs), as well as hoofs and stomach contents.Meat production data for minor animals (poultry, rabbits, etc.) are reported in one of the following three ways: ready-to-cook weight (giblets are sometimes included and sometimes excluded); eviscerated weight (including the feet and head); or dressed weight, i.e. the live weight less the blood, feathers and skin.FAO data relate to dressed carcass weight for livestock and, wherever possible, ready-to- cook weight for poultry.Among individual countries, one of the following three concepts issued to measure production:A. Production from all animals, of both indigenous and foreign origin, that are slaughtered within national boundaries. B. Production from the slaughter of indigenous animals plus exports of live indigenous animals during the reference period. Derived from meat production as follows: production from slaughtered animals plus the meat equivalent of all animals exported alive, minus the meat equivalent of all animals imported alive. As imports/exports of live animals are recorded by FAO in numbers, not weight, animal type and size are of significance. C. The biological production concept covers indigenous animals that are either slaughtered or exported live, plus net additions to the stock during the reference period. Derived from indigenous productions follows: indigenous production plus (or minus) the meat equivalent of the change in the stock numbers during the reference period. Production is expressed in terms of live weight. Changes in the total live weight of all animals are not taken into account.FAO uses the first concept of meat production in the construction of its food balance sheets and for related indicators. The second concept, indigenous meat production, in measuring the output of the national livestock sector, is useful mainly in the construction of index numbers of agricultural production. The third concept, biological production, would be the most complete as it also reflects changes in the livestock herd, but it is not used because of difficulties in obtaining information from national reporting offices. The prices applied to indigenous meat production are derived from prices of live animals. This covers not only the value of meat, but also the value of offals, fats, hides and skins.
+>
+> --- Definitions and Standards  - Producter Prices (FAOSTAT)
+
+Therefore, the values reported for unit prices of live weights of indigenous animals which are taken from 
+the FAO producer prices, should in most cases include the value of these 
+secondary outputs such as skin, hides, offal, fat, etc.
+
+<div class="alert alert-info">
+  <strong>Note:</strong> Due to the way that the FAO reports Producer Prices, values for secondary outputs 
+  such as Skin, Offal, fats and hides will in most cases be included in the values reported in Scenario O1. 
+  Scenario 02 then only requires O1, plus values for Wool.  The yield values for these 
+  items is reported in the Livestock Production tables. 
+</div>
+
+
+
+
+
+
+
+
+## Scenario AS2: Value of Animal Biomass {#data-AS2}
+See Section \@ref(AS2) for a full description of this scenario. 
+
+Currently global data detailing each countries stocks of aquatic products has not yet
+been sourced. 
+
+### FAO {#data-AS2-fao}
+
+The current approach that  has been taken to the estimation of Scenario AS2^[A detailed description of this scenario can be found in Section \@ref(AS2)]
+using FAOSTAT data is to use the Livestock population numbers available in the QCL^[http://www.fao.org/faostat/en/#data/QCL] table. 
+Live weight prices can then be derived from the producer prices table ^[http://www.fao.org/faostat/en/#data/PP] using some form
+of live weight conversion factor.  Hence, the value of animal stock for each country under Scenario AS
+will then be 
+
+\begin{equation}
+     \sum_{i \in \{\text{cattle, goat, camels, ...}\}} x_i \cdot w_i \cdot \$_i
+    (\#eq:AS2-fao)
+\end{equation}
+Where $x_i$ is the reported stocks of livestock type $i \in \{\text{cattle, goat, camels, ...}\}$
+$w_i$ the associated liveweight conversion for species $i$ in and $\$_i$ the unit price. 
+
+
+
+#### Producer Prices {#data-AS2-fao-prices}
+
+Currently, the FAO producer prices ^[http://www.fao.org/faostat/en/#data/PP] are 
+used to determine livestock value. 
+
+According to the Producer Prices metadata ^[http://fenixservices.fao.org/faostat/static/documents/PP/PP_e.pdf]
+
+>Annual producer prices are available in local currency unit (LCU), standard local currency (SLC)2
+ and 
+US dollars. To date, prices are available from 1991 to 2018 whilst historical data from 1966 to 1991 
+are available in the Price Archive section of the price domain of FAOSTAT in local currency unit 
+only. And the monthly producer prices are available only in local currency unit from 2010 to 2018. 
+Most data originate from country sources received through the FAO questionnaire on annual and 
+monthly producer prices received by farmers for primary crops and livestock products. In addition, 
+where no official data are available, these are complemented by FAO estimates. But only official 
+producer prices from the questionnaire are published in FAOSTAT. 
+>
+> --- Agricultural Producer Price Domain in FAOSTAT^[http://fenixservices.fao.org/faostat/static/documents/PP/PP_e.pdf](pg.1)
+
+Therefore, only official nationally reported price data can be accessed in FAOSTAT. 
+For prices reported in SLC, 
+
+>  Prices in SLC are standardised to reflect data in one currency only, normally the currency in the most recent year of 
+data reporting
+>
+> --- Agricultural Producer Price Domain in FAOSTAT^[http://fenixservices.fao.org/faostat/static/documents/PP/PP_e.pdf](pg.1)
+
+For data coverage, the FAO states 
+
+>The price domain of FAOSTAT has the largest coverage of producer prices in the world; 
+i. Annual producer prices cover 179 country and 212 crop and livestock products. <br>
+ii. Monthly producer prices cover 113 country and 200 crop and livestock products. 
+>
+> --- Agricultural Producer Price Domain in FAOSTAT^[http://fenixservices.fao.org/faostat/static/documents/PP/PP_e.pdf](pg.2)
+
+
+##### Data Issues {#data-AS2-fao-pp-issues}
+<div class="alert alert-info">
+   <strong>Note:</strong> Currently only annual prices are used (Item 7021) as there 
+   is no information on the month in which items where sold. 
+</div>
+
+
+The following are the available producer prices per tonne  from the FAO since 1992 for 
+live weights of livestock. 
+```{r as2-fao-pp-issues}
+
+path <- here::here('data', 'temp')
+files <- list.files(path)
+prices <- arrow::read_parquet(file.path(path, grep(".*Prices_E_All_Data_.*.parquet", files, perl=TRUE, value = TRUE))) %>% 
+    filter(str_detect(item, 'live weight'), months_code ==7021, element_code %in% c(5530, 5531, 5532)) %>% 
+    mutate(country_name = countrycode::countrycode(area_code, 'fao', 'country.name.en')) %>% 
+    drop_na(country_name) %>% 
+    group_by(country_name, year, item, item_code) %>% 
+    arrange(element_code) %>% 
+    summarise(
+        element = last(element), 
+         unit = last(unit), 
+         value = last(value), 
+        .groups = 'drop'
+    ) %>% 
+    separate(item, c(NA, 'animal'), sep=',', extra = 'merge') %>% 
+    mutate(animal = trimws(animal))
+DT::datatable(select(prices, country_name, year, animal , unit, value), 
+              caption = 'FAO Livewight Price Per Tonne (USD)', 
+               filter = list(position = 'top', clear = TRUE, plain = FALSE))
+
+DT::datatable(data.frame(table(prices$unit)), caption = 'Currencies Reported In')
+```
+
+To determine what issues there may be with the lack of data availability,
+items for which liveweight prices were not reported for can be cross referenced 
+with where animal stocks where reported. 
+
+
+
+<div class="alert alert-info">
+   <strong>Note:</strong> This will include data which has been imputed by the 
+   FAO.  Currently this appears to be a reasonable approach, the lack of price 
+   data does not mean the animal stocks in the country do not have value. 
+</div>
+
+
+```{r missing-price-data-table}
+stocks <- arrow::read_parquet(file.path(path, grep(".*Crops_Livestock_E_All_Data.*.parquet", files, perl=TRUE, value = TRUE))) %>% 
+    filter(element_code %in% c(5111, 5112, 5114), year >= 1992) %>% 
+    mutate(country_name = countrycode::countrycode(area_code, 'fao', 'country.name.en')) %>% 
+    drop_na(country_name) %>% 
+    mutate(
+        item = gsub('s$', '',  tolower(item))
+    ) %>% 
+    filter(
+        !(item %in% c('beehive', 'cattle and buffaloe', 'sheep and goat', 'poultry bird'))
+    ) %>% mutate(
+        item = case_when(
+            item == 'asse' ~ 'ass', 
+            item  =='geese and guinea fowl'~'goose', 
+            item  == 'rabbits and hare'~ 'rabbit', 
+            item  == 'buffaloe' ~ 'buffalo',
+            TRUE ~ item
+        )
+    )  %>% rename(animal = item)
+
+prices <- filter(prices, animal %in% unique(stocks$animal))
+
+missing <- anti_join(select(stocks, country_name,year, animal , unit, value),
+                        select(prices, country_name, year, animal), 
+                        by= c('country_name', 'year', 'animal'))
+DT::datatable(missing, caption = 'Missing Prices', filter = list(position = 'top', clear = TRUE, plain = FALSE))
+DT::datatable(missing %>% 
+                  count(country_name, animal) %>% rename(`number of missing years` = n), 
+              caption = 'Number of Missing Annual Prices (1992-2019)', 
+               filter = list(position = 'top', clear = TRUE, plain = FALSE), 
+              options = list(scrollx=100))
+```
+Overall, there are approximately  32 thousand  instances where animal stocks are reported 
+but the associated prices is missing, hence two thirds of all stock reported is missing 
+a live weight price.  
+
+To get a global view of what prices are missing, and what animals they are missing 
+for the following map can be used. 
+
+```{r}
+
+missing_count <-  missing %>% count(country_name, animal) %>% 
+    mutate(un_code = countrycode::countryname(country_name, 'un')) %>% 
+    drop_na(un_code)
+   
+
+world_spdf <- readOGR( 
+  dsn= paste0(here::here('data', 'raw', 'shapefiles')) , 
+  layer="TM_WORLD_BORDERS_SIMPL-0.3",
+  verbose=FALSE
+)
+
+my_text <- paste( "<b>Country:</b> ", world_spdf@data$NAME,"<br/>", sep='')
+for (an in unique(missing_count$animal)) {
+   
+    world_spdf@data[an] <- sapply(world_spdf@data$UN,
+                                function(x) ifelse(x %in% missing_count$un_code,
+                                                   missing_count %>% 
+                                                       filter(un_code == x, animal == an) %>% 
+                                                       head(1)['n'],
+                                                   NA))
+    my_text <- paste(my_text,'<b>',  an , '</b>:', world_spdf@data[[an]], "<br/>", sep ='')
+}
+
+
+missing_sum <- missing_count %>%  
+    group_by(un_code) %>%
+    summarise(n = sum(n))
+
+world_spdf@data$value <- sapply(world_spdf@data$UN, 
+                                function(x) ifelse(x %in% missing_sum$un_code, 
+                                                   missing_sum %>% 
+                                                       filter(un_code == x) %>% 
+                                                       pull(n), 
+                                                   NA))
+my_text <- paste(my_text, '<b>Total:</b>', world_spdf@data$value)
+my_text <- lapply(my_text, htmltools::HTML)
+
+missing_sum <- missing_count %>%  group_by(un_code) %>% summarise(n = sum(n))
+my_bins <- c(quantile(missing_sum$n, 0:4/5), 350)
+world_spdf@data$value <- sapply(world_spdf@data$UN, 
+                                function(x) ifelse(x %in% missing_sum$un_code, 
+                                                   missing_sum %>% 
+                                                       filter(un_code == x) %>% 
+                                                       pull(n), 
+                                                   NA))
+
+    
+mypalette <- colorBin(palette="viridis",
+                      reverse = T, 
+                      domain=world_spdf@data$value,
+                      na.color="transparent",
+                      bins=my_bins)
+
+
+leaflet(world_spdf) %>% 
+  addTiles()  %>% 
+  setView( lat=10, lng=0 , zoom=2) %>%
+  addPolygons( 
+    fillColor = ~mypalette(value), 
+    stroke=TRUE, 
+    fillOpacity = 0.9, 
+    color="white", 
+    weight=0.3,
+    label = my_text,
+    labelOptions = labelOptions( 
+      style = list("font-weight" = "normal", padding = "3px 8px"), 
+      textsize = "13px", 
+      direction = "auto"
+    )
+  ) %>%
+  addLegend(pal=mypalette, values=~value, opacity=0.9, title = "Total Number of Prices Missing", position = "bottomleft" )
+```
+
+
+Which shows high values of missing prices for  for Brazil, missing prices for cattle in 9 of the 28 years
+and India which actually only reports prices for some animals in 2  of the 28 years. 
+This can be confirmed by looking at the previous table containing the price data. 
+
+```{r}
+
+
+
+
+```
+
+
+#### Live Weight Conversions {#data-AS2-fao-liveweights}
+
+To calculate the true liveweight of each animal several approaches can be taken, each of which have advantages and disadvantages.
+These approaches must be taken due to the lack of high quality global data detailing livestock weights by age and breed. 
+
+##### Livestock Units
+The first approach is to use a proxy of live weights such as LUs (Livestock Units) which are available from FAOSTAT ^[http://www.fao.org/faostat/en/#data/EK]
+on a country by country basis.  
+
+>Comparing and aggregating stocks of different livestock requires the use of Livestock 
+Units or even kg of biomass (FAO, 2011). Livestock Units (LSU) are a reference unit which 
+facilitates the aggregation of livestock from various animal cohorts and species, via the 
+use of specific coefficients, established initially on the basis of feed requirements of each 
+species and category (Eurostat, 2013; Eurostat, 2016). The reference unit used for the 
+calculation of livestock units (=1 LSU) is the grazing equivalent of one adult dairy cow 
+producing 3000 kg of milk annually, fed without additional concentrated foodstuffs. 
+>
+> --- FAOSTAT Domain Livestock Patterns. Metadata, release March 2021^[http://fenixservices.fao.org/faostat/static/documents/EK/EK_e.pdf]
+
+This methodology was derived from a paper by Chilonde & Otte (2006)^[http://www.lrrd.org/lrrd18/8/chil18117.htm] which states,
+
+>Livestock units are basically an 'exchange ratio' among livestock species and obtained by converting the body weight into the metabolic weight i.e body weight$^{0.75}$
+[...] For global comparisons, the concept of livestock unit is preferred to that of tropical livestock unit, which only considers livestock raised in the tropics and used extensively in the analysis of livestock systems in the tropics. In the estimation of livestock units in Table 1, it is assumed that a cow in the Unites States has the highest weight and hence a factor of one and all the coefficients for the other regions are estimated in relation to this.
+>
+> --- Chilonde & Otte (2006)
+
+
+<div class="alert alert-info">
+  <strong>Note:</strong> One problem with this approach is it still remains to determine the weight of a North American Cow which should be used as the base unit. 
+</div>
+
+
+A comparison of LU converted body weights for different base units can be seen in the following table. 
+
+```{r data-fao-lu}
+lu <- readr::read_csv(here::here('data', 'raw', 'FAOSTAT', 'LSU_Coeffs_by_Country.csv'), show_col_types = FALSE) %>% 
+    mutate(country_name = countrycode::countrycode(AreaCode, 'fao','country.name.en')) %>% 
+    drop_na() %>% 
+    select(-AreaName)
+
+fao_lus <- lu %>% mutate("kgs" = Value * 600) %>% 
+    dplyr::select(-Value, -AreaCode, -ItemCode, -Unit) %>% 
+    spread(ItemName, kgs) 
+
+fao_lus[fao_lus == 0] <-  NA
+    
+DT::datatable(data.frame(fao_lus), caption = "FAO LU Converted Liveweights (Base Unit of 600kg)", options = list(scrollX=300))
+    
+
+```
+
+
+##### Liveweight Conversion Factors
+Another approach is to use Liveweight Conversion factors  derived from the 
+FAO's technical conversion factors ^[http://www.fao.org/fileadmin/templates/ess/documents/methodology/tcf.pdf] that are used to derive the carcass Yields
+reported.   
+
+The following table shows  these values.
+```{r, fao-tcfs}
+tcfs <- readr::read_csv(here::here('data', 'raw', 'FAOSTAT', 'faostat_conversions.csv'), show_col_types = FALSE) %>% 
+    select(country_name, animal_en, live_weight) %>% 
+    mutate(country_name = stringr::str_replace_all(country_name,  "[^[:alnum:]]", " "), 
+           live_weight = if_else(stringr::str_detect(animal_en, 'turkeys|geese|ducks|chickens'), round(live_weight/1000, 1), live_weight)) %>% 
+    distinct(country_name, animal_en, .keep_all = TRUE) %>% 
+    spread(animal_en, live_weight, fill=NA)
+    
+
+
+DT::datatable(tcfs, caption = "FAOSTAT Technical Conversion Factors For Meat LiveWeights (kg)", options=list(scrollX=300))
+```
+
+<div class="alert alert-info">
+  <strong>Info!</strong>  This is not the entirety of the conversion factors reported, some of the poultry 
+conversion factors are missing for some countries.
+</div>
+
+<div class="alert alert-info">
+  <strong>Note:</strong> The problem with these conversion factors is that they are used for conversions of slaughtered animals into meant yield, 
+there for they are probably not accurate weights for the an entire species weight and age structure, leading to an overestimate
+in the total weight of a species
+</div>
+
+
+
+
+#### Aquatic Data {#data-AS2-fao-fish}
+
+The FAO has been estimating and reporting global marine stocks annually since 1974, and according to ^[https://unstats.un.org/sdgs/metadata/files/Metadata-14-04-01.pdf]
+
+> ... the FAO uses a wide 
+spectrum of data and methods to extend its assessment to the fish stocks that account for the majority 
+(70-80 percent) of the global catch (FAO, 2005).
+>
+> --- SDG 14.4.1 ( Proportion of fish stocks within biologically sustainable levels) Indicator Metadata
+
+
+With  estimates on a national level are said to be collected on a 2 yearly basis, 
+
+>the national-level questionnaire was dispatched for the first time in November 2019; FAO 
+identifies 165 countries with a marine border, and three countries with Caspian Sea border, as being 
+eligible, in principle, to report. As the result of the first questionnaire call, ninety-seven countries 
+expressed interest in the indicator (59%), of which eighty two replied with completed questionnaires
+while three countries reported the indicator separately (51.5%), 11 countries stated that they could not 
+report due to lack of data or time, and one responded with some catch data.
+>
+> --- SDG 14.4.1 ( Proportion of fish stocks within biologically sustainable levels) Indicator Metadata
+
+However, this data is not yet available and is still considered to be in the trial/testing phase. 
+
+Information on the FAOs methodology for assessing global fishing stocks 
+is available in the following papers ^[http://www.fao.org/3/i2389e/i2389e.pdf].
+
+Data on Global Aquaculture captures (by live weight and value) is easily available from ^[http://www.fao.org/fishery/statistics/global-capture-production/3/en], however, 
+ countries where the total number of catches can be used as a proxy for the stock, 
+ could potentially just be a by product ofover fishing. 
+
+
+<div class="alert alert-info">
+  <strong>Note:</strong> Data on global aquaculture stocks at a national level has not yet been included in 
+                         Scenario AS2. It may yet be included at a national level for countries in which data is already present. 
+</div>

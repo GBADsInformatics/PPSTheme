@@ -1,0 +1,129 @@
+--- 
+title: "GBADS: Total Economic Value of Livestock"
+author: "Gabriel Dennis (Research Technician, CSIRO, St Lucia)"
+date: "`r Sys.Date()`"
+site: bookdown::bookdown_site
+documentclass: book
+bibliography: [book.bib, packages.bib]
+# url: your book url like https://bookdown.org/yihui/bookdown
+# cover-image: path to the social sharing image like images/cover.jpg
+description: |
+     This document contains documentation of the data and methodology used to produce
+     the an estimation of the Total Economic Value of Livestock for the GBADS
+     (Global Burden of Animal Disease) project. 
+     
+link-citations: yes
+#github-repo: rstudio/bookdown-demo
+---
+
+# About
+
+This report contains a description of the methods and analysis used by the GBAD's (Global Burden of Animal Disease) 
+PPS (Population and Production Systems) theme to obtain an estimate of the 
+global economic value of livestock.   This was done using a total economic value approach, 
+similar to approaches taken in various different economic fields. 
+
+The purpose of this section of GBADs is to establish as baseline valuation which 
+can be used in downstream calculations to determine the economic cost of different 
+animal diseases present in different livestock types worldwide. 
+
+
+Currently, this project has only looked at estimating a countries Livestock and 
+aquaculture TEV for over the range 1990-2020. This is due to the lack of economic 
+data, such as livestock prices, which is available on a global basis prior to this 
+point. As, due to inconsistencies with currencies and exchange rates, comparisons
+across countries are much less trustworthy for older data. 
+
+
+## Progress Report (Last Updated 2021-10-11)
+
+The following section contains brief descriptions of the current progress
+that has been achieved on a variety of different items in relation to the 
+estimation. 
+
+October
+: - [ ] Compare estimates derived from FAO and OIE data to data sourced from national statistics. 
+: - [ ] Produce confidence estimates of the valuations
+: - [ ] Report data quality issues
+: - [ ] Source US Dairy data ^[https://www.ers.usda.gov/data-products/dairy-data/dairy-data/]
+    
+October
+: -	[ ] List data gaps as detailed as possible
+: -	[x] AS2: Price data (unit price) missing for number of years/countries, e.g., India, Ethiopia, other which countries (please list them all) (Section \@ref(data-AS2-fao-price))
+: -	[x] AS2: Live aquaculture biomass (Section \@ref(data-AS2-fao-fish))
+: -	[x] O1: Any data missing – volume/value? (Section \@ref(data-O1-fao))
+: -	[x] O2: (Price data) for secondary outputs (e.g., skins) - for which countries? (Section \@ref(data-O2-fao-issues))
+: - [ ] Missing time series data (interpolation?), which countries/years are mostly affected?
+: - [ ] List extensions that could be done with more time 
+: - [ ] Use of FAO export data and potential assumptions when using this data to derive price values for a county’s live animal stock
+
+November/Decemeber
+: - [ ] Scenario estimations (year with most data available globally) 
+: - [ ] Scenario to compare volume biomass & value for livestock and aquatic animals separately (proportional development?)
+: - [ ] AS2+O1 = total value of production and output (what was the issue with that? 80% hurdle?)
+: - [ ] AS2 = all up (update)
+: - [ ] AS2 = cattle, sheep, gout, poultry (update)
+: - [ ] O1 = all up (update)
+: - [ ] O1 = fish, meat, milk, eggs (update)
+: - [ ] AS2 all up /capita (update)
+: - [ ] O1 all up/capita (update)
+: - [ ] (GDP – to be confirmed if we need that)
+: - [ ] (Scenarios using different biomass conversion factors to be confirmed after meeting with other GBADs teams)
+: -  -  Issues related to different conversion factors are detailed in section \@ref(data-AS2-fao-liveweights)
+
+
+December
+: - [ ] Document scenario estimation including data sources
+
+Todo
+: - Automate reports, looking at time series, price vs biomass, prices vs animal products, liveweight prices, 
+
+## Data Sources {#data-sources}
+
+This section contains a variety of different data sources we are in the progress 
+of accessing or are planning to in the future. 
+
+
+
+### India {#data-sources-india}
+
+Some reports for data on India are available online ^[[India Department of Animal Husbandry and Dairying](https://dahd.nic.in/animal-husbandry-statistics)]. 
+These are pdf reports which contain quite detailed data over the last 10 years on livestock populations, 
+and production, but don't appear to include live weight prices. Only value added 
+calculations, which may not be useful in calculating the value of animal stock present in a country.
+There are also derived statistics of value added by sector on the Ministry of Statistics and Programme Implementation [website](http://www.mospi.nic.in/publication/national-accounts-statistics-2021). 
+However, they only include the value added. 
+
+
+<div class="alert alert-info">
+  <strong>Note:</strong> Price data for India could potential be reconstructed using the 
+  producer prices index reported by the FAO in the PP table. However,in some cases  they appear to be constant across live weight prices 
+  within some years. 
+</div>
+
+### United States {#data-sources-usa}
+
+Data for the Unites States Department of Agriculture (USD) 
+from the National Agricultural Statistics Service is available [here](https://quickstats.nass.usda.gov/api)
+
+#### Dairy Data 
+Data from the USDA on diary products, as well as prices of livestock outputs 
+are available from [this](https://www.ers.usda.gov/data-products/dairy-data) link.
+
+Prices can be found [here](https://www.ers.usda.gov/data-products/meat-price-spreads/)
+
+
+## To Consider
+
+### Currencies
+
+<div class "alert alerg-info">
+<strong> For Peggy: </strong> One thing to consider is what currency that GBADs would like results reported in. 
+The FAO has data reported in LCU, SLC (constant/current), USD (constant/current)
+as well as International dollars and Producer Price Indices. 
+In cases where only one is available, there must be an agreed upon form of conversion
+to what is the most appropriate unit to present and compare results in, 
+and a a methodology for eliminating values should be decided upon. 
+</div>
+
+

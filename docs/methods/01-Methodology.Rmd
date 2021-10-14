@@ -1,0 +1,113 @@
+# Methodology {#methodology}
+
+This chapter will give a brief overview of the methodology and components that 
+will be used to approach the  the different scenario estimates which make up the 
+TEV components. 
+
+## Total Economic Value {#tev}
+
+**TODO: Add section describing total economic valuation with references. **
+**Add References to Bibtext**
+
+In most cases countries will report values in Local Currency Units (LCU), 
+Standard Local Currency Units (SLC) or some form of international dollars, which 
+are usually in the form of current US dollars for the reporting year. 
+When making comparisons across countries it is most reasonable to report numbers
+in current US dollars, as that will give some idea of the comparative buying power
+of each estimate. However, when comparing trends within a country it can be fine
+to leave the values in the countries prevailing SLC, and for comparisons across
+time it can be best to fix currencies to some appropriate baseline. 
+
+## Scenarios {#scenarios}
+
+The following scenarios have so far been considered to produce some preliminary 
+estimates if the TEV of a countries livestock and aquculture.  
+
+### O1: Value of Direct Animal Outputs {#O1}
+
+Scenario O1 encompasses the value of primary animal outputs. 
+These outputs include meat, fish, milk and eggs. Therefore, the value for each country can be defined as 
+
+\begin{equation}
+      \sum_{i \in \{\text{meat}, \text{fish}, \text{milk}, \text{eggs} \}} x_i \cdot \$_i
+     (\#eq:O1)
+\end{equation}
+Here, in Equation \@ref(eq:O1) $x_i$ denotes a countries output quantity for commodities $i \in \{\text{meat}, \text{fish}, \text{milk}, \text{eggs} \}$, 
+and $\$_i$ the associated unit price. 
+
+
+
+### O2: Value of Direct Animal Outputs {#O2}
+
+Scenario O2 a countries values of primary and secondary animal outputs. 
+These outputs include those detailed above in \@ref(O1), but now include secondary outputs
+such as skin, hides, wool, offal, horns, etc.
+The value for each country is defined as 
+\begin{equation}
+     \text{O1} \  + \sum_{i \in \{\text{skin}, \text{hides}, \text{wool}, \text{offal}, \text{horns}, \dots \}} x_i \cdot \$_i
+     (\#eq:O2)
+\end{equation}
+Once again,in Equation \@ref(eq:O2)  $x_i$ denotes a countries output quantity for commodities $i \in \{\text{skin}, \text{hides}, \text{wool}, \text{offal}, \text{horns}, \dots \}$
+and $\$_i$ the associated unit price. 
+
+
+### AS1: Value of Animal Stock  {#AS1}
+This scenario attempts to give a basic valuation of the value of a countries
+animal population.  This is done using the live animal population for each livestock 
+animal and that animals current farm gate price. 
+Farm gate price is used as it is the price which is most likely to determine the true value that the primary producer of that animal 
+benefited from its sale. 
+
+The associated equation is 
+\begin{equation}
+        \sum_{i \in \{\text{cattle}, \text{pigs}, \text{goats}, \text{chickens}, \text{camels}, \dots\}} x_i \cdot \$_i
+       (\#eq:AS1)
+\end{equation}
+Where now in Equation \@ref(eq:AS1), $x_i$ is a countries live animal population  for species $i \in \{\text{cattle}, \text{pigs}, \text{goats}, \text{chickens}, \text{camels}, \dots\}$
+and $\$_i$ the associated farm gate price for that animal. 
+
+
+### AS2: Value of Animal Stock {#AS2}
+Scenario AS2 gives a slightly more detailed estimate of the of the use value of livestock
+by attempting to value the value of livestock biomass.  This is done by instead of using of using per head farm gate prices 
+to value the population, instead use meat liveweight prices. 
+This has the associated equation 
+\begin{equation}
+     \sum_{i \in \{\text{cattle}, \text{pigs}, \text{goats}, \text{chickens}, \text{camels}, \dots\}} x_i \cdot \$_i
+     (\#eq:AS2)
+\end{equation}
+
+Where now in Equation \@ref(eq:AS2), $x_i$ is a countries live animal population's live weight  for species $i \in \{\text{cattle}, \text{pigs}, \text{goats}, \text{chickens}, \text{camels}, \dots\}$
+and $\$_i$ the associated meat liveweight price.
+
+### AS3: Value of Animal Stock {#AS3}
+
+Scenario AS3 is once again more detailed that Scenario AS2 (Section \@ref(AS2))
+has it now tries to value animal stock by taking into account, not only the livestock 
+population,  but also the price by age structure.   The resulting equation to determine 
+a countries value of animal stock under scenario AS2 is then 
+\begin{equation}
+        \sum_{i \in \{\text{cattle}, \text{pigs}, \text{goats}, \text{chickens}, \text{camels}, \dots\}}\sum_{j \in \{1, 2, \dots\}} x_{ij} \cdot \$_{ij}
+      (\#eq:AS3)
+\end{equation}
+Where $x_ij$ is the countries live animal population for species $i \in \{\text{cattle}, \text{pigs}, \text{goats}, \text{chickens}, \text{camels}, \dots\}$
+which is of age $j \in \{0, 1, 2, \dots\}$ ($j \in \mathbb{N}$), and 
+$\$_{ij}$ is the associated live weight price ^[Global data is currently not available for this scenario]. 
+
+ 
+
+### AS4: Value of Animal Stock (Advanced) {#AS4}
+
+The most advanced scenario to estimate a countries value of animal stock is the final 
+AS scenario which now takes into account age, but also live weight, breed and production system.
+
+\begin{equation}
+      \sum_{i \in \mathcal{L}} \sum_{j \in \mathcal{A}} \sum_{k \in \mathcal{W}} \sum_{l \in \mathcal{B}}\sum_{m \in \mathcal{P}} x_{ijklm} \cdot \$_{ijklm} 
+\end{equation}
+Here, $x_{ijkl}$ is a countries live animal population for species $i \in \{\text{cattle, chickens, sheep , goats}, \dots \}   = \mathcal{L}$, at age $j \in \{0, 1, \dots \} = \mathcal{A}$
+weight $w \in \{0, 1, \dots\} = \mathcal{W}$,  breed $l \in \mathcal{B}$ and production system $p \in \mathcal{P}$, 
+and $\$_{ijklm}$ is the associated unit price^[Global data is currently not available for this scenario]. 
+
+
+**TODO: ADD expansions and adaptions of the methodologies**
+

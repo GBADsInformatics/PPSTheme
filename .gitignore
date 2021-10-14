@@ -9,4 +9,4 @@ docs/dashboard/  # Leave it untracked for now
 _targets/
 .Rprofile
 *.png
-
+^_* # Directories which start wiht underscore 

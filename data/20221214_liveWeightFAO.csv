@@ -1,0 +1,1156 @@
+﻿iso3,country_name,animal,animal_en,live_weight,carcass_weight,carcass_pct
+DZA,Algeria,bovins,cattle,319,166,52
+DZA,Algeria,ovins,sheep,32,16,49
+DZA,Algeria,caprins,goat,20,10,50
+DZA,Algeria,porcins,pigs,60,40,66
+DZA,Algeria,poules,chickens,1300,1000,76
+DZA,Algeria,dindons,turkeys,6700,5000,74
+DZA,Algeria,chevaux,horses,259,129,50
+DZA,Algeria,chameaux,camels,459,173,37
+DZA,Algeria,lapins,rabbits,1600,1000,62
+AGO,Angola,bovins,cattle,300,150,50
+AGO,Angola,ovins,sheep,33,15,45
+AGO,Angola,caprins,goat,33,15,45
+AGO,Angola,porcins,pigs,81,65,80
+AGO,Angola,poules,chickens,1200,900,75
+BEN,Benin,bovins,cattle,220,110,50
+BEN,Benin,ovins,sheep,20,10,50
+BEN,Benin,caprins,goat,20,10,50
+BEN,Benin,porcins,pigs,40,28,70
+BEN,Benin,poules,chickens,1100,800,72
+BWA,Botswana,cattle,cattle,350,185,52
+BWA,Botswana,sheep,sheep,24,14,58
+BWA,Botswana,goats,goats,22,12,54
+BWA,Botswana,pigs,pigs,67,50,74
+BWA,Botswana,chickens,chickens,1100,800,72
+BWA,Botswana,rabbits,rabbits,2500,1800,72
+BFA,Burkina Faso,bovins,cattle,220,110,50
+BFA,Burkina Faso,ovins,sheep,18,9,50
+BFA,Burkina Faso,caprins,goat,16,8.1,50
+BFA,Burkina Faso,porcins,pigs,34,23,69
+BFA,Burkina Faso,poules,chickens,1100,800,72
+BFA,Burkina Faso,chevaux,horses,305,152,50
+BFA,Burkina Faso,chameaux,camels,383,191,50
+BDI,Burundi,bovins,cattle,250,130,52
+BDI,Burundi,ovins,sheep,25,12,48
+BDI,Burundi,caprins,goat,20,10,50
+BDI,Burundi,porcins,pigs,53,40,75
+BDI,Burundi,poules,chickens,1200,900,75
+BDI,Burundi,lapins,rabbits,1800,1200,66
+CMR,Cameroon,bovins,cattle,300,140,46
+CMR,Cameroon,ovins,sheep,24,12,50
+CMR,Cameroon,caprins,goat,20,10,50
+CMR,Cameroon,porcins,pigs,45,30,66
+CMR,Cameroon,poules,chickens,1100,800,72
+CMR,Cameroon,chevaux,horses,260,130,50
+CMR,Cameroon,lapins,rabbits,2000,1000,50
+CPV,Cape Verde,bovins,cattle,260,133,51
+CPV,Cape Verde,ovins,sheep,50,25,50
+CPV,Cape Verde,caprins,goat,18,14,77
+CPV,Cape Verde,porcins,pigs,68,54,79
+CPV,Cape Verde,poules,chickens,1400,915,65
+CAF,Central African Republic,bovins,cattle,280,180,64
+CAF,Central African Republic,ovins,sheep,30,15,50
+CAF,Central African Republic,caprins,goat,34,17,50
+CAF,Central African Republic,porcins,pigs,60,55,90
+CAF,Central African Republic,poules,chickens,2000,1100,55
+TCD,Chad,bovins,cattle,283,141,50
+TCD,Chad,ovins,sheep,40,18,45
+TCD,Chad,caprins,goat,26,13,50
+TCD,Chad,porcins,pigs,35,25,71
+TCD,Chad,poules,chickens,1000,700,70
+TCD,Chad,chevaux,horses,210,100,47
+TCD,Chad,chameaux,camels,360,180,50
+COM,Comoros,bovins,cattle,220,110,50
+COM,Comoros,ovins,sheep,30,15,50
+COM,Comoros,caprins,goat,21,10,47
+COM,Comoros,poules,chickens,1100,800,72
+COG,Congo - Brazzaville,bovins,cattle,312,156,50
+COG,Congo - Brazzaville,ovins,sheep,22,10,45
+COG,Congo - Brazzaville,caprins,goat,20,9,45
+COG,Congo - Brazzaville,porcins,pigs,80,56,70
+COG,Congo - Brazzaville,poules,chickens,1200,1000,83
+CIV,CÙte díIvoire,bovins,cattle,274,137,50
+CIV,CÙte díIvoire,ovins,sheep,20,10,50
+CIV,CÙte díIvoire,caprins,goat,20,10,50
+CIV,CÙte díIvoire,porcins,pigs,62,50,80
+CIV,CÙte díIvoire,poules,chickens,1300,1100,84
+DJI,Djibouti,bovins,cattle,240,110,45
+DJI,Djibouti,ovins,sheep,21,10,49
+DJI,Djibouti,caprins,goat,27,12,46
+DJI,Djibouti,chameaux,camels,340,150,44
+EGY,Egypt,cattle,cattle,247,150,60
+EGY,Egypt,buffaloes,buffaloes,285,136,47
+EGY,Egypt,sheep,sheep,54,24,45
+EGY,Egypt,goats,goats,38,18,48
+EGY,Egypt,pigs,pigs,55,43,78
+EGY,Egypt,chickens,chickens,1340,1082,80
+EGY,Egypt,turkeys,turkeys,6700,5000,74
+EGY,Egypt,camels,camels,584,279,47
+EGY,Egypt,rabbits,rabbits,1800,1200,66
+GIN,Guinea,ganado vacuno,cattle,220,110,50
+GIN,Guinea,ovinos,sheep,22,11,50
+GIN,Guinea,caprinos,goats,22,11,50
+GIN,Guinea,cerdos,pigs,60,45,75
+GIN,Guinea,gallinas,chickens,1100,800,72
+ERI,Eritrea,cattle,cattle,213,106,49
+ERI,Eritrea,sheep,sheep,21,9.8,46
+ERI,Eritrea,goats,goats,18,8.4,46
+ERI,Eritrea,chickens,chickens,1224,780,63
+ERI,Eritrea,camels,camels,300,120,40
+ETH,Ethiopia,cattle,cattle,250,110,44
+ETH,Ethiopia,sheep,sheep,20,10,50
+ETH,Ethiopia,goats,goats,18,10,55
+ETH,Ethiopia,pigs,pigs,65,50,77
+ETH,Ethiopia,chickens,chickens,1256,800,64
+ETH,Ethiopia,camels,camels,300,120,40
+GAB,Gabon,bovins,cattle,265,132,49
+GAB,Gabon,ovins,sheep,26,12,46
+GAB,Gabon,caprins,goat,24,10,41
+GAB,Gabon,porcins,pigs,40,28,70
+GAB,Gabon,poules,chickens,1100,800,72
+GAB,Gabon,lapins,rabbits,1650,1200,72
+GMB,Gambia,cattle,cattle,240,120,50
+GMB,Gambia,sheep,sheep,22,11,50
+GMB,Gambia,goats,goats,22,11,50
+GMB,Gambia,pigs,pigs,50,40,80
+GMB,Gambia,chickens,chickens,1380,1000,72
+GHA,Ghana,cattle,cattle,230,115,50
+GHA,Ghana,sheep,sheep,22,11,50
+GHA,Ghana,goats,goats,20,9.5,47
+GHA,Ghana,pigs,pigs,35,28,80
+GHA,Ghana,chickens,chickens,1240,900,72
+GIN,Guinea,bovins,cattle,250,109,43
+GIN,Guinea,ovins,sheep,25,12,48
+GIN,Guinea,caprins,goat,25,16,64
+GIN,Guinea,porcins,pigs,80,47,59
+GIN,Guinea,poules,chickens,1200,900,75
+GNB,Guinea-Bissau,bovins,cattle,180,85,48
+GNB,Guinea-Bissau,ovins,sheep,19,9,47
+GNB,Guinea-Bissau,caprins,goat,17,8,47
+GNB,Guinea-Bissau,porcins,pigs,45,25,55
+GNB,Guinea-Bissau,poules,chickens,1000,600,60
+KEN,Kenya,cattle,cattle,259,129,50
+KEN,Kenya,sheep,sheep,25,12,48
+KEN,Kenya,goats,goats,23,11,47
+KEN,Kenya,pigs,pigs,80,65,81
+KEN,Kenya,chickens,chickens,1560,1200,76
+KEN,Kenya,camels,camels,650,300,46
+KEN,Kenya,rabbits,rabbits,1800,1200,66
+LSO,Lesotho,cattle,cattle,250,130,52
+LSO,Lesotho,sheep,sheep,45,19,42
+LSO,Lesotho,goats,goats,17,9,53
+LSO,Lesotho,pigs,pigs,45,23,73
+LSO,Lesotho,chickens,chickens,2000,1500,75
+LBR,Liberia,cattle,cattle,250,125,50
+LBR,Liberia,sheep,sheep,20,10,50
+LBR,Liberia,goats,goats,18,9,50
+LBR,Liberia,pigs,pigs,50,40,80
+LBR,Liberia,chickens,chickens,1100,800,72
+LBY,Libya,cattle,cattle,400,200,50
+LBY,Libya,sheep,sheep,27,15,55
+LBY,Libya,goats,goats,23,15,63
+LBY,Libya,chickens,chickens,1600,1300,81
+LBY,Libya,camels,camels,400,200,50
+MDG,Madagascar,bovins,cattle,255,127,50
+MDG,Madagascar,ovins,sheep,25,12,48
+MDG,Madagascar,caprins,goat,32,15,46
+MDG,Madagascar,porcins,pigs,90,70,78
+MDG,Madagascar,poules,chickens,1700,1200,71
+MDG,Madagascar,dindons,turkeys,3600,3000,83
+MDG,Madagascar,chevaux,horses,350,175,50
+MDG,Madagascar,lapins,rabbits,1800,1200,66
+MWI,Malawi,cattle,cattle,400,200,50
+MWI,Malawi,sheep,sheep,25,14,56
+MWI,Malawi,goats,goats,22,12,54
+MWI,Malawi,pigs,pigs,72,50,69
+MWI,Malawi,chickens,chickens,1100,800,72
+MLI,Mali,bovins,cattle,260,130,50
+MLI,Mali,ovins,sheep,26,12,46
+MLI,Mali,caprins,goat,29,14,48
+MLI,Mali,porcins,pigs,58,40,68
+MLI,Mali,poules,chickens,1100,800,72
+MLI,Mali,chevaux,horses,200,100,50
+MLI,Mali,chameaux,camels,300,160,53
+MRT,Mauritania,bovins,cattle,272,124,45
+MRT,Mauritania,ovins,sheep,30,15,50
+MRT,Mauritania,caprins,goat,30,15,50
+MRT,Mauritania,poules,chickens,1100,800,72
+MRT,Mauritania,chevaux,horses,320,150,46
+MRT,Mauritania,chameaux,camels,424,184,43
+MUS,Mauritius,cattle,cattle,400,182,46
+MUS,Mauritius,sheep,sheep,16,12,75
+MUS,Mauritius,goats,goats,15,7.2,48
+MUS,Mauritius,pigs,pigs,85,68,80
+MUS,Mauritius,chickens,chickens,1900,1460,76
+MUS,Mauritius,turkeys,turkeys,4100,3500,85
+MUS,Mauritius,rabbits,rabbits,2500,1800,72
+MAR,Morocco,bovins,cattle,300,160,53
+MAR,Morocco,ovins,sheep,30,14,47
+MAR,Morocco,caprins,goat,32,10,31
+MAR,Morocco,porcins,pigs,65,50,77
+MAR,Morocco,poules,chickens,1800,1200,67
+MAR,Morocco,chevaux,horses,255,130,51
+MAR,Morocco,chameaux,camels,324,120,37
+MOZ,Mozambique,cattle,cattle,290,150,51
+MOZ,Mozambique,sheep,sheep,24,12,50
+MOZ,Mozambique,goats,goats,24,12,50
+MOZ,Mozambique,pigs,pigs,80,60,75
+MOZ,Mozambique,chickens,chickens,1200,900,75
+NAM,Namibia,cattle,cattle,400,224,56
+NAM,Namibia,sheep,sheep,29,16,55
+NAM,Namibia,goats,goats,28,12,42
+NAM,Namibia,pigs,pigs,75,54,72
+NAM,Namibia,chickens,chickens,1100,800,72
+NER,Niger,bovins,cattle,275,114,41
+NER,Niger,ovins,sheep,29,16,55
+NER,Niger,caprins,goat,24,12,50
+NER,Niger,porcins,pigs,60,45,75
+NER,Niger,poules,chickens,1100,800,72
+NER,Niger,chevaux,horses,280,130,46
+NER,Niger,chameaux,camels,305,142,46
+NGA,Nigeria,cattle,cattle,337,167,49
+NGA,Nigeria,sheep,sheep,22,11,50
+NGA,Nigeria,goats,goats,25,12,50
+NGA,Nigeria,pigs,pigs,55,45,81
+NGA,Nigeria,chickens,chickens,1250,1000,80
+REU,RÈunion,bovins,cattle,423,229,54
+REU,RÈunion,ovins,sheep,24,12,50
+REU,RÈunion,caprins,goat,24,9.7,40
+REU,RÈunion,porcins,pigs,147,112,76
+REU,RÈunion,poules,chickens,1300,1000,76
+REU,RÈunion,dindons,turkeys,3500,3000,85
+REU,RÈunion,chevaux,horses,415,207,50
+REU,RÈunion,lapins,rabbits,1600,1200,75
+RWA,Rwanda,bovins,cattle,230,104,45
+RWA,Rwanda,ovins,sheep,23,12,52
+RWA,Rwanda,caprins,goat,22,11,50
+RWA,Rwanda,porcins,pigs,60,42,70
+RWA,Rwanda,poules,chickens,1100,900,81
+RWA,Rwanda,lapins,rabbits,1800,1200,66
+STP,S„o TomÈ & PrÌncipe,bovins,cattle,280,176,63
+STP,S„o TomÈ & PrÌncipe,ovins,sheep,20,10,50
+STP,S„o TomÈ & PrÌncipe,caprins,goat,22,11,50
+STP,S„o TomÈ & PrÌncipe,porcins,pigs,68,46,67
+STP,S„o TomÈ & PrÌncipe,poules,chickens,1000,800,80
+STP,S„o TomÈ & PrÌncipe,dindons,turkeys,3600,3000,83
+SEN,Senegal,bovins,cattle,250,125,50
+SEN,Senegal,ovins,sheep,28,12,43
+SEN,Senegal,caprins,goat,20,10,50
+SEN,Senegal,porcins,pigs,35,26,75
+SEN,Senegal,poules,chickens,1300,1000,76
+SEN,Senegal,chevaux,horses,250,125,50
+SEN,Senegal,chameaux,camels,300,150,50
+SYC,Seychelles,cattle,cattle,360,217,60
+SYC,Seychelles,goats,goats,22,11,50
+SYC,Seychelles,pigs,pigs,65,50,76
+SYC,Seychelles,chickens,chickens,1200,1000,83
+SLE,Sierra Leone,cattle,cattle,180,90,50
+SLE,Sierra Leone,sheep,sheep,25,11,44
+SLE,Sierra Leone,goats,goats,20,9,45
+SLE,Sierra Leone,pigs,pigs,70,58,82
+SLE,Sierra Leone,chickens,chickens,1200,900,75
+SOM,Somalia,cattle,cattle,230,110,47
+SOM,Somalia,sheep,sheep,26,13,50
+SOM,Somalia,goats,goats,26,13,50
+SOM,Somalia,pigs,pigs,70,50,71
+SOM,Somalia,chickens,chickens,1100,800,72
+SOM,Somalia,camels,camels,360,170,47
+ZAF,South Africa,cattle,cattle,391,215,55
+ZAF,South Africa,sheep,sheep,35,17,49
+ZAF,South Africa,goats,goats,31,17,55
+ZAF,South Africa,pigs,pigs,85,65,76
+ZAF,South Africa,chickens,chickens,1700,1262,74
+ZAF,South Africa,turkeys,turkeys,9000,8000,88
+ZAF,South Africa,horses,horses,420,200,47
+SDN,Sudan,cattle,cattle,217,108,50
+SDN,Sudan,sheep,sheep,32,16,50
+SDN,Sudan,goats,goats,26,13,50
+SDN,Sudan,chickens,chickens,1200,1000,83
+SDN,Sudan,camels,camels,490,225,45
+SWZ,Eswatini,cattle,cattle,432,214,49
+SWZ,Eswatini,sheep,sheep,37,18,48
+SWZ,Eswatini,goats,goats,37,18,48
+SWZ,Eswatini,pigs,pigs,68,50,73
+SWZ,Eswatini,chickens,chickens,1500,1000,66
+TZA,Tanzania,cattle,cattle,206,107,52
+TZA,Tanzania,sheep,sheep,24,12,50
+TZA,Tanzania,goats,goats,24,12,50
+TZA,Tanzania,pigs,pigs,51,40,78
+TZA,Tanzania,chickens,chickens,1270,900,71
+TGO,Togo,bovins,cattle,250,125,50
+TGO,Togo,ovins,sheep,22,11,50
+TGO,Togo,caprins,goat,20,9,45
+TGO,Togo,porcins,pigs,40,28,70
+TGO,Togo,poules,chickens,1100,800,72
+TUN,Tunisia,bovins,cattle,350,182,52
+TUN,Tunisia,ovins,sheep,22,11,49
+TUN,Tunisia,caprins,goat,16,8.2,49
+TUN,Tunisia,porcins,pigs,70,50,70
+TUN,Tunisia,poules,chickens,1584,1218,76
+TUN,Tunisia,dindons,turkeys,6700,5000,74
+TUN,Tunisia,chevaux,horses,115,52,45
+TUN,Tunisia,chameaux,camels,216,80,37
+UGA,Uganda,cattle,cattle,310,150,48
+UGA,Uganda,sheep,sheep,28,13,49
+UGA,Uganda,goats,goats,24,11,49
+UGA,Uganda,pigs,pigs,75,60,80
+UGA,Uganda,chickens,chickens,1600,1300,81
+COD,Congo - Kinshasa,bovins,cattle,303,151,50
+COD,Congo - Kinshasa,ovins,sheep,22,9.9,45
+COD,Congo - Kinshasa,caprins,goat,20,11,55
+COD,Congo - Kinshasa,porcins,pigs,71,50,70
+COD,Congo - Kinshasa,poules,chickens,1000,789,78
+ZMB,Zambia,cattle,cattle,309,154,50
+ZMB,Zambia,sheep,sheep,29,14,48
+ZMB,Zambia,goats,goats,23,12,52
+ZMB,Zambia,pigs,pigs,60,44,73
+ZMB,Zambia,chickens,chickens,1200,1000,83
+ZWE,Zimbabwe,cattle,cattle,359,179,49
+ZWE,Zimbabwe,sheep,sheep,28,14,50
+ZWE,Zimbabwe,goats,goats,24,12,50
+ZWE,Zimbabwe,pigs,pigs,74,55,74
+ZWE,Zimbabwe,chickens,chickens,1500,1150,76
+ZWE,Zimbabwe,turkeys,turkeys,4500,4000,88
+ATG,Antigua & Barbuda,cattle,cattle,377,188,49
+ATG,Antigua & Barbuda,sheep,sheep,26,12,46
+ATG,Antigua & Barbuda,goats,goats,22,10,45
+ATG,Antigua & Barbuda,pigs,pigs,74,51,70
+ATG,Antigua & Barbuda,chickens,chickens,1500,1200,80
+BHS,Bahamas,cattle,cattle,350,170,48
+BHS,Bahamas,sheep,sheep,30,14,46
+BHS,Bahamas,goats,goats,26,12,46
+BHS,Bahamas,pigs,pigs,75,50,66
+BHS,Bahamas,chickens,chickens,1600,1205,75
+BRB,Barbados,cattle,cattle,389,194,50
+BRB,Barbados,sheep,sheep,30,14,46
+BRB,Barbados,goats,goats,30,14,46
+BRB,Barbados,pigs,pigs,136,95,69
+BRB,Barbados,chickens,chickens,1500,1223,81
+BLZ,Belize,cattle,cattle,339,169,49
+BLZ,Belize,sheep,sheep,28,15,53
+BLZ,Belize,goats,goats,24,12,50
+BLZ,Belize,pigs,pigs,54,35,64
+BLZ,Belize,chickens,chickens,1798,1493,83
+BLZ,Belize,turkeys,turkeys,2400,2000,83
+BMU,Bermuda,cattle,cattle,311,156,50
+BMU,Bermuda,goats,goats,26,12,46
+BMU,Bermuda,pigs,pigs,97,68,70
+BMU,Bermuda,chickens,chickens,1500,1200,80
+VGB,British Virgin Islands,cattle,cattle,360,180,50
+VGB,British Virgin Islands,sheep,sheep,30,14,46
+VGB,British Virgin Islands,goats,goats,26,12,46
+VGB,British Virgin Islands,pigs,pigs,75,50,66
+CAN,Canada,cattle,cattle,592,296,50
+CAN,Canada,sheep,sheep,42,21,50
+CAN,Canada,pigs,pigs,96,79,82
+CAN,Canada,chickens,chickens,1820,1492,82
+CAN,Canada,ducks,ducks,2678,2012,75
+CAN,Canada,geese,geese,6570,4937,75
+CAN,Canada,turkeys,turkeys,7556,6193,82
+CAN,Canada,horses,horses,500,204,40
+CRI,Costa Rica,ganado vacuno,cattle,417,204,49
+CRI,Costa Rica,ovinos,sheep,33,15,45
+CRI,Costa Rica,caprinos,goats,26,12,46
+CRI,Costa Rica,cerdos,pigs,96,74,76
+CRI,Costa Rica,gallinas,chickens,1871,1571,83
+CUB,Cuba,ganado vacuno,cattle,286,143,50
+CUB,Cuba,ovinos,sheep,24,12,50
+CUB,Cuba,caprinos,goats,24,12,50
+CUB,Cuba,cerdos,pigs,91,61,66
+CUB,Cuba,gallinas,chickens,1540,1208,78
+CUB,Cuba,caballos,horses,270,120,44
+DMA,Dominica,cattle,cattle,360,180,50
+DMA,Dominica,sheep,sheep,30,14,46
+DMA,Dominica,goats,goats,26,12,46
+DMA,Dominica,pigs,pigs,90,60,66
+DMA,Dominica,chickens,chickens,1586,1000,63
+DOM,Dominican Republic,ganado vacuno,cattle,518,253,48
+DOM,Dominican Republic,ovinos,sheep,20,12,60
+DOM,Dominican Republic,caprinos,goats,24,12,50
+DOM,Dominican Republic,cerdos,pigs,100,65,64
+DOM,Dominican Republic,gallinas,chickens,1721,1205,70
+SLV,El Salvador,ganado vacuno,cattle,318,165,52
+SLV,El Salvador,ovinos,sheep,30,15,50
+SLV,El Salvador,caprinos,goats,30,15,50
+SLV,El Salvador,cerdos,pigs,90,49,54
+SLV,El Salvador,gallinas,chickens,1591,1352,85
+GRL,Greenland,sheep,sheep,35,19,54
+GRD,Grenada,cattle,cattle,303,151,49
+GRD,Grenada,sheep,sheep,33,16,50
+GRD,Grenada,goats,goats,22,11,51
+GRD,Grenada,pigs,pigs,79,56,71
+GRD,Grenada,chickens,chickens,1729,1000,57
+GLP,Guadeloupe,bovins,cattle,418,209,50
+GLP,Guadeloupe,ovins,sheep,24,16,67
+GLP,Guadeloupe,caprins,goat,26,13,49
+GLP,Guadeloupe,porcins,pigs,83,59,71
+GLP,Guadeloupe,poules,chickens,1500,1013,67
+GLP,Guadeloupe,dindons,turkeys,5049,3091,61
+GLP,Guadeloupe,chevaux,horses,250,125,50
+GLP,Guadeloupe,lapins,rabbits,1800,1533,85
+GTM,Guatemala,ganado vacuno,cattle,362,181,50
+GTM,Guatemala,ovinos,sheep,30,15,50
+GTM,Guatemala,caprinos,goats,30,15,50
+GTM,Guatemala,cerdos,pigs,81,74,91
+GTM,Guatemala,gallinas,chickens,2048,1649,80
+GTM,Guatemala,caballos,horses,250,126,50
+HTI,Haiti,bovins,cattle,280,140,50
+HTI,Haiti,ovins,sheep,30,15,50
+HTI,Haiti,caprins,goat,30,15,50
+HTI,Haiti,porcins,pigs,90,59,66
+HTI,Haiti,poules,chickens,1200,900,75
+HTI,Haiti,dindons,turkeys,2000,1500,75
+HTI,Haiti,chevaux,horses,400,200,50
+HND,Honduras,ganado vacuno,cattle,290,154,53
+HND,Honduras,ovinos,sheep,30,15,50
+HND,Honduras,caprinos,goats,30,15,50
+HND,Honduras,cerdos,pigs,45,33,74
+HND,Honduras,gallinas,chickens,1300,999,76
+HND,Honduras,caballos,horses,250,125,50
+JAM,Jamaica,cattle,cattle,436,218,50
+JAM,Jamaica,sheep,sheep,37,17,46
+JAM,Jamaica,goats,goats,26,11,46
+JAM,Jamaica,pigs,pigs,97,64,66
+JAM,Jamaica,chickens,chickens,1830,1455,79
+JAM,Jamaica,horses,horses,300,150,50
+MTQ,Martinique,bovins,cattle,410,205,49
+MTQ,Martinique,ovins,sheep,34,19,57
+MTQ,Martinique,caprins,goat,21,12,57
+MTQ,Martinique,porcins,pigs,81,54,66
+MTQ,Martinique,poules,chickens,1330,1081,81
+MTQ,Martinique,lapins,rabbits,3000,1442,48
+MEX,Mexico,ganado vacuno,cattle,384,209,54
+MEX,Mexico,ovinos,sheep,32,14,45
+MEX,Mexico,caprinos,goats,25,15,60
+MEX,Mexico,cerdos,pigs,82,63,77
+MEX,Mexico,gallinas,chickens,1903,1585,83
+MEX,Mexico,pavos,turkeys,4000,3300,82
+MEX,Mexico,caballos,horses,250,125,50
+MEX,Mexico,conejos,rabbits,1700,1000,58
+MSR,Montserrat,cattle,cattle,360,180,50
+MSR,Montserrat,sheep,sheep,30,14,46
+MSR,Montserrat,goats,goats,26,12,46
+MSR,Montserrat,pigs,pigs,75,50,66
+MSR,Montserrat,chickens,chickens,1500,1200,80
+NA,Netherlands Antilles,cattle,cattle,300,150,50
+NA,Netherlands Antilles,sheep,sheep,20,10,50
+NA,Netherlands Antilles,goats,goats,18,9,50
+NA,Netherlands Antilles,pigs,pigs,90,60,66
+NA,Netherlands Antilles,chickens,chickens,1300,1000,76
+NIC,Nicaragua,ganado vacuno,cattle,291,145,49
+NIC,Nicaragua,ovinos,sheep,26,12,46
+NIC,Nicaragua,caprinos,goats,30,16,53
+NIC,Nicaragua,cerdos,pigs,66,44,66
+NIC,Nicaragua,gallinas,chickens,2035,1590,78
+NIC,Nicaragua,caballos,horses,200,100,50
+PAN,Panama,ganado vacuno,cattle,360,187,52
+PAN,Panama,cerdos,pigs,78,66,85
+PAN,Panama,gallinas,chickens,1625,1268,78
+PRI,Puerto Rico,cattle,cattle,439,220,50
+PRI,Puerto Rico,sheep,sheep,25,12,48
+PRI,Puerto Rico,goats,goats,28,11,39
+PRI,Puerto Rico,pigs,pigs,87,47,54
+PRI,Puerto Rico,chickens,chickens,1600,1307,81
+KNA,St. Kitts & Nevis,cattle,cattle,360,181,50
+KNA,St. Kitts & Nevis,sheep,sheep,35,16,45
+KNA,St. Kitts & Nevis,goats,goats,30,14,46
+KNA,St. Kitts & Nevis,pigs,pigs,90,60,66
+KNA,St. Kitts & Nevis,chickens,chickens,1500,1200,80
+LCA,St. Lucia,cattle,cattle,365,182,49
+LCA,St. Lucia,sheep,sheep,42,20,47
+LCA,St. Lucia,goats,goats,30,14,46
+LCA,St. Lucia,pigs,pigs,85,57,67
+LCA,St. Lucia,chickens,chickens,1500,1200,80
+VCT,St. Vincent & Grenadines,cattle,cattle,365,181,49
+VCT,St. Vincent & Grenadines,sheep,sheep,30,13,43
+VCT,St. Vincent & Grenadines,goats,goats,28,12,42
+VCT,St. Vincent & Grenadines,pigs,pigs,95,60,63
+VCT,St. Vincent & Grenadines,chickens,chickens,1696,1000,58
+TTO,Trinidad & Tobago,cattle,cattle,344,172,50
+TTO,Trinidad & Tobago,sheep,sheep,38,20,52
+TTO,Trinidad & Tobago,goats,goats,30,15,50
+TTO,Trinidad & Tobago,pigs,pigs,76,53,69
+TTO,Trinidad & Tobago,chickens,chickens,1965,1549,78
+USA,United States,cattle,cattle,539,308,57
+USA,United States,sheep,sheep,59,28,47
+USA,United States,pigs,pigs,117,83,71
+USA,United States,chickens,chickens,2072,1516,73
+USA,United States,turkeys,turkeys,10296,8027,77
+USA,United States,horses,horses,500,250,50
+VIR,U.S. Virgin Islands,cattle,cattle,410,213,52
+VIR,U.S. Virgin Islands,sheep,sheep,30,14,46
+VIR,U.S. Virgin Islands,goats,goats,23,11,47
+VIR,U.S. Virgin Islands,pigs,pigs,90,70,77
+VIR,U.S. Virgin Islands,chickens,chickens,1700,1300,76
+ARG,Argentina,ganado vacuno,cattle,393,187,47
+ARG,Argentina,ovinos,sheep,34,17,49
+ARG,Argentina,caprinos,goats,13,6.6,50
+ARG,Argentina,cerdos,pigs,112,90,79
+ARG,Argentina,gallinas,chickens,2472,1944,78
+ARG,Argentina,pavos,turkeys,6000,5100,85
+ARG,Argentina,caballos,horses,434,217,49
+ARG,Argentina,conejos,rabbits,1800,1100,61
+BOL,Bolivia,ganado vacuno,cattle,342,171,50
+BOL,Bolivia,ovinos,sheep,22,10,45
+BOL,Bolivia,caprinos,goats,22,10,47
+BOL,Bolivia,cerdos,pigs,88,60,68
+BOL,Bolivia,gallinas,chickens,2000,1750,88
+BOL,Bolivia,pavos,turkeys,2900,2500,86
+BOL,Bolivia,conejos,rabbits,1500,900,60
+BRA,Brazil,cattle,cattle,382,188,49
+BRA,Brazil,sheep,sheep,30,16,53
+BRA,Brazil,goats,goats,22,11,51
+BRA,Brazil,pigs,pigs,120,84,70
+BRA,Brazil,chickens,chickens,1750,1348,77
+BRA,Brazil,turkeys,turkeys,6980,6612,94
+BRA,Brazil,horses,horses,180,129,71
+BRA,Brazil,rabbits,rabbits,2200,1500,68
+CHL,Chile,ganado vacuno,cattle,495,247,49
+CHL,Chile,ovinos,sheep,28,15,55
+CHL,Chile,caprinos,goats,36,18,50
+CHL,Chile,cerdos,pigs,95,79,83
+CHL,Chile,gallinas,chickens,1400,1126,80
+CHL,Chile,caballos,horses,431,215,49
+COL,Colombia,ganado vacuno,cattle,389,194,49
+COL,Colombia,ovinos,sheep,27,14,51
+COL,Colombia,caprinos,goats,31,15,50
+COL,Colombia,cerdos,pigs,91,68,74
+COL,Colombia,gallinas,chickens,1926,1528,79
+COL,Colombia,caballos,horses,360,125,34
+COL,Colombia,conejos,rabbits,1800,1312,72
+ECU,Ecuador,ganado vacuno,cattle,460,230,50
+ECU,Ecuador,ovinos,sheep,50,30,60
+ECU,Ecuador,caprinos,goats,40,24,60
+ECU,Ecuador,cerdos,pigs,90,68,75
+ECU,Ecuador,gallinas,chickens,2000,1500,75
+ECU,Ecuador,pavos,turkeys,10000,7500,75
+ECU,Ecuador,conejos,rabbits,2000,800,40
+FLK,Falkland Islands,cattle,cattle,520,261,50
+FLK,Falkland Islands,sheep,sheep,40,18,45
+FLK,Falkland Islands,chickens,chickens,1700,1300,76
+GUF,French Guiana,bovins,cattle,378,177,46
+GUF,French Guiana,ovins,sheep,26,12,46
+GUF,French Guiana,caprins,goat,22,10,45
+GUF,French Guiana,porcins,pigs,98,91,93
+GUF,French Guiana,poules,chickens,1381,1108,80
+GUY,Guyana,cattle,cattle,318,159,50
+GUY,Guyana,sheep,sheep,20,10,50
+GUY,Guyana,goats,goats,21,10,47
+GUY,Guyana,pigs,pigs,78,50,65
+GUY,Guyana,chickens,chickens,1400,1099,78
+PRY,Paraguay,ganado vacuno,cattle,345,179,52
+PRY,Paraguay,ovinos,sheep,31,15,48
+PRY,Paraguay,caprinos,goats,22,10,45
+PRY,Paraguay,cerdos,pigs,90,60,66
+PRY,Paraguay,gallinas,chickens,1300,1000,76
+PRY,Paraguay,pavos,turkeys,3500,3000,85
+PRY,Paraguay,caballos,horses,360,180,50
+PER,Peru,ganado vacuno,cattle,280,140,50
+PER,Peru,ovinos,sheep,22,10,45
+PER,Peru,caprinos,goats,21,10,48
+PER,Peru,cerdos,pigs,74,52,69
+PER,Peru,gallinas,chickens,1800,1386,77
+PER,Peru,conejos,rabbits,1500,1200,80
+SUR,Suriname,cattle,cattle,274,144,52
+SUR,Suriname,sheep,sheep,25,12,48
+SUR,Suriname,goats,goats,22,10,45
+SUR,Suriname,pigs,pigs,90,60,66
+SUR,Suriname,chickens,chickens,1722,1686,97
+URY,Uruguay,ganado vacuno,cattle,441,233,52
+URY,Uruguay,ovinos,sheep,33,15,48
+URY,Uruguay,cerdos,pigs,108,77,71
+URY,Uruguay,gallinas,chickens,1300,1000,76
+URY,Uruguay,pavos,turkeys,3500,3000,85
+URY,Uruguay,caballos,horses,420,201,47
+URY,Uruguay,conejos,rabbits,1900,1500,78
+VEN,Venezuela,ganado vacuno,cattle,416,208,49
+VEN,Venezuela,ovinos,sheep,30,13,45
+VEN,Venezuela,caprinos,goats,20,9.3,46
+VEN,Venezuela,cerdos,pigs,75,60,80
+VEN,Venezuela,gallinas,chickens,2066,1656,80
+ARM,Armenia,cattle,cattle,265,140,53
+ARM,Armenia,sheep,sheep,33,15,45
+ARM,Armenia,goats,goats,30,13,43
+ARM,Armenia,pigs,pigs,91,70,76
+ARM,Armenia,chickens,chickens,1631,1255,76
+ARM,Armenia,rabbits,rabbits,2149,1653,76
+AFG,Afghanistan,cattle,cattle,230,122,53
+AFG,Afghanistan,sheep,sheep,32,15,48
+AFG,Afghanistan,goats,goats,33,16,49
+AFG,Afghanistan,chickens,chickens,1080,800,74
+AFG,Afghanistan,camels,camels,360,180,50
+AZE,Azerbaijan,cattle,cattle,192,112,58
+AZE,Azerbaijan,sheep,sheep,38,18,47
+AZE,Azerbaijan,pigs,pigs,97,71,73
+AZE,Azerbaijan,chickens,chickens,1896,1365,72
+BHR,Bahrain,cattle,cattle,240,100,41
+BHR,Bahrain,sheep,sheep,36,18,50
+BHR,Bahrain,goats,goats,30,18,62
+BHR,Bahrain,chickens,chickens,1500,1094,72
+BHR,Bahrain,camels,camels,320,212,66
+BGD,Bangladesh,cattle,cattle,130,60,46
+BGD,Bangladesh,buffaloes,buffaloes,155,74,48
+BGD,Bangladesh,sheep,sheep,15,7.1,47
+BGD,Bangladesh,goats,goats,14,7,49
+BGD,Bangladesh,chickens,chickens,1000,726,72
+BTN,Bhutan,cattle,cattle,170,85,50
+BTN,Bhutan,buffaloes,buffaloes,170,85,50
+BTN,Bhutan,sheep,sheep,22,10,45
+BTN,Bhutan,goats,goats,20,9,45
+BTN,Bhutan,pigs,pigs,59,36,62
+BTN,Bhutan,chickens,chickens,1000,700,70
+BRN,Brunei,cattle,cattle,250,125,50
+BRN,Brunei,buffaloes,buffaloes,350,210,60
+MMR,Myanmar (Burma),cattle,cattle,230,130,56
+MMR,Myanmar (Burma),buffaloes,buffaloes,300,147,49
+MMR,Myanmar (Burma),sheep,sheep,20,13,65
+MMR,Myanmar (Burma),goats,goats,20,13,65
+MMR,Myanmar (Burma),pigs,pigs,90,68,75
+MMR,Myanmar (Burma),chickens,chickens,1420,1080,76
+MMR,Myanmar (Burma),ducks,ducks,1700,1270,75
+MMR,Myanmar (Burma),geese,geese,3270,2450,75
+MMR,Myanmar (Burma),turkeys,turkeys,3270,2450,75
+CHN,China,cattle,cattle,322,146,45
+CHN,China,buffaloes,buffaloes,221,100,45
+CHN,China,sheep,sheep,23,11,49
+CHN,China,goats,goats,25,12,50
+CHN,China,pigs,pigs,99,75,75
+CHN,China,chickens,chickens,1759,1328,75
+CHN,China,horses,horses,250,120,48
+CHN,China,camels,camels,450,220,48
+CHN,China,rabbits,rabbits,1836,1412,76
+CYP,Cyprus,cattle,cattle,584,310,53
+CYP,Cyprus,sheep,sheep,43,21,49
+CYP,Cyprus,goats,goats,42,22,53
+CYP,Cyprus,pigs,pigs,103,76,74
+CYP,Cyprus,chickens,chickens,2307,1775,76
+CYP,Cyprus,turkeys,turkeys,6900,5500,79
+CYP,Cyprus,rabbits,rabbits,1734,1284,74
+GEO,Georgia,cattle,cattle,280,117,42
+GEO,Georgia,sheep,sheep,30,12,36
+GEO,Georgia,pigs,pigs,100,70,70
+GEO,Georgia,chickens,chickens,900,650,72
+GEO,Georgia,rabbits,rabbits,2166,1666,77
+HKG,Hong Kong SAR China,cattle,cattle,468,234,50
+HKG,Hong Kong SAR China,sheep,sheep,38,19,50
+HKG,Hong Kong SAR China,goats,goats,24,12,49
+HKG,Hong Kong SAR China,pigs,pigs,84,57,68
+HKG,Hong Kong SAR China,chickens,chickens,1788,1431,80
+IND,India,cattle,cattle,205,102,50
+IND,India,buffaloes,buffaloes,310,138,44
+IND,India,sheep,sheep,22,12,54
+IND,India,goats,goats,18,10,55
+IND,India,pigs,pigs,50,35,70
+IND,India,chickens,chickens,1200,900,75
+IDN,Indonesia,cattle,cattle,400,200,50
+IDN,Indonesia,buffaloes,buffaloes,356,165,46
+IDN,Indonesia,sheep,sheep,21,10,47
+IDN,Indonesia,goats,goats,21,10,47
+IDN,Indonesia,pigs,pigs,68,55,80
+IDN,Indonesia,chickens,chickens,1100,800,72
+IDN,Indonesia,horses,horses,250,125,50
+IRN,Iran,cattle,cattle,280,140,50
+IRN,Iran,buffaloes,buffaloes,350,160,46
+IRN,Iran,sheep,sheep,36,18,50
+IRN,Iran,goats,goats,27,14,52
+IRN,Iran,chickens,chickens,1800,1400,78
+IRN,Iran,ducks,ducks,2500,2000,80
+IRN,Iran,geese,geese,3200,2500,78
+IRN,Iran,turkeys,turkeys,4000,3000,75
+IRN,Iran,camels,camels,400,200,50
+IRQ,Iraq,cattle,cattle,244,135,55
+IRQ,Iraq,buffaloes,buffaloes,330,150,45
+IRQ,Iraq,sheep,sheep,34,16,47
+IRQ,Iraq,goats,goats,25,12,48
+IRQ,Iraq,chickens,chickens,1300,1000,76
+IRQ,Iraq,camels,camels,500,175,35
+ISR,Israel,cattle,cattle,661,352,53
+ISR,Israel,sheep,sheep,38,19,50
+ISR,Israel,goats,goats,33,15,48
+ISR,Israel,pigs,pigs,100,76,76
+ISR,Israel,chickens,chickens,1364,1051,77
+ISR,Israel,turkeys,turkeys,8016,6341,79
+ISR,Israel,camels,camels,320,159,49
+JPN,Japan,cattle,cattle,717,394,55
+JPN,Japan,sheep,sheep,52,26,50
+JPN,Japan,goats,goats,62,27,44
+JPN,Japan,pigs,pigs,108,75,69
+JPN,Japan,chickens,chickens,2591,1819,70
+JPN,Japan,turkeys,turkeys,4000,3000,75
+JPN,Japan,horses,horses,780,373,48
+JOR,Jordan,cattle,cattle,310,165,53
+JOR,Jordan,sheep,sheep,29,14,48
+JOR,Jordan,goats,goats,24,11,46
+JOR,Jordan,chickens,chickens,1500,1100,73
+JOR,Jordan,turkeys,turkeys,5000,4000,80
+JOR,Jordan,camels,camels,175,120,69
+JOR,Jordan,rabbits,rabbits,2000,1200,60
+KAZ,Kazakhstan,cattle,cattle,296,157,53
+KAZ,Kazakhstan,sheep,sheep,35,16,46
+KAZ,Kazakhstan,goats,goats,36,16,46
+KAZ,Kazakhstan,pigs,pigs,80,51,64
+KAZ,Kazakhstan,chickens,chickens,1481,1075,73
+KAZ,Kazakhstan,horses,horses,315,172,54
+KAZ,Kazakhstan,rabbits,rabbits,2113,1056,50
+KGZ,Kyrgyzstan,cattle,cattle,374,214,57
+KGZ,Kyrgyzstan,sheep,sheep,37,16,44
+KGZ,Kyrgyzstan,goats,goats,35,15,44
+KGZ,Kyrgyzstan,pigs,pigs,117,90,76
+KGZ,Kyrgyzstan,chickens,chickens,1261,970,76
+KGZ,Kyrgyzstan,horses,horses,371,180,48
+KGZ,Kyrgyzstan,rabbits,rabbits,1877,1501,79
+KHM,Cambodia,bovins,cattle,218,120,55
+KHM,Cambodia,buffles,buffaloes,320,160,50
+KHM,Cambodia,porcins,pigs,72,50,69
+KHM,Cambodia,poules,chickens,1300,1000,76
+PRK,North Korea,cattle,cattle,290,150,51
+PRK,North Korea,sheep,sheep,33,15,45
+PRK,North Korea,goats,goats,33,15,45
+PRK,North Korea,pigs,pigs,66,50,75
+PRK,North Korea,chickens,chickens,1300,1100,84
+KOR,South Korea,cattle,cattle,500,305,61
+KOR,South Korea,sheep,sheep,30,14,46
+KOR,South Korea,goats,goats,30,15,50
+KOR,South Korea,pigs,pigs,90,67,74
+KOR,South Korea,chickens,chickens,1800,1190,66
+KOR,South Korea,rabbits,rabbits,2800,2000,71
+KWT,Kuwait,cattle,cattle,357,195,55
+KWT,Kuwait,sheep,sheep,49,26,53
+KWT,Kuwait,goats,goats,40,21,53
+KWT,Kuwait,chickens,chickens,1500,1050,70
+KWT,Kuwait,camels,camels,700,350,50
+LAO,Laos,bovins,cattle,130,78,60
+LAO,Laos,buffles,buffaloes,200,110,55
+LAO,Laos,caprins,goat,20,11,55
+LAO,Laos,porcins,pigs,30,21,70
+LAO,Laos,poules,chickens,1200,850,70
+LAO,Laos,canards,ducks,2000,1500,75
+LBN,Lebanon,bovins,cattle,383,192,50
+LBN,Lebanon,ovins,sheep,50,25,50
+LBN,Lebanon,caprins,goat,46,22,48
+LBN,Lebanon,porcins,pigs,100,75,75
+LBN,Lebanon,poules,chickens,1380,1060,77
+MYS,Malaysia,cattle,cattle,300,113,38
+MYS,Malaysia,buffaloes,buffaloes,350,181,52
+MYS,Malaysia,sheep,sheep,25,16,64
+MYS,Malaysia,goats,goats,20,9.1,46
+MYS,Malaysia,pigs,pigs,90,60,67
+MYS,Malaysia,chickens,chickens,2000,1600,80
+MYS,Malaysia,ducks,ducks,3100,2500,84
+MYS,Malaysia,horses,horses,250,120,48
+MNG,Mongolia,cattle,cattle,266,133,50
+MNG,Mongolia,sheep,sheep,46,19,42
+MNG,Mongolia,goats,goats,32,14,44
+MNG,Mongolia,pigs,pigs,77,47,61
+MNG,Mongolia,chickens,chickens,1493,1148,76
+NPL,Nepal,cattle,cattle,170,85,50
+NPL,Nepal,buffaloes,buffaloes,368,184,50
+NPL,Nepal,sheep,sheep,28,14,50
+NPL,Nepal,goats,goats,24,12,50
+NPL,Nepal,pigs,pigs,27,14,50
+NPL,Nepal,chickens,chickens,1300,975,75
+OMN,Oman,cattle,cattle,260,130,50
+OMN,Oman,sheep,sheep,50,30,60
+OMN,Oman,goats,goats,40,25,62
+OMN,Oman,chickens,chickens,1200,800,66
+OMN,Oman,camels,camels,430,210,48
+PAK,Pakistan,cattle,cattle,363,181,49
+PAK,Pakistan,buffaloes,buffaloes,264,132,50
+PAK,Pakistan,sheep,sheep,38,19,50
+PAK,Pakistan,goats,goats,36,16,46
+PAK,Pakistan,chickens,chickens,1420,1065,75
+PHL,Philippines,cattle,cattle,400,200,50
+PHL,Philippines,buffaloes,buffaloes,370,185,50
+PHL,Philippines,sheep,sheep,26,13,50
+PHL,Philippines,goats,goats,30,13,43
+PHL,Philippines,pigs,pigs,80,56,70
+PHL,Philippines,chickens,chickens,1452,1118,77
+PHL,Philippines,turkeys,turkeys,2000,1500,75
+PHL,Philippines,horses,horses,207,103,50
+QAT,Qatar,cattle,cattle,240,120,50
+QAT,Qatar,sheep,sheep,28,15,53
+QAT,Qatar,goats,goats,25,14,56
+QAT,Qatar,chickens,chickens,1300,1082,83
+SAU,Saudi Arabia,cattle,cattle,383,191,50
+SAU,Saudi Arabia,sheep,sheep,35,17,50
+SAU,Saudi Arabia,goats,goats,28,14,50
+SAU,Saudi Arabia,chickens,chickens,1300,1000,76
+SAU,Saudi Arabia,camels,camels,447,223,49
+SGP,Singapore,cattle,cattle,0,220,59
+SGP,Singapore,sheep,sheep,67,25,37
+SGP,Singapore,pigs,pigs,120,66,54
+SGP,Singapore,chickens,chickens,2000,1500,75
+LKA,Sri Lanka,cattle,cattle,271,135,50
+LKA,Sri Lanka,buffaloes,buffaloes,226,113,50
+LKA,Sri Lanka,sheep,sheep,35,20,57
+LKA,Sri Lanka,goats,goats,35,20,57
+LKA,Sri Lanka,pigs,pigs,103,71,69
+LKA,Sri Lanka,chickens,chickens,1560,1200,76
+SYR,Syria,cattle,cattle,220,110,50
+SYR,Syria,buffaloes,buffaloes,220,110,50
+SYR,Syria,sheep,sheep,36,18,50
+SYR,Syria,goats,goats,30,16,55
+SYR,Syria,chickens,chickens,1405,1000,71
+SYR,Syria,turkeys,turkeys,9500,7000,73
+SYR,Syria,camels,camels,380,180,47
+SYR,Syria,rabbits,rabbits,3000,1800,60
+TJK,Tajikistan,cattle,cattle,287,164,57
+TJK,Tajikistan,sheep,sheep,34,15,44
+TJK,Tajikistan,pigs,pigs,56,43,76
+TJK,Tajikistan,chickens,chickens,1094,841,76
+TKM,Turkmenistan,cattle,cattle,314,179,57
+TKM,Turkmenistan,sheep,sheep,33,15,44
+TKM,Turkmenistan,goats,goats,34,15,44
+TKM,Turkmenistan,pigs,pigs,79,60,76
+TKM,Turkmenistan,chickens,chickens,1630,1254,76
+THA,Thailand,cattle,cattle,364,200,54
+THA,Thailand,buffaloes,buffaloes,506,253,50
+THA,Thailand,sheep,sheep,33,15,45
+THA,Thailand,goats,goats,33,15,45
+THA,Thailand,pigs,pigs,72,50,69
+THA,Thailand,chickens,chickens,1626,1301,80
+TUR,Turkey,cattle,cattle,302,151,50
+TUR,Turkey,buffaloes,buffaloes,298,149,49
+TUR,Turkey,sheep,sheep,34,15,44
+TUR,Turkey,goats,goats,35,15,44
+TUR,Turkey,pigs,pigs,82,60,74
+TUR,Turkey,chickens,chickens,1500,1200,80
+TUR,Turkey,turkeys,turkeys,2500,2000,80
+TUR,Turkey,horses,horses,320,150,46
+TUR,Turkey,camels,camels,525,248,47
+TUR,Turkey,rabbits,rabbits,1300,1000,76
+ARE,United Arab Emirates,cattle,cattle,480,250,52
+ARE,United Arab Emirates,sheep,sheep,36,18,50
+ARE,United Arab Emirates,goats,goats,32,16,50
+ARE,United Arab Emirates,chickens,chickens,1500,1200,80
+ARE,United Arab Emirates,camels,camels,380,180,47
+UZB,Uzbekistan,cattle,cattle,319,182,57
+UZB,Uzbekistan,sheep,sheep,39,17,44
+UZB,Uzbekistan,pigs,pigs,81,62,76
+UZB,Uzbekistan,chickens,chickens,1643,1264,76
+VNM,Vietnam,bovins,cattle,276,151,54
+VNM,Vietnam,buffles,buffaloes,430,215,50
+VNM,Vietnam,caprins,goat,33,15,45
+VNM,Vietnam,porcins,pigs,92,61,66
+VNM,Vietnam,poules,chickens,961,800,83
+VNM,Vietnam,chevaux,horses,230,110,47
+YEM,Yemen,cattle,cattle,171,91,53
+YEM,Yemen,sheep,sheep,20,10,50
+YEM,Yemen,goats,goats,20,10,50
+YEM,Yemen,chickens,chickens,1189,915,76
+YEM,Yemen,camels,camels,320,160,50
+ALB,Albania,bovins,cattle,196,105,53
+ALB,Albania,ovins,sheep,17,8.5,48
+ALB,Albania,caprins,goat,24,9.2,38
+ALB,Albania,porcins,pigs,57,45,78
+ALB,Albania,poules,chickens,809,608,75
+AUT,Austria,cattle,cattle,545,289,53
+AUT,Austria,sheep,sheep,45,21,47
+AUT,Austria,goats,goats,19,9.5,50
+AUT,Austria,pigs,pigs,127,103,81
+AUT,Austria,chickens,chickens,1642,1235,75
+AUT,Austria,turkeys,turkeys,11364,8436,74
+AUT,Austria,horses,horses,459,229,49
+AUT,Austria,rabbits,rabbits,2400,1675,69
+BEL,Belgium,bovins,cattle,603,331,54
+BEL,Belgium,ovins,sheep,42,21,50
+BEL,Belgium,porcins,pigs,114,91,79
+BEL,Belgium,poules,chickens,1955,1427,72
+BEL,Belgium,dindons,turkeys,6956,5499,79
+BEL,Belgium,chevaux,horses,572,286,49
+BGR,Bulgaria,bovins,cattle,371,192,51
+BGR,Bulgaria,buffles,buffaloes,422,218,51
+BGR,Bulgaria,ovins,sheep,38,16,42
+BGR,Bulgaria,caprins,goat,28,12,42
+BGR,Bulgaria,porcins,pigs,111,74,66
+BGR,Bulgaria,poules,chickens,1942,1400,72
+BGR,Bulgaria,lapins,rabbits,3096,1702,55
+CZE,Czechia,cattle,cattle,522,277,53
+CZE,Czechia,sheep,sheep,58,26,45
+CZE,Czechia,goats,goats,70,31,44
+CZE,Czechia,pigs,pigs,112,80,71
+CZE,Czechia,chickens,chickens,1800,1350,75
+CZE,Czechia,turkeys,turkeys,14000,11200,80
+CZE,Czechia,horses,horses,600,318,53
+CZE,Czechia,rabbits,rabbits,3000,1770,59
+SVK,Slovakia,cattle,cattle,420,226,54
+SVK,Slovakia,sheep,sheep,17,8,47
+SVK,Slovakia,goats,goats,11,5,45
+SVK,Slovakia,pigs,pigs,110,93,85
+SVK,Slovakia,chickens,chickens,1790,1253,70
+SVK,Slovakia,ducks,ducks,2600,1820,70
+SVK,Slovakia,geese,geese,5200,3640,70
+SVK,Slovakia,turkeys,turkeys,6500,4550,70
+SVK,Slovakia,horses,horses,266,141,53
+SVK,Slovakia,rabbits,rabbits,2800,1873,67
+DNK,Denmark,cattle,cattle,500,247,49
+DNK,Denmark,sheep,sheep,42,21,49
+DNK,Denmark,pigs,pigs,106,75,70
+DNK,Denmark,chickens,chickens,1718,1320,76
+DNK,Denmark,turkeys,turkeys,11457,8184,71
+DNK,Denmark,horses,horses,635,295,46
+FIN,Finland,cattle,cattle,466,242,52
+FIN,Finland,sheep,sheep,44,20,45
+FIN,Finland,pigs,pigs,104,78,75
+FIN,Finland,chickens,chickens,1575,1184,75
+FIN,Finland,horses,horses,524,273,52
+FRA,France,bovins,cattle,521,276,52
+FRA,France,ovins,sheep,35,17,50
+FRA,France,caprins,goat,13,6.7,52
+FRA,France,porcins,pigs,114,85,74
+FRA,France,poules,chickens,1756,1317,75
+FRA,France,dindons,turkeys,7568,5676,75
+FRA,France,chevaux,horses,530,288,54
+FRA,France,lapins,rabbits,2000,1500,75
+DEU,Germany,cattle,cattle,555,295,53
+DEU,Germany,sheep,sheep,40,19,48
+DEU,Germany,goats,goats,37,18,49
+DEU,Germany,pigs,pigs,117,90,77
+DEU,Germany,chickens,chickens,1750,1280,73
+DEU,Germany,turkeys,turkeys,13750,11140,81
+DEU,Germany,horses,horses,528,264,50
+DEU,Germany,rabbits,rabbits,2400,1600,66
+GRC,Greece,bovins,cattle,424,221,52
+GRC,Greece,ovins,sheep,22,11,49
+GRC,Greece,caprins,goat,20,10,49
+GRC,Greece,porcins,pigs,79,60,76
+GRC,Greece,poules,chickens,1500,1100,73
+GRC,Greece,dindons,turkeys,5500,4200,76
+GRC,Greece,chevaux,horses,360,180,50
+GRC,Greece,lapins,rabbits,2015,1515,75
+HUN,Hungary,cattle,cattle,423,243,57
+HUN,Hungary,sheep,sheep,25,12,48
+HUN,Hungary,pigs,pigs,117,97,82
+HUN,Hungary,chickens,chickens,1891,1419,75
+HUN,Hungary,turkeys,turkeys,8016,6012,75
+HUN,Hungary,rabbits,rabbits,2578,1418,55
+ISL,Iceland,cattle,cattle,226,136,60
+ISL,Iceland,sheep,sheep,32,15,48
+ISL,Iceland,pigs,pigs,80,60,76
+ISL,Iceland,chickens,chickens,1641,1224,74
+ISL,Iceland,horses,horses,193,100,52
+IRL,Ireland,cattle,cattle,612,318,52
+IRL,Ireland,sheep,sheep,42,21,50
+IRL,Ireland,pigs,pigs,92,69,75
+IRL,Ireland,chickens,chickens,1540,1155,75
+IRL,Ireland,turkeys,turkeys,7900,5925,75
+IRL,Ireland,horses,horses,509,244,48
+ITA,Italy,bovins,cattle,441,247,55
+ITA,Italy,buffles,buffaloes,359,178,49
+ITA,Italy,ovins,sheep,16,9.2,56
+ITA,Italy,caprins,goat,14,8.3,55
+ITA,Italy,porcins,pigs,141,111,79
+ITA,Italy,poules,chickens,2118,1590,75
+ITA,Italy,dindons,turkeys,11200,8385,74
+ITA,Italy,chevaux,horses,412,218,52
+ITA,Italy,lapins,rabbits,2000,1500,75
+MLT,Malta,cattle,cattle,438,250,57
+MLT,Malta,sheep,sheep,32,16,50
+MLT,Malta,goats,goats,26,14,56
+MLT,Malta,pigs,pigs,95,76,79
+MLT,Malta,chickens,chickens,1664,1248,75
+MLT,Malta,turkeys,turkeys,5586,4200,75
+MLT,Malta,horses,horses,168,96,57
+MLT,Malta,rabbits,rabbits,2100,1500,71
+NLD,Netherlands,cattle,cattle,447,244,54
+NLD,Netherlands,sheep,sheep,50,24,49
+NLD,Netherlands,goats,goats,26,13,48
+NLD,Netherlands,pigs,pigs,113,86,75
+NLD,Netherlands,chickens,chickens,1600,1250,78
+NLD,Netherlands,turkeys,turkeys,7100,5000,70
+NLD,Netherlands,horses,horses,569,239,42
+NOR,Norway,cattle,cattle,469,244,52
+NOR,Norway,sheep,sheep,44,19,45
+NOR,Norway,goats,goats,26,11,45
+NOR,Norway,pigs,pigs,102,77,75
+NOR,Norway,chickens,chickens,1386,1047,75
+NOR,Norway,horses,horses,489,254,51
+POL,Poland,cattle,cattle,256,133,52
+POL,Poland,sheep,sheep,36,16,45
+POL,Poland,pigs,pigs,112,86,77
+POL,Poland,chickens,chickens,1700,1300,69
+POL,Poland,turkeys,turkeys,6670,5000,69
+POL,Poland,horses,horses,507,280,55
+POL,Poland,rabbits,rabbits,2100,1211,57
+PRT,Portugal,cattle,cattle,442,246,55
+PRT,Portugal,sheep,sheep,20,10,50
+PRT,Portugal,goats,goats,15,7.6,50
+PRT,Portugal,pigs,pigs,95,73,76
+PRT,Portugal,chickens,chickens,1473,1107,75
+PRT,Portugal,turkeys,turkeys,5300,4000,75
+PRT,Portugal,horses,horses,329,164,49
+ROU,Romania,bovins,cattle,248,121,49
+ROU,Romania,ovins,sheep,20,8,43
+ROU,Romania,caprins,goat,22,9,41
+ROU,Romania,porcins,pigs,105,75,71
+ROU,Romania,poules,chickens,2000,1500,75
+ROU,Romania,chevaux,horses,350,175,50
+ROU,Romania,lapins,rabbits,3000,1500,50
+ESP,Spain,ganado vacuno,cattle,475,250,52
+ESP,Spain,ovinos,sheep,22,11,49
+ESP,Spain,caprinos,goats,19,7.9,39
+ESP,Spain,cerdos,pigs,97,78,79
+ESP,Spain,gallinas,chickens,2029,1522,75
+ESP,Spain,pavos,turkeys,4800,4000,83
+ESP,Spain,caballos,horses,371,187,50
+ESP,Spain,conejos,rabbits,1842,1228,66
+SWE,Sweden,cattle,cattle,510,275,54
+SWE,Sweden,sheep,sheep,40,18,46
+SWE,Sweden,pigs,pigs,107,82,77
+SWE,Sweden,chickens,chickens,1650,1200,73
+SWE,Sweden,turkeys,turkeys,3971,3057,76
+SWE,Sweden,horses,horses,518,270,52
+CHE,Switzerland,bovins,cattle,365,197,54
+CHE,Switzerland,ovins,sheep,43,19,44
+CHE,Switzerland,caprins,goat,33,15,44
+CHE,Switzerland,porcins,pigs,107,84,78
+CHE,Switzerland,poules,chickens,1765,1200,68
+CHE,Switzerland,chevaux,horses,535,294,55
+CHE,Switzerland,lapins,rabbits,3300,2000,60
+GBR,United Kingdom,cattle,cattle,544,294,54
+GBR,United Kingdom,sheep,sheep,37,19,51
+GBR,United Kingdom,pigs,pigs,93,71,76
+GBR,United Kingdom,chickens,chickens,2200,1500,68
+GBR,United Kingdom,turkeys,turkeys,9200,7500,82
+GBR,United Kingdom,horses,horses,308,154,50
+BIH,Bosnia & Herzegovina,cattle,cattle,279,168,60
+BIH,Bosnia & Herzegovina,sheep,sheep,23,12,52
+BIH,Bosnia & Herzegovina,pigs,pigs,81,66,81
+BIH,Bosnia & Herzegovina,chickens,chickens,1189,892,75
+BIH,Bosnia & Herzegovina,turkeys,turkeys,9846,7385,75
+HRV,Croatia,cattle,cattle,412,221,53
+HRV,Croatia,sheep,sheep,21,10,50
+HRV,Croatia,goats,goats,36,18,50
+HRV,Croatia,pigs,pigs,93,72,77
+HRV,Croatia,chickens,chickens,1169,872,74
+HRV,Croatia,turkeys,turkeys,10589,7942,75
+HRV,Croatia,horses,horses,370,200,54
+MKD,North Macedonia,cattle,cattle,170,93,54
+MKD,North Macedonia,sheep,sheep,39,19,50
+MKD,North Macedonia,pigs,pigs,119,95,79
+MKD,North Macedonia,chickens,chickens,1316,989,75
+SVN,Slovenia,cattle,cattle,482,264,54
+SVN,Slovenia,sheep,sheep,28,13,47
+SVN,Slovenia,pigs,pigs,106,93,87
+SVN,Slovenia,chickens,chickens,1448,1087,75
+SVN,Slovenia,turkeys,turkeys,10014,7529,75
+SVN,Slovenia,horses,horses,407,230,56
+NA,Yugoslavia,cattle,cattle,440,235,53
+NA,Yugoslavia,sheep,sheep,26,13,51
+NA,Yugoslavia,goats,goats,36,18,50
+NA,Yugoslavia,pigs,pigs,99,77,78
+NA,Yugoslavia,chickens,chickens,1226,919,75
+NA,Yugoslavia,turkeys,turkeys,10662,7997,75
+NA,Yugoslavia,horses,horses,313,156,50
+BLR,Belarus,cattle,cattle,302,172,57
+BLR,Belarus,sheep,sheep,45,19,44
+BLR,Belarus,pigs,pigs,91,70,76
+BLR,Belarus,chickens,chickens,1692,1301,76
+EST,Estonia,cattle,cattle,258,147,57
+EST,Estonia,sheep,sheep,46,20,44
+EST,Estonia,pigs,pigs,86,66,76
+EST,Estonia,chickens,chickens,1321,1016,76
+EST,Estonia,rabbits,rabbits,2084,1667,79
+LVA,Latvia,cattle,cattle,281,177,63
+LVA,Latvia,sheep,sheep,46,27,59
+LVA,Latvia,pigs,pigs,100,82,82
+LVA,Latvia,chickens,chickens,1824,1313,72
+LVA,Latvia,horses,horses,448,250,56
+LTU,Lithuania,cattle,cattle,272,155,57
+LTU,Lithuania,sheep,sheep,51,22,44
+LTU,Lithuania,pigs,pigs,111,85,76
+LTU,Lithuania,chickens,chickens,1709,1314,76
+LTU,Lithuania,horses,horses,370,180,48
+LTU,Lithuania,rabbits,rabbits,2004,1603,79
+MDA,Moldova,cattle,cattle,315,180,57
+MDA,Moldova,sheep,sheep,29,12,44
+MDA,Moldova,pigs,pigs,95,73,76
+MDA,Moldova,chickens,chickens,1705,1311,76
+MDA,Moldova,turkeys,turkeys,7666,5896,76
+MDA,Moldova,horses,horses,370,180,48
+MDA,Moldova,rabbits,rabbits,2000,1600,80
+RUS,Russia,cattle,cattle,277,158,57
+RUS,Russia,sheep,sheep,34,15,44
+RUS,Russia,goats,goats,30,14,46
+RUS,Russia,pigs,pigs,98,75,76
+RUS,Russia,chickens,chickens,1645,1265,76
+RUS,Russia,rabbits,rabbits,2066,1601,77
+UKR,Ukraine,cattle,cattle,268,159,59
+UKR,Ukraine,sheep,sheep,30,13,43
+UKR,Ukraine,goats,goats,30,13,43
+UKR,Ukraine,pigs,pigs,112,82,73
+UKR,Ukraine,chickens,chickens,1500,1100,73
+UKR,Ukraine,horses,horses,339,204,60
+UKR,Ukraine,rabbits,rabbits,3800,1900,50
+ASM,American Samoa,cattle,cattle,300,150,50
+ASM,American Samoa,pigs,pigs,75,50,66
+ASM,American Samoa,chickens,chickens,1100,800,72
+AUS,Australia,cattle,cattle,431,215,50
+AUS,Australia,sheep,sheep,38,19,50
+AUS,Australia,goats,goats,48,25,52
+AUS,Australia,pigs,pigs,95,66,70
+AUS,Australia,chickens,chickens,1750,1425,81
+AUS,Australia,turkeys,turkeys,5500,3500,63
+AUS,Australia,horses,horses,560,280,50
+SLB,Solomon Islands,cattle,cattle,370,185,50
+COK,Cook Islands,cattle,cattle,300,132,44
+COK,Cook Islands,goats,goats,33,15,45
+COK,Cook Islands,pigs,pigs,45,30,66
+COK,Cook Islands,chickens,chickens,1100,800,72
+FJI,Fiji,cattle,cattle,380,190,50
+FJI,Fiji,sheep,sheep,30,15,53
+FJI,Fiji,goats,goats,25,11,46
+FJI,Fiji,pigs,pigs,70,45,64
+FJI,Fiji,chickens,chickens,1812,1292,71
+FJI,Fiji,turkeys,turkeys,1900,1500,78
+PYF,French Polynesia,bovins,cattle,330,157,47
+PYF,French Polynesia,ovins,sheep,33,15,45
+PYF,French Polynesia,caprins,goat,33,15,45
+PYF,French Polynesia,porcins,pigs,75,53,71
+PYF,French Polynesia,poules,chickens,1200,900,75
+KIR,Kiribati,pigs,pigs,55,40,72
+KIR,Kiribati,chickens,chickens,1100,850,77
+GUM,Guam,cattle,cattle,350,166,47
+GUM,Guam,buffaloes,buffaloes,320,150,46
+GUM,Guam,goats,goats,33,38,115
+GUM,Guam,pigs,pigs,90,65,72
+GUM,Guam,chickens,chickens,1100,860,78
+NRU,Nauru,pigs,pigs,45,30,66
+NRU,Nauru,chickens,chickens,1100,800,72
+NCL,New Caledonia,bovins,cattle,348,174,50
+NCL,New Caledonia,ovins,sheep,30,16,53
+NCL,New Caledonia,caprins,goat,26,12,45
+NCL,New Caledonia,porcins,pigs,108,81,75
+NCL,New Caledonia,poules,chickens,1200,779,64
+VUT,Vanuatu,cattle,cattle,448,215,48
+VUT,Vanuatu,goats,goats,22,10,45
+VUT,Vanuatu,pigs,pigs,74,51,68
+VUT,Vanuatu,chickens,chickens,1300,1000,76
+VUT,Vanuatu,horses,horses,300,150,50
+NZL,New Zealand,cattle,cattle,340,170,50
+NZL,New Zealand,sheep,sheep,34,17,50
+NZL,New Zealand,goats,goats,23,11,50
+NZL,New Zealand,pigs,pigs,86,62,72
+NZL,New Zealand,chickens,chickens,1820,1370,75
+NZL,New Zealand,turkeys,turkeys,4729,3920,83
+NZL,New Zealand,horses,horses,520,260,50
+NIU,Niue,cattle,cattle,400,200,50
+NIU,Niue,pigs,pigs,99,65,65
+NIU,Niue,chickens,chickens,1279,930,72
+PNG,Papua New Guinea,cattle,cattle,300,150,50
+PNG,Papua New Guinea,sheep,sheep,33,15,45
+PNG,Papua New Guinea,goats,goats,33,15,45
+PNG,Papua New Guinea,pigs,pigs,45,30,66
+PNG,Papua New Guinea,chickens,chickens,1200,900,75
+PNG,Papua New Guinea,turkeys,turkeys,1700,1300,76
+PNG,Papua New Guinea,horses,horses,320,150,46
+TON,Tonga,cattle,cattle,356,190,53
+TON,Tonga,goats,goats,33,15,45
+TON,Tonga,pigs,pigs,73,44,59
+TON,Tonga,chickens,chickens,1143,816,71
+TUV,Tuvalu,pigs,pigs,45,24,54
+TUV,Tuvalu,chickens,chickens,1300,813,62
+WSM,Samoa,cattle,cattle,320,148,46
+WSM,Samoa,pigs,pigs,48,35,72
+WSM,Samoa,chickens,chickens,1200,781,65

@@ -4,6 +4,9 @@ A space for code made by PPS modellers and analysts in the Global Burden of Anim
 
 # Code
 
+## Biomass calculations in python: 
+
+
 ## Yin's original biomass calculation code
 
 Name of file: `20210831_biomassUsingFAOSTAT.R`
@@ -12,7 +15,7 @@ Description:
 
 Use: 
 
-## Biomass calculations: 
+## Biomass calculations in R: 
 
 Name of file: `20210818_YinBiomassCalculation.R`
 

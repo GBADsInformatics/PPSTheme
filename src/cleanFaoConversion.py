@@ -44,7 +44,10 @@ if __name__ == '__main__':
 		sys.exit('Please provide original live weight table as a system argument.')
 	else: 
 		file = sys.argv[1]
+	try:
 		con_table = pd.read_csv(file, encoding='utf8')
+	except: 
+		sys.exit('Please provide valid file.')
 
 	# Create name for output file
 	now = datetime.datetime.now()
@@ -125,9 +128,9 @@ if __name__ == '__main__':
 	# Make df species title case
 	con_table["species"] = con_table["species"].str.title()
 
-	# Convert grams to kg for chickens and turkeys (divide by 1000)
-	con_table.loc[con_table["species"] == 'Chickens', "live_weight"] = con_table.loc[con_table["species"] == 'Chickens', "live_weight"].divide(1000)
-	con_table.loc[con_table["species"] == 'Turkeys', "live_weight"] = con_table.loc[con_table["species"] == 'Turkeys', "live_weight"].divide(1000)
+	# Convert grams to kg for chickens, rabbits, and turkeys (divide by 1000)
+	for i in ['Chickens', 'Rabbits', 'Turkeys']:
+		con_table.loc[con_table["species"] == i, "live_weight"] = con_table.loc[con_table["species"] == i, "live_weight"].divide(1000)
 
 	# Save to outfile
 	con_table.reset_index(level=0, inplace=True)

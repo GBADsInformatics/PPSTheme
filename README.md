@@ -20,10 +20,11 @@ Data cleaning and biomass calculations were coded in python to assist in the ing
 	* `<date>_biomass_liveWeight_faostat.csv` is the output file that has all biomass estimates calculated using the GBADs API. Information about the API call can be found in `src/BiomassCalc.py`.
 * `/src`
 	* `cleanFaoConversion.py` maps countries to FAO country names and converts all live weights to kg. To run you must specify the input file as a command line argument. The input file used is `<date>_liveWeightFAO.csv`. The output file is `<date>_liveWeightFAO_cleaned.csv`.
+		* Running: `cleanFaoConversion.py <date>_liveWeightFAO.csv`
 	* `BiomassCalc.py` calculates biomass by multiplying population of animals by live weight. The program takes one command line argument, which is the live weight file `<date>_liveWeightFAO_cleaned.csv`. 
+		* Running: `BiomassCalc.py <date>_liveWeightFAO_cleaned.csv <source> <path to data dir>` 
 
 ### TO DO: 
-* Add functionality to calculate biomass using OIE numbers.
 * Add functionality to calculate biomass using TLUs. 
 
 ## Yin's original biomass calculation code

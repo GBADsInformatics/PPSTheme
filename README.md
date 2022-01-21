@@ -6,6 +6,25 @@ A space for code made by PPS modellers and analysts in the Global Burden of Anim
 
 ## Biomass calculations in python: 
 
+Name of relevant directories: `/src` and `/data`
+
+Author: Kassy Raymond
+
+### Description
+Data cleaning and biomass calculations were coded in python to assist in the ingestion of biomass data into the knowledge engine. 
+
+### Use
+* `/data`
+	* `<date>_liveWeightFAO.csv` is the original csv file that provides live weights for livestock animals according to: https://www.fao.org/economic/the-statistics-division-ess/methodology/methodology-systems/technical-conversion-factors-for-agricultural-commodities/en/
+	* `<date>_liveWeightFAO_cleaned.csv` is the cleaned livestock live weights. Information about cleaning and rational can be found in FIXME.
+	* `<date>_biomass_liveWeight_faostat.csv` is the output file that has all biomass estimates calculated using the GBADs API. Information about the API call can be found in `src/BiomassCalc.py`.
+* `/src`
+	* `cleanFaoConversion.py` maps countries to FAO country names and converts all live weights to kg. To run you must specify the input file as a command line argument. The input file used is `<date>_liveWeightFAO.csv`. The output file is `<date>_liveWeightFAO_cleaned.csv`.
+	* `BiomassCalc.py` calculates biomass by multiplying population of animals by live weight. The program takes one command line argument, which is the live weight file `<date>_liveWeightFAO_cleaned.csv`. 
+
+### TO DO: 
+* Add functionality to calculate biomass using OIE numbers.
+* Add functionality to calculate biomass using TLUs. 
 
 ## Yin's original biomass calculation code
 

@@ -10,3 +10,5 @@ _targets/
 .Rprofile
 *.png
 ^_* # Directories which start wiht underscore 
+data/*
+docs/*

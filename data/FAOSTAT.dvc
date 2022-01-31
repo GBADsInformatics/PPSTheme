@@ -1,0 +1,5 @@
+outs:
+- md5: e748ce909f8083f7a0f1e4a07ef2ccce.dir
+  size: 100080063
+  nfiles: 8
+  path: FAOSTAT

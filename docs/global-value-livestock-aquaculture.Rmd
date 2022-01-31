@@ -17,15 +17,35 @@ bibliography: "`r path.expand('~/projects/Bibtex/GBADS-Livestock-Value.bib')`"
 link-citation: true
 nocite: '@*'
 zotero: true
-
 params:
+    libraries: !r c("magrittr", 
+          "tidyr", 
+          "dplyr", 
+          'stringr', 
+          "arrow",
+          "here",
+          "FAOSTAT",
+          "ggthemes",
+           "ggplot2", 
+          "sf",
+          "purrr",
+          "rnaturalearth",
+          "rnaturalearthdata",
+          "ggpubr",
+          "wbstats",
+          "knitr",
+          "ggsci",
+          "ggtext",
+          "viridis", 
+          "filenamer", 
+          "DT"
+        )
     cutoff_year: 1994
     final_year: 2019
     file_names: !r list(
-                     value_of_production = "Value_of_Production_E_All_Data_(Normalized).parquet", 
-                     production = "Production_Crops_Livestock_E_All_Data_(Normalized).parquet", 
-                     prices = "Prices_E_All_Data_(Normalized).parquet"
-                     )
+                     value_of_production = "Value_of_Production_E_All_Data.parquet", 
+                     production = "Production_Crops_Livestock_E_All_Data.parquet", 
+                     prices = "Prices_E_All_Data.parquet")
     fao_codes_dir: !r here::here("data", "codes", "FAOSTAT")
     
 ---
@@ -46,6 +66,21 @@ The FAOSTAT data sets @FAO2021a, @FAO2021b @FAO2021c are used to produce this es
 
 ```{r setup, include=FALSE}
 
+
+#################################################################
+# Load Libraries
+#################################################################
+sapply(params$libraries, 
+       function(x) {
+         if (!require(x, character.only = TRUE)) {
+           renv::install(x)
+           library(x, character.only = TRUE)
+         }
+       } 
+)
+
+
+
 #################################################################
 #   Global Chunk Options
 #################################################################
@@ -54,54 +89,33 @@ knitr::opts_chunk$set(
   error = FALSE, # Don't Print Errors
   fig.height = 12, # Default Figure Settings
   fig.width = 18,
-  fig.path = here::here('output', 'figures'), # Set the Images and Figures to the Output Directory - They Will be matched to chunk names
+  fig.path = here::here('output', 'figures'), # Set the Images and Figures to the Output Directory
+  # - They Will be matched to chunk names
   message = FALSE,
   warning = FALSE,
   autodep = TRUE,
   cache = TRUE,
-  dev = c("png"), # Update depending on the journal
+  dev = c("png"), # c(png, svg) Update depending on the journal
   dpi = 350
 )
 
-
-
 #################################################################
-# Libraries
+# Source Other files 
 #################################################################
-if (!require(librarian)) {
-  install.packages("librarian")
-}
+source(here("src", "utils", "FAOSTAT_helper_functions.R"))
 
-
-#################################################################
-#  Load packages
-#################################################################
-librarian::shelf(
-  codebook,  # Create and Assign metadata 
-  tidyverse,
-  arrow,
-  here,
-  FAOSTAT,
-  ggthemes,
-  sf,
-  purrr,
-  rnaturalearth,
-  rnaturalearthdata,
-  ggpubr,
-  wbstats,
-  knitr,
-  ggsci,
-  hrbrthemes,
-  ggtext,
-  viridis, 
-  filenamer, 
-  DT
-)
-
-set.seed(0)
 ```
 
 
+```{r}
+data <- arrow::read_parquet(get_gbads_file(
+  params$file_names$value_of_production, 
+  dir = here::here('data', 'FAOSTAT')
+)) %>% 
+  janitor::clean_names()
+
+head(data)
+```
 
 
 
@@ -112,23 +126,31 @@ set.seed(0)
 # Helper Functions
 #################################################################
 
-# - Cleans Table Names ------------------------------------------
-renamer <- function(df) {
-  df %>%
-    as_tibble() %>%
-    rename_with(~tolower(gsub("\\s+", "_", .x)))
-}
-
 # - Cleans FAOSTAT countries -------------------------------------------------------------------
-clean_countries <- function(df, code_col = "area_code", year_col = "year", value_col = "value") {
+clean_countries <- function(df, 
+                            code_col = "area_code",
+                            year_col = "year",
+                            value_col = "value") {
+  
   names(df)[names(df) == code_col] <- "FAOST_CODE"
-  countries <- FAOSTAT::FAOcountryProfile %>% select(FAOST_CODE, ISO3_CODE)
+  
+  countries <- FAOSTAT::FAOcountryProfile %>%
+    select(FAOST_CODE, ISO3_CODE)
+
   df %>%
-    FAOSTAT::FAOcheck(var = value_col, year = year_col, data = ., type = "multiChina") %>%
-    drop_na(value) %>%
+    FAOSTAT::FAOcheck(
+      var = value_col,
+      year = year_col,
+      data = .,
+      type = "multiChina") %>%  # Check for multiple China entries
+    drop_na(value) %>%  # Remove missing values 
     left_join(countries, by = "FAOST_CODE") %>%
-    drop_na(ISO3_CODE) %>%
-    relocate(ISO3_CODE, .before = everything())
+    drop_na(ISO3_CODE) %>%  # Remove countries without valid ISO3_CODES according to FAO 
+    mutate(
+      area = plyr::mapvalues(area, c('China, mainland'), c('China'))
+    ) %>% 
+    relocate(ISO3_CODE, .before = everything()) %>% 
+    janitor::clean_names()
 }
 
 
@@ -136,25 +158,21 @@ clean_countries <- function(df, code_col = "area_code", year_col = "year", value
 sanitize_columns <- function(df) {
     df %>%
         mutate_if(~is.character(.x),
-                  ~iconv(.x, from = "UTF-8", to = "ASCII", sub = "") %>% 
-                      gsub('[$]', '_dollars', .) %>%  # Dollar signs
-                      gsub('\\(|\\)', '', .) %>%    # Parentheses and commas 
-                      gsub(',', '_', .) %>% 
-                      gsub('/', '_', .) %>% 
-                      gsub('\\.', '', .) %>% 
-                      gsub('-', '', .) %>% 
-                      tolower() %>%       # Make Lower Case 
-                      gsub("\\s+", "_", .) %>%  # Replace Spaces with underscores
-                      gsub('_=_100', '', .)  %>% 
-                      gsub('_+', '_', .) 
-                    
-                  )
+                  ~iconv(.x, "UTF-8", "ASCII") %>%
+                    snakecase::to_any_case())
 }
 
-#################################################################
-# Other Helper functions 
-# #################################################################
-source(here("src", "utils", "FAOSTAT_helper_functions.R"))
+
+
+# Load the data 
+data <- purrr::map(params$file_names,
+  ~arrow::read_parquet(get_gbads_file( .x, 
+  dir = here::here('data', 'FAOSTAT'))) %>% 
+  janitor::clean_names() %>% 
+  filter(year %in% params$cutoff_year:params$final_year) %>% 
+  clean_countries() %>% 
+  sanitize_columns())
+
 
 
 fig_captions <- function(descr="", citations="", file_name="") {
@@ -204,7 +222,7 @@ names(code_rds_files) <- basename(code_rds_files) %>%
 faostat_item_codes <- purrr::map(
   code_rds_files,
   ~ readRDS(.x) %>%
-    renamer()
+    janitor::clean_names()
 )
 
 #################################################################
@@ -233,21 +251,6 @@ crop_groups <- faostat_item_codes$Item_Codes %>%
 
 
 ```{r import-data}
-
-#################################################################
-#  Import FAOSTAT files to a list
-#################################################################
-files <- map(params$file_names, 
-             function(x) {
-                 get_gbads_file(x) %>%
-                     arrow::read_parquet() %>% 
-                     renamer() %>% 
-                     filter(year %in% params$initial_year:params$final_year) %>% 
-                     clean_countries() %>% 
-                     renamer() %>% 
-                     sanitize_columns()
-             }
-)
 
 
 
@@ -282,6 +285,8 @@ for (i in seq_along(files)) {
     }
 }
 
+
+# Update with correct values 
 fao_tcf_files <- here::here("data", "raw", "FAOSTAT", "faostat_conversions.csv")
 ```
 
@@ -313,40 +318,64 @@ and are accompanied by a corresponding list of metadata for each file.
 crop_df_name <- "20211222_Value-of-Crops.csv"
 
 if (!file.exists(crop_df_name)) {
-  data <- purrr::map(
-    files, ~ arrow::read_parquet(.x) %>%
-      renamer() %>%
-      filter(year >= CUTOFF_YEAR)
-  )
-
   # Extract the Crop Data and match countries
   crops <- purrr::map(
     data,
-    ~ filter(.x, item_code %in% unique(crop_groups$item_code)) %>%
-      clean_countries() %>%
-      left_join(crop_groups)
+    ~ filter(.x, item_code %in% unique(crop_groups$item_code)) %>% 
+      select(-year_code) %>% 
+      left_join(crop_groups) %>% 
+      relocate(group, .after = item)
   )
 
   # Filter specific things
-  crops$fao_production <- filter(crops$fao_production, element == "Production")
-  crops$fao_prices <- filter(crops$fao_prices, months_code == 7021)
+  crops$production <- filter(crops$production, element == "production")
+  crops$prices <- filter(crops$prices, months_code == 7021)
 
 
   # Spread each table
-  crops$fao_vop <- crops$fao_vop %>%
-    select(-element_code, -year_code, -unit, -flag) %>%
+  crops$value_of_production <- crops$value_of_production %>%
+    select(-element_code,  -unit, -flag) %>%
     spread(element, value)
 
-  crops$fao_production <- crops$fao_production %>%
-    select(-element_code, -flag, -element) %>%
-    rename(tonnes = unit)
+  crops$production <- crops$production %>%
+    select(-element_code, -flag, -element, -unit) %>%
+    rename(tonnes = value)
 
-  crops$fao_prices <- crops$fao_prices %>%
-    select(-element_code, -year_code, -months_code, -months, -unit, -flag) %>%
+  crops$prices <- crops$prices %>%
+    select(-element_code,-months_code, -months, -unit, -flag) %>%
     spread(element, value)
 
-  crop_df <- purrr::reduce(crops, full_join)
-  readr::write_csv(crop_df, paste0(format(Sys.Date(), format = "%Y%m%d"), "_Value-of-Crops.csv"))
+  crop_df <- purrr::reduce(crops[c('production', 'prices', 'value_of_production')], 
+                           full_join)
+  
+  # Convert to a Arrow table 
+  crop_table <- arrow::Table$create(crop_df)
+  
+  
+  # Add initial metadata 
+  crop_table$metadata <- list(
+      iso3_code = "ISO 3166-1 alpha-3", 
+      faost_code = "FAOSTAT Area Code", 
+      area = "FAOSTAT Area Name", 
+      year = "Year in YYYY format", 
+      tonnes = "Metric Tonnes", 
+      producer_price_index_2014_2016_100 =  "An FAOSTAT Items producer price index, for a certain item calculated to average 100 between 2014 and 2016", 
+      producer_price_lcu_tonne = 'Producer price of item in local currency per tonne', 
+      producer_price_slc_tonne = 'Producer price of item in national currency per tonne', 
+      producer_price_usd_tonne = 'Producer price of item in current USD per tonne', 
+      gross_production_value_constant_2014_2016_thousand_i = 'Gross production value of item in constant thousand 2014 2016 international dollars, for a certain item calculated to average 100 between 2014 and 2016', 
+      gross_production_value_constant_2014_2016_thousand_slc = 'Gross production value of item in constant 2014 2016 in thousand standard local currency units, for a certain item calculated to average 100 between 2014 and 2016', 
+      gross_production_value_constant_2014_2016_thousand_us = 'Gross production value of item in constant thousand 2014 2016 US dollars,  for a certain item calculated to average 100 between 2014 and 2016',  
+      gross_production_value_current_thousand_slc = 'Gross production value of item in current thousand   standard local currency units, for a certain item calculated to average 100 between 2014 and 2016', 
+      gross_production_value_current_thousand_us = 'Gross production value of item in current thousand US dollars' , 
+      date = iso_date(), 
+      contributor = 'Gabriel Dennis CSIRO, gabriel.dennis@csiro.au', 
+      format = 'Arrow Table', 
+      language = 'English', 
+      source = '[FAO.] [Database Title.] [Dataset Title.] [Latest update: Day/month/year.] [(Accessed [Day/month/year).] [URL or URI]'
+  )
+  
+  arrow::write_parquet(crop_table, file_name("FAOSTAT", tags = c("Crop", "Values")))
   
 } else {
   crop_df <- readr::read_csv(crop_df_name)
@@ -376,10 +405,9 @@ if (!file.exists(livestock_df_name)) {
   # Extract the Livestock Data  and match countries
   livestock <- purrr::map(
     data,
-    ~ filter(.x, item_code %in% livestock_codes) %>%
-      clean_countries()
+    ~ filter(.x, item_code %in% livestock_codes)
   )
-  livestock$fao_prices <- filter(livestock$fao_prices, months_code == 7021)
+  livestock$fao_prices <- filter(livestock$prices, months_code == 7021)
 
 
 
@@ -390,9 +418,9 @@ if (!file.exists(livestock_df_name)) {
   # This is different across countries and animals in how it is reported,
   # however, we will assume that this is the true carcass yield for all animals.
   #################################################################
-  livestock$yield <- livestock$fao_production %>%
+  livestock$yield <- livestock$production %>%
     filter(
-      element %in% c("Producing Animals/Slaughtered", "Production"),
+      element %in% c("producing_animals_slaughtered", "production"),
       item_code %in% unique(faostat_item_codes$Livestock_Meat_Item_Codes$item_code)
     ) %>%
     mutate(
@@ -401,14 +429,14 @@ if (!file.exists(livestock_df_name)) {
         TRUE ~ value
       ),
       unit = case_when(
-        str_detect(unit, "1000") ~ "Head",
+        str_detect(unit, "1000") ~ "head",
         TRUE ~ unit
       )
     ) %>%
     select(-element, -element_code, -flag, -year_code) %>%
-    spread(unit, value) %>%
+    tidyr::spread(unit, value) %>%
     mutate(
-      yield_kg = round(tonnes * 1000 / Head, 1)
+      yield_kg = round(tonnes * 1000 / head, 1)
     ) %>%
     drop_na(yield_kg)
 

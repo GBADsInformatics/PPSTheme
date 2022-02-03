@@ -107,15 +107,7 @@ source(here("src", "utils", "FAOSTAT_helper_functions.R"))
 ```
 
 
-```{r}
-data <- arrow::read_parquet(get_gbads_file(
-  params$file_names$value_of_production, 
-  dir = here::here('data', 'FAOSTAT')
-)) %>% 
-  janitor::clean_names()
 
-head(data)
-```
 
 
 
@@ -125,43 +117,6 @@ head(data)
 #################################################################
 # Helper Functions
 #################################################################
-
-# - Cleans FAOSTAT countries -------------------------------------------------------------------
-clean_countries <- function(df, 
-                            code_col = "area_code",
-                            year_col = "year",
-                            value_col = "value") {
-  
-  names(df)[names(df) == code_col] <- "FAOST_CODE"
-  
-  countries <- FAOSTAT::FAOcountryProfile %>%
-    select(FAOST_CODE, ISO3_CODE)
-
-  df %>%
-    FAOSTAT::FAOcheck(
-      var = value_col,
-      year = year_col,
-      data = .,
-      type = "multiChina") %>%  # Check for multiple China entries
-    drop_na(value) %>%  # Remove missing values 
-    left_join(countries, by = "FAOST_CODE") %>%
-    drop_na(ISO3_CODE) %>%  # Remove countries without valid ISO3_CODES according to FAO 
-    mutate(
-      area = plyr::mapvalues(area, c('China, mainland'), c('China'))
-    ) %>% 
-    relocate(ISO3_CODE, .before = everything()) %>% 
-    janitor::clean_names()
-}
-
-
-##  - Sanitize character columns if necessary ------------------------------#
-sanitize_columns <- function(df) {
-    df %>%
-        mutate_if(~is.character(.x),
-                  ~iconv(.x, "UTF-8", "ASCII") %>%
-                    snakecase::to_any_case())
-}
-
 
 
 # Load the data 
@@ -254,40 +209,9 @@ crop_groups <- faostat_item_codes$Item_Codes %>%
 
 
 
-#################################################################
-# Attach metadata to each file from the bulk download
-#################################################################
-
-
-#################################################################
-# Assign Attributes
-#################################################################
-attr_dict <- list(
-    iso3_code = "ISO Alpha 3 Country Code", 
-    faost_code = "FAOSTAT Country Code", 
-    area = "FAOSTAT Country name", 
-    item_code = "FAOSTAT Item or Commodity Code", 
-    item = "Modified FAOSTAT Item Name/Description", 
-    element_code = "FAOSTAT Element Code", 
-    element = "Modified FAOSTAT Element Name/Description", 
-    year_code = "FAOSTAT Year Code", 
-    year = "FAOSTAT Year Designation", 
-    unit = "Modified FAOSTAT Unit", 
-    value = "Observation value", 
-    flag = "FAOSTAT Data quality flag"
-)
-
-for (i in seq_along(files)) {
-    for (j in 1:ncol(files[[i]])) {
-        if (names(files[[i]])[j] %in% names(attr_dict)) {
-            attr(files[[i]][[j]], 'label') <- attr_dict[[names(files[[i]])[j]]]
-        }
-    }
-}
-
 
 # Update with correct values 
-fao_tcf_files <- here::here("data", "raw", "FAOSTAT", "faostat_conversions.csv")
+fao_tcf_files <- here::here("data", "FAOSTAT", "FAOSTAT_LiveWeight_Conversion_Factors.csv")
 ```
 
 
@@ -311,84 +235,12 @@ and are accompanied by a corresponding list of metadata for each file.
 
 ```{r crop-data, cache=TRUE, include=FALSE}
 
-#################################################################
-# Load all crop data
-#################################################################
-
-crop_df_name <- "20211222_Value-of-Crops.csv"
-
-if (!file.exists(crop_df_name)) {
-  # Extract the Crop Data and match countries
-  crops <- purrr::map(
-    data,
-    ~ filter(.x, item_code %in% unique(crop_groups$item_code)) %>% 
-      select(-year_code) %>% 
-      left_join(crop_groups) %>% 
-      relocate(group, .after = item)
-  )
-
-  # Filter specific things
-  crops$production <- filter(crops$production, element == "production")
-  crops$prices <- filter(crops$prices, months_code == 7021)
-
-
-  # Spread each table
-  crops$value_of_production <- crops$value_of_production %>%
-    select(-element_code,  -unit, -flag) %>%
-    spread(element, value)
-
-  crops$production <- crops$production %>%
-    select(-element_code, -flag, -element, -unit) %>%
-    rename(tonnes = value)
-
-  crops$prices <- crops$prices %>%
-    select(-element_code,-months_code, -months, -unit, -flag) %>%
-    spread(element, value)
-
-  crop_df <- purrr::reduce(crops[c('production', 'prices', 'value_of_production')], 
-                           full_join)
-  
-  # Convert to a Arrow table 
-  crop_table <- arrow::Table$create(crop_df)
-  
-  
-  # Add initial metadata 
-  crop_table$metadata <- list(
-      iso3_code = "ISO 3166-1 alpha-3", 
-      faost_code = "FAOSTAT Area Code", 
-      area = "FAOSTAT Area Name", 
-      year = "Year in YYYY format", 
-      tonnes = "Metric Tonnes", 
-      producer_price_index_2014_2016_100 =  "An FAOSTAT Items producer price index, for a certain item calculated to average 100 between 2014 and 2016", 
-      producer_price_lcu_tonne = 'Producer price of item in local currency per tonne', 
-      producer_price_slc_tonne = 'Producer price of item in national currency per tonne', 
-      producer_price_usd_tonne = 'Producer price of item in current USD per tonne', 
-      gross_production_value_constant_2014_2016_thousand_i = 'Gross production value of item in constant thousand 2014 2016 international dollars, for a certain item calculated to average 100 between 2014 and 2016', 
-      gross_production_value_constant_2014_2016_thousand_slc = 'Gross production value of item in constant 2014 2016 in thousand standard local currency units, for a certain item calculated to average 100 between 2014 and 2016', 
-      gross_production_value_constant_2014_2016_thousand_us = 'Gross production value of item in constant thousand 2014 2016 US dollars,  for a certain item calculated to average 100 between 2014 and 2016',  
-      gross_production_value_current_thousand_slc = 'Gross production value of item in current thousand   standard local currency units, for a certain item calculated to average 100 between 2014 and 2016', 
-      gross_production_value_current_thousand_us = 'Gross production value of item in current thousand US dollars' , 
-      date = iso_date(), 
-      contributor = 'Gabriel Dennis CSIRO, gabriel.dennis@csiro.au', 
-      format = 'Arrow Table', 
-      language = 'English', 
-      source = '[FAO.] [Database Title.] [Dataset Title.] [Latest update: Day/month/year.] [(Accessed [Day/month/year).] [URL or URI]'
-  )
-  
-  arrow::write_parquet(crop_table, file_name("FAOSTAT", tags = c("Crop", "Values")))
-  
-} else {
-  crop_df <- readr::read_csv(crop_df_name)
-}
 ```
 
 
 
 ```{r load-livestock-data, cache=TRUE, include=FALSE}
 
-livestock_df_name <- "2021222_Value-of-Livestock.csv"
-
-if (!file.exists(livestock_df_name)) {
 
   # - Uniqe Livestock Codes that will be used
   livestock_codes <- unique(
@@ -407,7 +259,7 @@ if (!file.exists(livestock_df_name)) {
     data,
     ~ filter(.x, item_code %in% livestock_codes)
   )
-  livestock$fao_prices <- filter(livestock$prices, months_code == 7021)
+  livestock$prices <- filter(livestock$prices, months_code == 7021)
 
 
 
@@ -448,16 +300,17 @@ if (!file.exists(livestock_df_name)) {
   #################################################################
   carcass_pct <- readr::read_csv(fao_tcf_files, show_col_types = FALSE) %>%
     mutate(
-      animal_en = str_remove_all(animal_en, "s$")
+      animal_en = str_remove_all(animal_en, "s$"), 
+      iso3 = tolower(iso3)
     ) %>%
     select(iso3, animal_en, carcass_pct)
 
 
   livestock$yield <- livestock$yield %>%
     mutate(
-      animal_en = trimws(str_remove(item, "Meat, "))
+      animal_en = trimws(str_remove(item, "meat_"))
     ) %>%
-    left_join(carcass_pct, by = c("ISO3_CODE" = "iso3", "animal_en")) %>%
+    left_join(carcass_pct, by = c("iso3_code" = "iso3", "animal_en")) %>%
     group_by(animal_en) %>%
     mutate(carcass_pct = case_when(
       is.na(carcass_pct) ~ mean(carcass_pct, na.rm = TRUE),
@@ -472,7 +325,7 @@ if (!file.exists(livestock_df_name)) {
       animal = trimws(animal),
       item = "stock"
     ) %>%
-    select(-Head, -tonnes, -animal_en)
+    select(-head, -tonnes, -animal_en)
 
 
 
@@ -481,31 +334,24 @@ if (!file.exists(livestock_df_name)) {
   #  - Use nested tibble data frames
   #################################################################
 
-  livestock$fao_vop <- livestock$fao_vop %>%
-    select(-element_code, -year_code, -unit, -flag) %>%
-    mutate(
-      element = element %>%
-        tolower() %>%
-        str_remove_all("\\$") %>%
-        gsub("\\s+", "_", .) %>%
-        gsub("\\(|\\)", "", .)
-    ) %>%
+  livestock$value_of_production <- livestock$value_of_production %>%
+    select(-element_code, -year_code, -unit, -flag)  %>%
     spread(element, value) %>%
-    separate(item, c("item", "animal"), sep = ",", extra = "merge", fill = "left") %>%
+    separate(item, c("item", "animal"), sep = "_", extra = "merge", fill = "left") %>%
     mutate(
       animal = trimws(animal),
       item = tolower(item)
     )
 
-  livestock$fao_production <- livestock$fao_production %>%
-    filter(element %in% c("Stocks", "Producing Animals/Slaughtered", "Production")) %>%
+  livestock$production <- livestock$production %>%
+    filter(element %in% c("stocks", "producing_animals_slaughtered", "production")) %>%
     mutate(
       value = case_when(
         str_detect(unit, "1000") ~ value * 1000,
         TRUE ~ value
       ),
       unit = case_when(
-        str_detect(unit, "1000") ~ "Head",
+        str_detect(unit, "1000") ~ "head",
         TRUE ~ unit
       )
     ) %>%
@@ -513,35 +359,28 @@ if (!file.exists(livestock_df_name)) {
     mutate(
       item = tolower(item)
     ) %>%
-    separate(item, c("item", "animal"), sep = ",", extra = "merge", fill = "left") %>%
+    separate(item, c("item", "animal"), sep = "_", extra = "merge", fill = "left") %>%
     mutate(
       animal = trimws(animal)
     ) %>%
     spread(unit, value) %>%
     replace_na(list(item = "stock"))
 
-  livestock$fao_prices <- livestock$fao_prices %>%
+  livestock$prices <- livestock$prices %>%
     select(-element_code, -year_code, -unit, -flag, -months, -months_code, -unit) %>%
-    mutate(
-      element = element %>%
-        tolower() %>%
-        str_remove_all("\\$") %>%
-        gsub("\\s+", "_", .) %>%
-        gsub("\\(|\\)", "", .)
-    ) %>%
-    separate(item, c("item", "animal"), sep = ",", extra = "merge", fill = "left") %>%
+    separate(item, c("item", "animal"), sep = "_", extra = "merge", fill = "left") %>%
     mutate(
       animal = trimws(animal)
     ) %>%
     spread(element, value) %>%
     mutate(
       item = case_when(
-        str_detect(item, "Meat live weight") ~ "stock",
+        str_detect(item, "live_weight") ~ "stock",
         TRUE ~ item
       ),
       item = tolower(item)
     ) %>%
-    filter(animal != "Meat nes")
+    filter(animal != "meat_nes")
 
 
   # Stock Item Code is first
@@ -566,25 +405,25 @@ if (!file.exists(livestock_df_name)) {
   matches <- setNames(data.frame(t(as_tibble(match_live_weight_items))), c("stock_code", "price_code", "yield_code"))
 
   # Switch Stock item codes and names
-  stock_id <- livestock$fao_prices$item == "stock"
-  livestock$fao_prices$item_code[stock_id] <- plyr::mapvalues(livestock$fao_prices$item_code[stock_id],
+  stock_id <- livestock$prices$item == "stock"
+  livestock$prices$item_code[stock_id] <- plyr::mapvalues(livestock$prices$item_code[stock_id],
     from = matches$price_code,
     to = matches$stock_code
   )
 
   # Match stock animal
   # stock_id <- livestock$fao_production$item == 'stock'
-  livestock$fao_production$animal <- plyr::mapvalues(livestock$fao_production$animal,
+  livestock$production$animal <- plyr::mapvalues(livestock$production$animal,
     from = c(
       "cattle", "buffaloes", "sheep", "goats", "pigs", "chickens", "ducks",
-      "goose and guinea fowl", "turkeys", "horses", "asses", "mules", "camels", "rabbits and hares"
+      "goose and guinea_fowl", "turkeys", "horses", "asses", "mules", "camels", "rabbits and hares"
     ),
     to = rownames(matches)
   )
-  livestock$fao_vop$animal <- plyr::mapvalues(livestock$fao_vop$animal,
+  livestock$value_of_production$animal <- plyr::mapvalues(livestock$value_of_production$animal,
     from = c(
       "cattle", "buffaloes", "sheep", "goats", "pigs", "chickens", "ducks",
-      "goose and guinea fowl", "turkeys", "horses", "asses", "mules", "camels", "rabbits and hares"
+      "goose and guinea_fowl", "turkeys", "horses", "asses", "mules", "camels", "rabbits and hares"
     ),
     to = rownames(matches)
   )
@@ -599,7 +438,7 @@ if (!file.exists(livestock_df_name)) {
   livestock$yield$animal <- plyr::mapvalues(livestock$yield$animal,
     from = c(
       "cattle", "buffaloes", "sheep", "goats", "pigs", "chickens", "ducks",
-      "goose and guinea fowl", "turkeys", "horses", "asses", "mules", "camels", "rabbits and hares"
+      "goose and guinea_fowl", "turkeys", "horses", "asses", "mules", "camels", "rabbits and hares"
     ),
     to = rownames(matches)
   )
@@ -609,7 +448,7 @@ if (!file.exists(livestock_df_name)) {
   # Match the Live Weight Price Item Codes to the stock items
   #################################################################
   livestock_df <- purrr::reduce(livestock, full_join)
-  livestock_df$animal <- gsub("whole fresh", "", livestock_df$animal)
+  livestock_df$animal <- gsub("whole_fresh", "", livestock_df$animal)
   livestock_df$animal <- gsub("edible,", "", livestock_df$animal)
   livestock_df$animal <- gsub("edible", "", livestock_df$animal)
   livestock_df$animal <- gsub(",$", "", livestock_df$animal)
@@ -617,31 +456,45 @@ if (!file.exists(livestock_df_name)) {
   livestock_df$animal <- plyr::mapvalues(livestock_df$animal,
     from = c(
       "cattle", "buffaloes", "sheep", "goats", "pigs", "chickens", "ducks",
-      "geese and guinea fowls", "turkeys", "horses", "asses", "mules", "camels", "rabbits and hares"
+      "goose and guinea_fowl", "turkeys", "horses", "asses", "mules", "camels", "rabbits and hares"
     ),
     to = rownames(matches)
   )
 
   livestock_df$animal <- plyr::mapvalues(livestock_df$animal,
-    from = c("cow", "geese", "hen, in shell"),
+    from = c("cow", "geese", "eggs_hen_in_shell"),
     to = c("cattle", "goose", "chicken")
   )
 
-  names(livestock_df) <- gsub("/", "_", names(livestock_df))
+
 
 
   #################################################################
   # Impute Live Weights to get Values of Animal Stock
+  # 
+  # If carcass % is outside the middle 80% set to the median 
+  # with that amount removed 
   #################################################################
   livestock_df <- livestock_df %>%
     group_by(animal) %>%
     mutate(
+      q10_carcass_pct = quantile(carcass_pct, 0.1, na.rm = TRUE), 
+      q90_carcass_pct = quantile(carcass_pct, 0.9, na.rm = TRUE)
+    ) %>% 
+    mutate(
       lbw_kg = case_when(
-        item == "stock" && is.na(lbw_kg) ~ mean(lbw_kg, na.rm = TRUE),
+        item == "stock" && !is.na(carcass_pct) && (carcass_pct < q10_carcass_pct || carcass_pct > q90_carcass_pct) ~ NA, 
+        TRUE ~ lbw_kg
+      )
+    ) %>% 
+    mutate(
+      lbw_kg = case_when(
+        item == "stock" && is.na(lbw_kg) ~ median(lbw_kg, na.rm = TRUE),
         TRUE ~ lbw_kg
       )
     ) %>%
-    ungroup()
+    ungroup() %>% 
+    select(-contains("_carcass_pct"))
 
 
   #################################################################
@@ -660,8 +513,8 @@ if (!file.exists(livestock_df_name)) {
     )
 
   # Get in Constant Dollars
-  exchange_rates <- arrow::read_parquet(here::here("data", "raw", "FAOSTAT", "20213501_Exchange_rate_E_All_Data_(Normalized).parquet")) %>%
-    rename_with(~ tolower(gsub(" ", "_", .x))) %>%
+  exchange_rates <-arrow::read_parquet(get_gbads_file("Exchange_rate_E_All_Data.parquet",  dir= here::here('data', 'FAOSTAT'))) %>%
+    janitor::clean_names() %>%
     select(area_code, year, value)
 
   mean_usd_prices_2014_2016 <- filter(livestock_df, year %in% 2014:2016) %>%
@@ -684,126 +537,8 @@ if (!file.exists(livestock_df_name)) {
       stock_value_constant_2014_2016_usd = ifelse(item == "stock", producer_price_usd_per_tonne_2014_2016 * tonnes, 0)
     )
 
-
-  cutoff_year <- 1992
-  # Files and directories
-  fao_fisheries_folder <- here::here("data", "raw", "20210716_FAO_Global_Aquaculture_Production")
-  value_file <- "AQUACULTURE_VALUE.csv"
-  quantity_file <- "AQUACULTURE_QUANTITY.csv"
-  CPC_Group_En_file <- "CL_FI_SPECIES_GROUPS.csv"
-
-
-
-  # Read in Codes and Value Files
-  iso3codes_file <- readr::read_csv(here::here(fao_fisheries_folder, "CL_FI_COUNTRY_GROUPS.csv")) %>%
-    renamer() %>%
-    select(un_code, iso3_code, name_en)
-
-  # Files and directories
-  fao_fisheries_folder <- here::here("data", "raw", "20210716_FAO_Global_Aquaculture_Production")
-  value_file <- "AQUACULTURE_VALUE.csv"
-  quantity_file <- "AQUACULTURE_QUANTITY.csv"
-  CPC_Group_En_file <- "CL_FI_SPECIES_GROUPS.csv"
-
-
-
-  # Read in Codes and Value Files
-  iso3codes_file <- readr::read_csv(here::here(fao_fisheries_folder, "CL_FI_COUNTRY_GROUPS.csv")) %>%
-    renamer() %>%
-    select(un_code, iso3_code, name_en)
-
-  fao_fisheries_values <- readr::read_csv(here::here(fao_fisheries_folder, value_file)) %>%
-    renamer() %>%
-    filter(period >= cutoff_year) %>%
-    group_by(country.un_code, species.alpha_3_code, measure, period) %>%
-    summarise(
-      value_1000_usd = sum(value, na.rm = TRUE), .groups = "drop"
-    )
-
-  fao_fisheries_quantity <- readr::read_csv(here::here(fao_fisheries_folder, quantity_file)) %>%
-    renamer() %>%
-    filter(period >= cutoff_year) %>%
-    group_by(country.un_code, species.alpha_3_code, measure, period) %>%
-    summarise(
-      tonnes = sum(value, na.rm = TRUE), .groups = "drop"
-    )
-
-
-
-  #################################################################
-  # Get the USD price for every reported quantity
-  #
-  # Note: Can keep Hong Kong and Taiwan as they are not double counted.
-  #################################################################
-  fao_fisheries <- left_join(fao_fisheries_quantity,
-    fao_fisheries_values,
-    by = c("country.un_code", "species.alpha_3_code", "period")
-  ) %>%
-    mutate(usd_price = if_else(tonnes > 0, (value_1000_usd / tonnes) * 1000, 0)) %>%
-    filter(usd_price > 0) %>%
-    rename(un_code = country.un_code) %>%
-    left_join(iso3codes_file, by = c("un_code")) %>%
-    rename(species_code = species.alpha_3_code, year = period) %>%
-    select(iso3_code, name_en, species_code, year, tonnes, value_1000_usd, usd_price) %>%
-    ungroup()
-
-
-  #################################################################
-  # Convert these prices back into SLC using the FAOSTAT exchange rates to
-  # get the mean 2014-2016 Conversions.
-  #################################################################
-
-  # FAOSTAT exchange rates
-  fao_exchange_rates <- arrow::read_parquet(get_gbads_file("Exchange_rate_E_All_Data_(Normalized).parquet")) %>%
-    renamer() %>%
-    filter(year >= cutoff_year) %>%
-    add_country_codes(area_code, area) %>%
-    rename(exchange_rate = value)
-
-  # Join by year and country
-  fao_fisheries <- fao_fisheries %>%
-    left_join(fao_exchange_rates, by = c("iso3_code", "year")) %>%
-    mutate(slc_price = usd_price / exchange_rate)
-
-
-  # Create mean prices
-  mean_fisheries_prices <- fao_fisheries %>%
-    filter(year %in% 2014:2016) %>%
-    group_by(iso3_code, species_code) %>%
-    summarise(mean_slc_price = mean(slc_price, na.rm = TRUE), .groups = "drop")
-
-  mean_exchange_rates <- fao_exchange_rates %>%
-    filter(year %in% 2014:2016) %>%
-    group_by(iso3_code) %>%
-    summarise(mean_exchange = mean(exchange_rate, na.rm = TRUE), .groups = "drop")
-
-  # Join back mean LCU prices and calculate constant values
-  fao_fisheries <- fao_fisheries %>%
-    left_join(mean_fisheries_prices, by = c("iso3_code", "species_code")) %>%
-    left_join(mean_exchange_rates, by = c("iso3_code")) %>%
-    mutate(aquaculture_constant_2014_2016_usd_price = (mean_slc_price * mean_exchange)) %>%
-    mutate(aquaculture_constant_2014_2016_constant_usd_value = tonnes * aquaculture_constant_2014_2016_usd_price)
-
-
-  # Rename
-  fao_fisheries <- rename(fao_fisheries %>% select(-item_code),
-    ISO3_CODE = iso3_code,
-    FAOST_CODE = country_code,
-    area = country,
-    animal = species_code,
-    aquaculture_1000_usd_value = value_1000_usd
-  ) %>%
-    mutate(
-      item = "meat",
-      item_code = 0,
-    ) %>%
-    select(
-      ISO3_CODE, FAOST_CODE, area, item_code, item, animal, year, tonnes, aquaculture_1000_usd_value, aquaculture_constant_2014_2016_usd_price, aquaculture_constant_2014_2016_constant_usd_value
-    )
-  livestock_df <- bind_rows(livestock_df, fao_fisheries)
-  readr::write_csv(livestock_df, livestock_df_name)
-}
 ```
+
 
 
 

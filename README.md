@@ -1,25 +1,18 @@
-# PPSTheme
+GBADS - Livestock Value
+================
 
-A space for code made by PPS modellers and analysts in the Global Burden of Animal Diseases (GBADs). For each of your models please follow the best practices set by GBADs Informatics, as articulated in the Data Governance Handbook.
+<!-- README.md is generated from README.Rmd. Please edit that file -->
 
+[![License: CC BY-SA
+4.0](https://img.shields.io/badge/license-CC%20BY--SA%204.0-blue.svg)](https://cran.r-project.org/web/licenses/CC%20BY-SA%204.0)
+[![](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://lifecycle.r-lib.org/articles/stages.html#experimental)
 
-## Data Governance Handbook
-http://www.gbadske.org/Documentation/DataGovernanceHandbook/intro.html
+# Description
 
-## AGROVOC format
-http://www.fao.org/agrovoc/format
+# Data
 
+# Results
 
-## Directory Structure
+# References
 
-```
-📦src
- ┣ 📜20210811_faoLivestockValueOfProductionDataCleaning.R 
- ┣ 📜20210813_faoAnimalStockDataCleaning.R
- ┣ 📜20210813_faoProducerPricesDataCleaning.R
- ┣ 📜20210816_faoGlobalAquacultureProductionDataCleaning.R
- ┣ 📜20210816_scenarioAS2ValueOfLivestockBiomass.R
- ┣ 📜20210816_scenarioO1ValueOfDirectLivestockOutputs.R
- ┗ 📜FAOSTAT_helper_functions.R
-```
-
+<!--- References go here --->

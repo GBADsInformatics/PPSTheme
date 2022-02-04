@@ -14,42 +14,39 @@ livestock value estimation manuscript.
 
 ## Files
 
-``` bash
-git ls-tree -r HEAD --name-only|grep  -v '^\.'
-#> DESCRIPTION
-#> LICENSE.md
-#> NAMESPACE
-#> PPSTheme.Rproj
-#> R/as2-calculation.R
-#> R/o1-calculation.R
-#> R/scripts/20210901_cleanDADISPopulationAndWeightData.R
-#> R/scripts/20211108_convert-constant-usd.R
-#> R/scripts/20220201_getFAOAquacultureValues.R
-#> R/scripts/20220201_getFAOCropValues.R
-#> R/utils/FAOSTAT_helper_functions.R
-#> R/utils/conversion_functions.R
-#> R/utils/data_loading_functions.R
-#> R/utils/functions.R
-#> README.Rmd
-#> README.md
-#> data/.gitignore
-#> data/FAOSTAT.dvc
-#> data/codes/FAOSTAT/20211021_FAOSTAT_Country_Codes.csv
-#> data/codes/FAOSTAT/20211021_FAOSTAT_Item_Codes.csv
-#> data/codes/FAOSTAT/FAOSTAT_Country_Codes.rds
-#> data/codes/FAOSTAT/FAOSTAT_Crop_Item_Codes.Rds
-#> data/codes/FAOSTAT/FAOSTAT_Item_Codes.rds
-#> data/codes/FAOSTAT/FAOSTAT_Livestock_Codes.rds
-#> data/codes/FAOSTAT/FAOSTAT_Livestock_Meat_Item_Codes.rds
-#> data/codes/FAOSTAT/FAOSTAT_Meat_Live_Weight_Codes.rds
-#> data/codes/FAOSTAT/FAOSTAT_Vop_Item_Codes.Rds
-#> data/codes/FAOSTAT/FAOSTAT_Vop_Items_Non-Indigenous_Codes.Rds
-#> docs/global-value-livestock-aquaculture.Rmd
-#> references.bib
-#> renv.lock
-#> renv/.gitignore
-#> renv/activate.R
-```
+    #> DESCRIPTION
+    #> LICENSE.md
+    #> NAMESPACE
+    #> PPSTheme.Rproj
+    #> R/as2-calculation.R
+    #> R/o1-calculation.R
+    #> R/scripts/20210901_cleanDADISPopulationAndWeightData.R
+    #> R/scripts/20211108_convert-constant-usd.R
+    #> R/scripts/20220201_getFAOAquacultureValues.R
+    #> R/scripts/20220201_getFAOCropValues.R
+    #> R/utils/FAOSTAT_helper_functions.R
+    #> R/utils/conversion_functions.R
+    #> R/utils/data_loading_functions.R
+    #> R/utils/functions.R
+    #> README.Rmd
+    #> README.md
+    #> data/.gitignore
+    #> data/FAOSTAT.dvc
+    #> data/codes/FAOSTAT/20211021_FAOSTAT_Country_Codes.csv
+    #> data/codes/FAOSTAT/20211021_FAOSTAT_Item_Codes.csv
+    #> data/codes/FAOSTAT/FAOSTAT_Country_Codes.rds
+    #> data/codes/FAOSTAT/FAOSTAT_Crop_Item_Codes.Rds
+    #> data/codes/FAOSTAT/FAOSTAT_Item_Codes.rds
+    #> data/codes/FAOSTAT/FAOSTAT_Livestock_Codes.rds
+    #> data/codes/FAOSTAT/FAOSTAT_Livestock_Meat_Item_Codes.rds
+    #> data/codes/FAOSTAT/FAOSTAT_Meat_Live_Weight_Codes.rds
+    #> data/codes/FAOSTAT/FAOSTAT_Vop_Item_Codes.Rds
+    #> data/codes/FAOSTAT/FAOSTAT_Vop_Items_Non-Indigenous_Codes.Rds
+    #> docs/global-value-livestock-aquaculture.Rmd
+    #> references.bib
+    #> renv.lock
+    #> renv/.gitignore
+    #> renv/activate.R
 
 # Data
 
@@ -61,6 +58,43 @@ tool [dvc](https://dvc.org/).
 ### Aquaculture (FAO[1])
 
 -   Conversions to liveweights are done using country specific numbers.
+
+| iso3_code          | faost_code        | name_en       | species_code       | year                | tonnes                       | value_1000_usd                           | exchange_rate             | slc_price                                                          | mean_2014_2016_slc_price                | mean_2014_2016_exchange                                         | aquaculture_constant_2014_2016_usd_price                                                                                | aquaculture_constant_2014_2016_constant_usd_value   | date     | contributor                                     | format      | language | source                                                                                                                                                                      |
+|:-------------------|:------------------|:--------------|:-------------------|:--------------------|:-----------------------------|:-----------------------------------------|:--------------------------|:-------------------------------------------------------------------|:----------------------------------------|:----------------------------------------------------------------|:------------------------------------------------------------------------------------------------------------------------|:----------------------------------------------------|:---------|:------------------------------------------------|:------------|:---------|:----------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| ISO 3166-1 alpha-3 | FAOSTAT Area Code | FAO Area Name | ASFIS Species Code | Year in YYYY format | Metric Tonnes of live weight | Current value in thousands of US dollars | FAO Exchange rate for SLC | SLC prices per tonne calculated using the FAO annual exchange rate | Average SCL price between 2014 and 2016 | Average exchange rate between SLC and USD between 2014 and 2016 | Constant prices per tonne of aquaculture using the 2014-2016 SLC prices and the mean exchange rates for the same period | Constant prices multiplied by production quantities | 20220204 | Gabriel Dennis CSIRO, <gabriel.dennis@csiro.au> | Arrow Table | English  | FAO.GLOBAL AQUACULTURE PRODUCTION. License: CC BY–NC–SA 3.0 IGO. Extracted from: <https://www.fao.org/fishery/statistics-query/en/aquaculture>. Data of Access: 2022-02-01. |
+
+Table: Metadata
+
+    #> The data contains 41025 observations of the following 13 variables:
+    #>   - iso3_code: 206 entries, such as CHN (4.20%); TWN (3.08%); KOR (3.04%) and 203 others (126 missing)
+    #>   - faost_code: n = 41025, Mean = 122.47, SD = 70.13, Median = , MAD = 88.96, range: [1, 299], Skewness = 0.08, Kurtosis = -1.10, 5.10% missing
+    #>   - name_en: 208 entries, such as China (4.20%); Taiwan Province of China (3.08%); Korea, Republic of (3.04%) and 205 others (0 missing)
+    #>   - species_code: 615 entries, such as FCP (4.96%); TRR (4.33%); TLN (4.06%) and 612 others (0 missing)
+    #>   - year: n = 41025, Mean = 2007.87, SD = 7.28, Median = 2009.00, MAD = 8.90, range: [1994, 2019], Skewness = -0.23, Kurtosis = -1.08, 0% missing
+    #>   - tonnes: n = 41025, Mean = 43636.60, SD = 3.16e+05, Median = 268.00, MAD = 394.37, range: [2.00e-03, 10978362], Skewness = 16.50, Kurtosis = 375.12, 0% missing
+    #>   - value_1000_usd: n = 41025, Mean = 78012.63, SD = 4.83e+05, Median = 948.83, MAD = 1394.37, range: [8.00e-03, 1.82e+07], Skewness = 15.03, Kurtosis = 308.26, 0% missing
+    #>   - exchange_rate: n = 41025, Mean = 18505.92, SD = 1.16e+06, Median = , MAD = 8.81, range: [1.17e-04, 7.64e+07], Skewness = 65.75, Kurtosis = 4321.28, 5.10% missing
+    #>   - slc_price: n = 41025, Mean = 6988.84, SD = 2.37e+05, Median = , MAD = 641.87, range: [5.24e-06, 2.30e+07], Skewness = 89.02, Kurtosis = 8365.49, 5.10% missing
+    #>   - mean_2014_2016_slc_price: n = 41025, Mean = 3293.30, SD = 16304.94, Median = , MAD = 561.58, range: [7.47e-03, 7.28e+05], Skewness = 36.20, Kurtosis = 1583.82, 16.07% missing
+    #>   - mean_2014_2016_exchange: n = 41025, Mean = 955.31, SD = 3598.76, Median = , MAD = 9.99, range: [0.30, 28622.67], Skewness = 5.23, Kurtosis = 29.69, 5.12% missing
+    #>   - aquaculture_constant_2014_2016_usd_price: n = 41025, Mean = 21540.56, SD = 3.16e+05, Median = , MAD = 3066.91, range: [24.27, 7.08e+06], Skewness = 21.13, Kurtosis = 448.05, 16.07% missing
+    #>   - aquaculture_constant_2014_2016_constant_usd_value: n = 41025, Mean = 1.14e+08, SD = 6.14e+08, Median = , MAD = 2.26e+06, range: [7.56, 1.81e+10], Skewness = 11.32, Kurtosis = 169.02, 16.07% missing
+
+|     | Variable                                          | n_Obs | percentage_Missing |         Mean |           SD |   Median |          MAD |          Min |          Max |   Skewness |    Kurtosis | n_Entries | n_Missing |
+|:----|:--------------------------------------------------|------:|-------------------:|-------------:|-------------:|---------:|-------------:|-------------:|-------------:|-----------:|------------:|----------:|----------:|
+| 6   | iso3_code                                         | 41025 |          0.3071298 |           NA |           NA |       NA |           NA |           NA |           NA |         NA |          NA |       206 |       126 |
+| 8   | faost_code                                        | 41025 |          5.0968921 | 1.224742e+02 | 7.012797e+01 |       NA | 8.895600e+01 |    1.0000000 | 2.990000e+02 |  0.0810013 |   -1.095632 |        NA |        NA |
+| 1   | name_en                                           | 41025 |          0.0000000 |           NA |           NA |       NA |           NA |           NA |           NA |         NA |          NA |       208 |         0 |
+| 2   | species_code                                      | 41025 |          0.0000000 |           NA |           NA |       NA |           NA |           NA |           NA |         NA |          NA |       615 |         0 |
+| 5   | year                                              | 41025 |          0.0000000 | 2.007866e+03 | 7.277978e+00 | 2009.000 | 8.895600e+00 | 1994.0000000 | 2.019000e+03 | -0.2319707 |   -1.083225 |        NA |        NA |
+| 3   | tonnes                                            | 41025 |          0.0000000 | 4.363660e+04 | 3.156720e+05 |  268.000 | 3.943716e+02 |    0.0020000 | 1.097836e+07 | 16.5009277 |  375.117197 |        NA |        NA |
+| 4   | value_1000_usd                                    | 41025 |          0.0000000 | 7.801263e+04 | 4.825715e+05 |  948.833 | 1.394375e+03 |    0.0080000 | 1.815239e+07 | 15.0308738 |  308.260905 |        NA |        NA |
+| 7   | exchange_rate                                     | 41025 |          5.0968921 | 1.850592e+04 | 1.161012e+06 |       NA | 8.811921e+00 |    0.0001174 | 7.636994e+07 | 65.7488843 | 4321.276253 |        NA |        NA |
+| 9   | slc_price                                         | 41025 |          5.0968921 | 6.988845e+03 | 2.368969e+05 |       NA | 6.418679e+02 |    0.0000052 | 2.299476e+07 | 89.0232802 | 8365.493233 |        NA |        NA |
+| 13  | mean_2014_2016_slc_price                          | 41025 |         16.0658135 | 3.293304e+03 | 1.630494e+04 |       NA | 5.615838e+02 |    0.0074699 | 7.276670e+05 | 36.2045466 | 1583.823899 |        NA |        NA |
+| 10  | mean_2014_2016_exchange                           | 41025 |          5.1163924 | 9.553054e+02 | 3.598757e+03 |       NA | 9.986088e+00 |    0.2958489 | 2.862267e+04 |  5.2341299 |   29.686403 |        NA |        NA |
+| 12  | aquaculture_constant_2014_2016_usd_price          | 41025 |         16.0658135 | 2.154056e+04 | 3.155164e+05 |       NA | 3.066910e+03 |   24.2674416 | 7.078235e+06 | 21.1264617 |  448.053793 |        NA |        NA |
+| 11  | aquaculture_constant_2014_2016_constant_usd_value | 41025 |         16.0658135 | 1.138805e+08 | 6.143593e+08 |       NA | 2.259051e+06 |    7.5590854 | 1.810283e+10 | 11.3150964 |  169.024438 |        NA |        NA |
 
 ### FAOSTAT
 

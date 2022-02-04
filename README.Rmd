@@ -42,7 +42,7 @@ cat(
  value estimation manuscript. 
 
 ## Files 
-```{bash}
+```{bash, echo=FALSE}
 git ls-tree -r HEAD --name-only|grep  -v '^\.'
 ```
  
@@ -60,6 +60,27 @@ git ls-tree -r HEAD --name-only|grep  -v '^\.'
  * Conversions to liveweights are done using country specific numbers. 
  
  
+```{r, echo=FALSE}
+aqua_values  <- arrow::read_parquet(
+  get_gbads_file('FAO_Global_Aquaculture_Production', dir = here::here('data', 'output', 'FAO')), 
+  as_data_frame = FALSE
+)
+
+kable(as.data.frame(aqua_values$metadata), caption = 'Table: Metadata')
+```
+
+```{r, echo=FALSE}
+aqua_report <- report(aqua_values %>% dplyr::collect(), digits = 2)
+aqua_report
+```
+
+```{r, echo=FALSE}
+kable(as.data.frame(aqua_report))
+```
+ 
+
+ 
+ 
  ### FAOSTAT 
  
  
@@ -67,23 +88,48 @@ git ls-tree -r HEAD --name-only|grep  -v '^\.'
  
 ```{r, echo=FALSE}
 crop_values  <- arrow::read_parquet(
-  get_gbads_file('FAOSTAT_Crop_Values', dir = here::here('data', 'output', 'FAOSTAT'))
+  get_gbads_file('FAOSTAT_Crop_Values', dir = here::here('data', 'output', 'FAOSTAT')), 
+  as_data_frame = FALSE
 )
 
 
-crop_report <- report(crop_values, digits = 2)
+kable(as.data.frame(crop_values$metadata))
+```
+
+```{r, echo=FALSE}
+crop_report <- report(crop_values %>% dplyr::collect(), digits = 2)
 crop_report
 ```
 
 ```{r, echo=FALSE}
 kable(as.data.frame(crop_report))
 ```
- 
+
+#### Livestock Production and Values  
+
+```{r, echo=FALSE}
+livestock_values  <- arrow::read_parquet(
+  get_gbads_file('FAOSTAT_Livestock_Values', dir = here::here('data', 'output', 'FAOSTAT')), 
+  as_data_frame = FALSE
+)
+
+
+kable(as.data.frame(livestock_values$metadata))
+```
+
+```{r, echo=FALSE}
+livestock_report <- report(livestock_values %>% dplyr::collect(), digits = 2)
+livestock_report
+```
+
+```{r, echo=FALSE}
+kable(as.data.frame(livestock_report))
+```
+
  
 # Methods
  
 ## Aquaculture
- 
  
 ## Crops 
  

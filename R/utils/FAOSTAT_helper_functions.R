@@ -27,6 +27,8 @@ library(arrow)
 library(rjson)
 library(janitor)
 library(FAOSTAT)
+library(dplyr)
+library(tidyr)
 
 
 

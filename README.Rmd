@@ -105,7 +105,7 @@ crop_report
 kable(as.data.frame(crop_report))
 ```
 
-#### Livestock Production and Values  
+#### Livestock Production and Values  (@FAO2021d)
 
 ```{r, echo=FALSE}
 livestock_values  <- arrow::read_parquet(
@@ -145,11 +145,6 @@ kable(as.data.frame(livestock_report))
 
 
 ## Figures  
-
-
-```{r}
-knitr::include_graphics(here::here('output', 'figurescars.png'))
-```
 
 
 

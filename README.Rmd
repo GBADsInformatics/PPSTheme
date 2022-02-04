@@ -16,10 +16,15 @@ knitr::opts_chunk$set(
   fig.path = "man/figures/README-",
   out.width = "100%"
 )
+
+source(here::here('R', 'utils', 'FAOSTAT_helper_functions.R'))
 ```
 
 ```{r echo=FALSE, results="hide", message=FALSE}
 library("badger")
+library(here)
+library(report)
+library(knitr)
 ``` 
 
 ```{r, echo = FALSE, results='asis'}
@@ -33,15 +38,78 @@ cat(
 
  # Description
  
+ This repository contains all R code and data for the *GBADS* global livestock 
+ value estimation. 
+
+## Files 
+```{bash}
+git ls-tree -r HEAD --name-only|grep  -v '^\.'
+```
+ 
+ 
  
  # Data 
+ 
+ ## Version Control 
+ 
+ Currently the data contained in this repository is tracked using the 
+ tool [dvc](https://dvc.org/). 
+ 
+ ### Aquaculture (@FAO2021e)
+ 
+ * Conversions to liveweights are done using country specific numbers. 
+ 
+ 
+ ### FAOSTAT 
+ 
+ 
+ #### Crop Production and Values @FAO2021d
+ 
+```{r, echo=FALSE}
+crop_values  <- arrow::read_parquet(
+  get_gbads_file('FAOSTAT_Crop_Values', dir = here::here('data', 'output', 'FAOSTAT'))
+)
+
+
+crop_report <- report(crop_values, digits = 2)
+crop_report
+```
+
+```{r, echo=FALSE}
+kable(as.data.frame(crop_report))
+```
+ 
+ 
+ # Methods
+ 
+ 
  
  
  # Results
  
+ <!--- Add automated results to this section --->
  
  
- # References
- 
- <!--- References go here --->
 
+
+ 
+
+
+# R Package References
+
+```{r, echo=FALSE, include=FALSE, message=FALSE, error=FALSE, warning=FALSE}
+# Attach all packages in lockfile
+sapply(unique(renv::dependencies()$Package), 
+       require, character.only = TRUE)
+```
+
+
+```{r, results='asis', echo=FALSE, error=FALSE, warning=FALSE, message=FALSE}
+report::cite_packages(sessionInfo())
+```
+
+
+ 
+# References
+
+<div id="refs"></div>

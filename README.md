@@ -10,7 +10,7 @@ GBADS - Livestock Value
 # Description
 
 This repository contains all R code and data for the *GBADS* global
-livestock value estimation.
+livestock value estimation manuscript.
 
 ## Files
 
@@ -22,17 +22,6 @@ git ls-tree -r HEAD --name-only|grep  -v '^\.'
 #> PPSTheme.Rproj
 #> R/as2-calculation.R
 #> R/o1-calculation.R
-#> R/scripts/20210811_faoLivestockValueOfProductionDataCleaning.R
-#> R/scripts/20210813_faoAnimalStockDataCleaning.R
-#> R/scripts/20210813_faoProducerPricesDataCleaning.R
-#> R/scripts/20210816_faoExchangeRateDataCleaning.R
-#> R/scripts/20210816_faoGlobalAquacultureProductionDataCleaning.R
-#> R/scripts/20210816_scenarioAS2ValueOfLivestockBiomass.R
-#> R/scripts/20210816_scenarioO1ValueOfDirectLivestockOutputs.R
-#> R/scripts/20210825_ifsExchangeRateDataCleaning.R
-#> R/scripts/20210826_faoTechnicalConversionFactorsImputation.R
-#> R/scripts/20210830_faoLivestockTradeDataCleaning.R
-#> R/scripts/20210830_wbDataCleaning.R
 #> R/scripts/20210901_cleanDADISPopulationAndWeightData.R
 #> R/scripts/20211108_convert-constant-usd.R
 #> R/scripts/20220201_getFAOAquacultureValues.R
@@ -132,7 +121,11 @@ tool [dvc](https://dvc.org/).
 
 ## Figures
 
-![](output/figurescars.png)
+``` r
+knitr::include_graphics(here::here('output', 'figurescars.png'))
+```
+
+<img src="C:/Users/DEN173/Projects/GBADS/PPSTheme/output/figurescars.png" width="100%" />
 
 # R Package References
 

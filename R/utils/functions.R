@@ -10,7 +10,7 @@
 
 require(FAOSTAT)
 
-source(here::here('src','utils',  'FAOSTAT_helper_functions.R'))
+source(here::here("src", "utils", "FAOSTAT_helper_functions.R"))
 ## 0 - function to read in fao data ------------------------------#
 
 
@@ -30,16 +30,16 @@ get_fao_data <- function(code) {
   require(FAOSTAT)
   require(lubridate)
 
- # tmp_dir <- tempdir()
+  # tmp_dir <- tempdir()
   # Change to using Curl
-  #data <- get_faostat_bulk(code, tmp_dir) %>%
+  # data <- get_faostat_bulk(code, tmp_dir) %>%
   #  rename_with(function(x) tolower(str_replace_all(x, "//s", "_")))
 
-  data <- arrow::read_parquet(here::here('data', 'temp', '20210111_Value_of_Production_E_All_Data_(Normalized).parquet')) %>%
-    rename_with(~tolower(str_replace_all(.x, " ", "_")))
+  data <- arrow::read_parquet(here::here("data", "temp", "20210111_Value_of_Production_E_All_Data_(Normalized).parquet")) %>%
+    rename_with(~ tolower(str_replace_all(.x, " ", "_")))
 
   column_names <- c(
-    "area_code","area",  "item_code", "item",
+    "area_code", "area", "item_code", "item",
     "element", "element_code", "year",
     "unit", "value", "flag"
   )
@@ -92,7 +92,7 @@ clean_fao_VOP_animal_outputs <- function(data, start_year = 1991) {
   # Element to filter for
   # Gross Production Value (current thousand SLC)      56
   # Gross Production Value (current thousand US$)      57
-  #element_filter <- c(56, 57)
+  # element_filter <- c(56, 57)
   element_filter <- c(58)
 
   # Items to filter for
@@ -128,10 +128,10 @@ clean_fao_VOP_animal_outputs <- function(data, start_year = 1991) {
       element_code %in% element_filter,
       item_code %in% c(meat_codes, milk_codes, egg_codes)
     ) %>%
-    add_country_codes(area_code,area) %>%
-    #filter(!is.na(ISO3_CODE)) %>%
+    add_country_codes(area_code, area) %>%
+    # filter(!is.na(ISO3_CODE)) %>%
     # Remove missing regions (just aggregates)
-    rename_with(~tolower(.x)) %>%
+    rename_with(~ tolower(.x)) %>%
     select(iso3_code, year, item, element, value)
 
 
@@ -225,7 +225,7 @@ clean_global_aquaculture_data_values <- function() {
     select(iso3_code, group, year, unit, value) %>%
     group_by(iso3_code, group, year, unit) %>%
     summarise(
-      live_weight = sum(value, na.rm = TRUE) ,
+      live_weight = sum(value, na.rm = TRUE),
       .groups = "drop"
     ) %>%
     filter(live_weight > 0)
@@ -284,9 +284,8 @@ clean_global_aquaculture_data <- function() {
     col_select = c("3A_Code", "CPC_Group_En"),
     col_types = "cc"
   ) %>%
-
-# Inputs:
-   rename(
+    # Inputs:
+    rename(
       alpha_3_code = `3A_Code`,
       group = CPC_Group_En
     ) %>%
@@ -296,7 +295,7 @@ clean_global_aquaculture_data <- function() {
     ) %>%
     mutate(
       group = tolower(if_else(!str_detect(grouping, "Other"),
-                              str_remove_all(grouping, ","), group
+        str_remove_all(grouping, ","), group
       ))
     ) %>%
     select(-grouping, -misc)
@@ -475,11 +474,11 @@ calculate_tev_sector <- function(O1, AS2) {
 # Save
 save_files <- function(O1, AS2, TEV, TEV_sector) {
   readr::write_csv(O1, "data/O1_Direct_Value_of_Animal_Outputs.csv")
-  #dataspice::prep_attributes("data/O1_Direct_Value_of_Animal_Outputs.csv")
+  # dataspice::prep_attributes("data/O1_Direct_Value_of_Animal_Outputs.csv")
   readr::write_csv(AS2, "data/AS2_Value_of_Animal_Stock.csv")
-  #dataspice::prep_attributes("data/AS2_Value_of_Animal_Stock.csv")
+  # dataspice::prep_attributes("data/AS2_Value_of_Animal_Stock.csv")
   readr::write_csv(TEV, "data/Total_Economic_Value_AS2-O1.csv")
-  #dataspice::prep_attributes("data/Total_Economic_Value_AS2-O1.csv")
+  # dataspice::prep_attributes("data/Total_Economic_Value_AS2-O1.csv")
   readr::write_csv(TEV_sector, "data/Total_Economic_Value_AS2-O1_sectors.csv")
-  #dataspice::prep_attributes("data/Total_Economic_Value_AS2-O1_sectors.csv")
+  # dataspice::prep_attributes("data/Total_Economic_Value_AS2-O1_sectors.csv")
 }

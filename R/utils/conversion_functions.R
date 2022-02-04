@@ -49,10 +49,14 @@ require(FAOSTAT)
 get_fao_livestock_tcfs <- function() {
   # Read in the FAO tcfs and merge them
   # with the FAO lus when missing for a particular country
-  data_folder <- here::here('data', 'output', 'archived')
-  data_file <- file.path(data_folder,
-                         grep('liveweight_conversion_factors_IMPUTED.parquet$',
-                              list.files(data_folder), value = TRUE))
+  data_folder <- here::here("data", "output", "archived")
+  data_file <- file.path(
+    data_folder,
+    grep("liveweight_conversion_factors_IMPUTED.parquet$",
+      list.files(data_folder),
+      value = TRUE
+    )
+  )
 
   tcfs <- arrow::read_parquet(data_file) %>%
     rename(item = animal)
@@ -65,46 +69,49 @@ get_fao_livestock_tcfs <- function() {
 
 
 convert_stocks_to_tcf_categories <- function(stocks, tcfs) {
+  stock_items <- c(
+    "Asses",
+    "Beehives",
+    "Buffaloes",
+    "Camelids, other",
+    "Camels",
+    "Cattle",
+    "Chickens",
+    "Ducks",
+    "Geese and guinea fowls",
+    "Goats",
+    "Horses",
+    "Mules",
+    "Pigs",
+    "Rabbits and hares",
+    "Rodents, other",
+    "Sheep",
+    "Turkeys"
+  )
 
-  stock_items <- c('Asses',
-                   'Beehives',
-                   'Buffaloes',
-                   'Camelids, other',
-                   'Camels',
-                   'Cattle',
-                   'Chickens',
-                   'Ducks',
-                   'Geese and guinea fowls',
-                   'Goats',
-                   'Horses',
-                   'Mules',
-                   'Pigs',
-                   'Rabbits and hares',
-                   'Rodents, other',
-                   'Sheep',
-                   'Turkeys')
-
-  tcf_items <- c('asses',
-                  NA,
-                 'buffaloes',
-                 'camels',
-                 'camels',
-                 'cattle',
-                 'chickens',
-                 'ducks',
-                 'geese',
-                 'goats',
-                 'horses',
-                 'mules',
-                 'pigs',
-                 'rabbits',
-                 'rabbits',
-                 'sheep',
-                 'turkeys')
+  tcf_items <- c(
+    "asses",
+    NA,
+    "buffaloes",
+    "camels",
+    "camels",
+    "cattle",
+    "chickens",
+    "ducks",
+    "geese",
+    "goats",
+    "horses",
+    "mules",
+    "pigs",
+    "rabbits",
+    "rabbits",
+    "sheep",
+    "turkeys"
+  )
 
 
   stocks$item <- plyr::mapvalues(stocks$item, stock_items, tcf_items)
-  stocks  %>%
+  stocks %>%
     drop_na(item) %>%
     rename(iso3 = iso3_code) %>%
     group_by(iso3, year, item) %>%
@@ -116,45 +123,48 @@ convert_stocks_to_tcf_categories <- function(stocks, tcfs) {
 }
 
 convert_to_head_price_using_tcf <- function(prices) {
+  price_items <- c(
+    "ass",
+    "buffalo",
+    "camel",
+    "camelids, other",
+    "cattle",
+    "chicken",
+    "duck",
+    "goat",
+    "goose",
+    "horse",
+    "mule",
+    "pig",
+    "poultry, other",
+    "rabbit",
+    "sheep",
+    "turkey"
+  )
 
-  price_items <- c("ass",
-                   "buffalo",
-    'camel',
-  'camelids, other',
-  'cattle',
-  'chicken',
-  'duck',
-  'goat',
-  'goose',
-  'horse',
-  'mule',
-  'pig',
-  'poultry, other',
-  'rabbit',
-  'sheep',
-  'turkey')
-
-  tcf_items <- c('asses',
-                 'buffaloes',
-                 'camels',
-                  NA,
-                 'cattle',
-                 'chickens',
-                 'ducks',
-                 'goats',
-                 'geese',
-                 'horses',
-                 'mules',
-                 'pigs',
-                  NA,
-                 'rabbits',
-                 'sheep',
-                 'turkeys')
+  tcf_items <- c(
+    "asses",
+    "buffaloes",
+    "camels",
+    NA,
+    "cattle",
+    "chickens",
+    "ducks",
+    "goats",
+    "geese",
+    "horses",
+    "mules",
+    "pigs",
+    NA,
+    "rabbits",
+    "sheep",
+    "turkeys"
+  )
 
 
   prices$item <- plyr::mapvalues(prices$item, price_items, tcf_items)
   return(prices)
-  }
+}
 
 
 # convert_stocks_to_lu_categories <- function(stocks, lu) {

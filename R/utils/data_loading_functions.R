@@ -15,7 +15,7 @@
 
 
 # TODO: ADD tests
-get_world_bank_population_data <- function(force=FALSE, total=TRUE) {
+get_world_bank_population_data <- function(force = FALSE, total = TRUE) {
   #' get_world_bank_population
   #'
   #' @param force whether to force external download
@@ -25,31 +25,36 @@ get_world_bank_population_data <- function(force=FALSE, total=TRUE) {
   #' @example
   #' > get_world_bank_population_data(force = TRUE)
   date <- format(Sys.Date(), "%Y%m%d")
-  data_type  <- ifelse(total, 'Population', 'Rural-Population')
-  indicator <- ifelse(total, 'SP.POP.TOTL', 'SP.RUR.TOTL.ZS')
+  data_type <- ifelse(total, "Population", "Rural-Population")
+  indicator <- ifelse(total, "SP.POP.TOTL", "SP.RUR.TOTL.ZS")
   data_location <- glue::glue(
-    file.path('data', 'raw', 'world-bank',
-              '{date}_World-Bank_{data_type}.parquet'))
+    file.path(
+      "data", "raw", "world-bank",
+      "{date}_World-Bank_{data_type}.parquet"
+    )
+  )
 
   if (!force & file.exists(data_location)) {
     return(arrow::read_parquet(data_location))
   }
 
   pop_data <- wbstats::wb_data(indicator,
-                 country = 'countries_only',
-                 mrv=30,
-                 lang = 'EN')
+    country = "countries_only",
+    mrv = 30,
+    lang = "EN"
+  )
 
-  assertthat::are_equal(names(pop_data) ,
-                        c("iso2c","iso3c","country","date" , indicator, "unit" ,
-                          "obs_status", "footnote", "last_updated" ))
+  assertthat::are_equal(
+    names(pop_data),
+    c(
+      "iso2c", "iso3c", "country", "date", indicator, "unit",
+      "obs_status", "footnote", "last_updated"
+    )
+  )
 
 
-  pop_data <- pop_data[, c("iso3c","obs_status", "date",indicator, 'unit')]
+  pop_data <- pop_data[, c("iso3c", "obs_status", "date", indicator, "unit")]
 
   arrow::write_parquet(pop_data, data_location)
   return(pop_data)
-
 }
-
-

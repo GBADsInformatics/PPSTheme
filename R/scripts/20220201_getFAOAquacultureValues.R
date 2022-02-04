@@ -20,20 +20,20 @@
 
 
 ## 0 - Libraries  ------------------------------#
-pkgs <- c('here', 'tidyr', 'readr', 'dplyr', 'magrittr', 'janitor')
+pkgs <- c("here", "tidyr", "readr", "dplyr", "magrittr", "janitor")
 sapply(pkgs, require, character.only = TRUE)
 
-source(here::here('R', 'utils', 'FAOSTAT_helper_functions.R'))
+source(here::here("R", "utils", "FAOSTAT_helper_functions.R"))
 
 ## 1 - Parameters ------------------------------#
 params <- list(
-  data_dir  =  here::here('data', 'FAO_Global_Aquaculture_Production') ,
-  value_file  =  "AQUACULTURE_VALUE.csv",
-  quantity_file  =  "AQUACULTURE_QUANTITY.csv",
-  cpc_group_en_file  =  "CL_FI_SPECIES_GROUPS.csv",
+  data_dir = here::here("data", "FAO_Global_Aquaculture_Production"),
+  value_file = "AQUACULTURE_VALUE.csv",
+  quantity_file = "AQUACULTURE_QUANTITY.csv",
+  cpc_group_en_file = "CL_FI_SPECIES_GROUPS.csv",
   iso3_codes_files = "CL_FI_COUNTRY_GROUPS.csv",
   use_years = 1994:2019,
-  exchange_rates_file = Sys.glob(here::here('data', 'FAOSTAT', '*Exchange_rate_E_All_Data.parquet'))
+  exchange_rates_file = Sys.glob(here::here("data", "FAOSTAT", "*Exchange_rate_E_All_Data.parquet"))
 )
 
 
@@ -43,12 +43,12 @@ aqua <- list()
 
 # Read in Codes and Value Files
 aqua$iso3codes <- readr::read_csv(file.path(params$data_dir, params$iso3_codes_files)) %>%
-  janitor::clean_names()%>%
+  janitor::clean_names() %>%
   select(un_code, iso3_code, name_en)
 
 aqua$fisheries_values <- readr::read_csv(file.path(params$data_dir, params$value_file)) %>%
   clean_names() %>%
-  filter(period  %in% params$use_years) %>%
+  filter(period %in% params$use_years) %>%
   group_by(country_un_code, species_alpha_3_code, measure, period) %>%
   summarise(
     value_1000_usd = sum(value, na.rm = TRUE), .groups = "drop"
@@ -57,7 +57,7 @@ aqua$fisheries_values <- readr::read_csv(file.path(params$data_dir, params$value
 
 aqua$fisheries_quantity <- readr::read_csv(file.path(params$data_dir, params$quantity_file)) %>%
   clean_names() %>%
-  filter(period  %in% params$use_years) %>%
+  filter(period %in% params$use_years) %>%
   group_by(country_un_code, species_alpha_3_code, measure, period) %>%
   summarise(
     tonnes = sum(value, na.rm = TRUE), .groups = "drop"
@@ -71,8 +71,8 @@ aqua$fisheries_quantity <- readr::read_csv(file.path(params$data_dir, params$qua
 # Note: Can keep Hong Kong and Taiwan as they are not double counted.
 #################################################################
 fao_fisheries <- left_join(aqua$fisheries_quantity,
-                           aqua$fisheries_values,
-                           by = c("country_un_code", "species_alpha_3_code", "period")
+  aqua$fisheries_values,
+  by = c("country_un_code", "species_alpha_3_code", "period")
 ) %>%
   mutate(usd_price = if_else(tonnes > 0, (value_1000_usd / tonnes) * 1000, 0)) %>%
   filter(usd_price > 0) %>%
@@ -111,7 +111,7 @@ mean_exchange_rates <- aqua$fao_exchange_rates %>%
 fao_fisheries <- fao_fisheries %>%
   left_join(mean_fisheries_prices, by = c("iso3_code", "species_code")) %>%
   left_join(mean_exchange_rates, by = c("iso3_code")) %>%
-  mutate(aquaculture_constant_2014_2016_usd_price = (mean_2014_2016_slc_price *mean_2014_2016_exchange)) %>%
+  mutate(aquaculture_constant_2014_2016_usd_price = (mean_2014_2016_slc_price * mean_2014_2016_exchange)) %>%
   mutate(aquaculture_constant_2014_2016_constant_usd_value = tonnes * aquaculture_constant_2014_2016_usd_price)
 
 
@@ -146,20 +146,21 @@ fao_fisheries <- fao_fisheries %>%
 
 ##  - Save the data - Will not be date tagged due to DVC ------------------------------#
 aqua_table <- arrow::Table$create(fao_fisheries %>%
-                                    select(iso3_code,
-                                           faost_code,
-                                           name_en,
-                                           species_code,
-                                           year,
-                                           tonnes,
-                                           value_1000_usd,
-                                           exchange_rate,
-                                           slc_price,
-                                           mean_2014_2016_slc_price,
-                                           mean_2014_2016_exchange,
-                                           aquaculture_constant_2014_2016_usd_price,
-                                           aquaculture_constant_2014_2016_constant_usd_value
-                                           ))
+  select(
+    iso3_code,
+    faost_code,
+    name_en,
+    species_code,
+    year,
+    tonnes,
+    value_1000_usd,
+    exchange_rate,
+    slc_price,
+    mean_2014_2016_slc_price,
+    mean_2014_2016_exchange,
+    aquaculture_constant_2014_2016_usd_price,
+    aquaculture_constant_2014_2016_constant_usd_value
+  ))
 
 
 # Add initial metadata
@@ -167,20 +168,20 @@ aqua_table$metadata <- list(
   iso3_code = "ISO 3166-1 alpha-3",
   faost_code = "FAOSTAT Area Code",
   name_en = "FAO Area Name",
-  species_code = 'ASFIS Species Code',
+  species_code = "ASFIS Species Code",
   year = "Year in YYYY format",
   tonnes = "Metric Tonnes of live weight",
-  value_1000_usd  = "Current value in thousands of US dollars",
-  exchange_rate  = "FAO Exchange rate for SLC",
-  slc_price  = "SLC prices per tonne  calculated using the FAO annual exchange rate",
-  mean_2014_2016_slc_price  = "Average SCL price between 2014 and 2016",
-  mean_2014_2016_exchange  = "Average exchange rate between SLC and USD between 2014 and 2016",
-  aquaculture_constant_2014_2016_usd_price  = "Constant prices per tonne of aquaculture using the 2014-2016 SLC prices and the mean exchange rates for the same period",
+  value_1000_usd = "Current value in thousands of US dollars",
+  exchange_rate = "FAO Exchange rate for SLC",
+  slc_price = "SLC prices per tonne  calculated using the FAO annual exchange rate",
+  mean_2014_2016_slc_price = "Average SCL price between 2014 and 2016",
+  mean_2014_2016_exchange = "Average exchange rate between SLC and USD between 2014 and 2016",
+  aquaculture_constant_2014_2016_usd_price = "Constant prices per tonne of aquaculture using the 2014-2016 SLC prices and the mean exchange rates for the same period",
   aquaculture_constant_2014_2016_constant_usd_value = "Constant prices multiplied by production quantities",
   date = iso_date(),
-  contributor = 'Gabriel Dennis CSIRO, gabriel.dennis@csiro.au',
-  format = 'Arrow Table',
-  language = 'English',
+  contributor = "Gabriel Dennis CSIRO, gabriel.dennis@csiro.au",
+  format = "Arrow Table",
+  language = "English",
   source = "FAO.GLOBAL AQUACULTURE PRODUCTION. License: CC BY–NC–SA 3.0 IGO. Extracted from:  https://www.fao.org/fishery/statistics-query/en/aquaculture. Data of Access: 2022-02-01."
 )
 

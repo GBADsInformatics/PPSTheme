@@ -118,9 +118,21 @@ tool [dvc](https://dvc.org/).
 
 # Methods
 
+## Aquaculture
+
+## Crops
+
+## Livestock
+
 # Results
 
 <!--- Add automated results to this section --->
+
+## Tables
+
+## Figures
+
+![](output/figurescars.png)
 
 # R Package References
 

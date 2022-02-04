@@ -39,7 +39,7 @@ cat(
  # Description
  
  This repository contains all R code and data for the *GBADS* global livestock 
- value estimation. 
+ value estimation manuscript. 
 
 ## Files 
 ```{bash}
@@ -80,19 +80,32 @@ kable(as.data.frame(crop_report))
 ```
  
  
- # Methods
+# Methods
+ 
+## Aquaculture
  
  
+## Crops 
  
  
- # Results
+## Livestock 
+ 
+ 
+# Results
  
  <!--- Add automated results to this section --->
  
- 
+## Tables  
 
 
- 
+## Figures  
+
+
+```{r}
+knitr::include_graphics(here::here('output', 'figurescars.png'))
+```
+
+
 
 
 # R Package References

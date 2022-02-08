@@ -1,3 +1,4 @@
+#!/usr/bin/env Rscript
 ################################################################
 #
 # Project: GBADS: Global Burden of Animal Disease
@@ -15,12 +16,12 @@
 # Date Created:  20220203
 #
 # Description:  This file contains helper functions
-# to work with the mmage to generate estimates of
+# to wor with the mmage to generate estimates of
 # the herd structure and hence biomass of livestock.
 #
 # Because there is not information on herd structure,
 # this will be run without initial age structures.
-#
+
 # Citation:
 # Matthieu Lesnoff (2021). mmage: A R package for sex-and-age population matrix models. R
 # package version 2.4-3.
@@ -30,6 +31,8 @@ library(purrr)
 library(tibble)
 library(dplyr)
 library(mmage)
+
+
 ##  - Create Schema table for DynamodDataFrame ------------------------------#
 
 #' get_dynamod_schema
@@ -79,7 +82,7 @@ get_dynamod_schema <- function() {
 #'
 #' @return logical determining if the dataframe conforms
 validate_dynamod_schema <- function(df, .schema = get_dynamod_schema()) {
-  return(df %>% has_columns(names(.schema)))
+  return(df %>% pointblank::has_columns(names(.schema)))
 }
 
 ##  - Validate  if the dataframe passed in has correct values -----------------#
@@ -124,6 +127,8 @@ get_tcla <- function(...) {
 #' @param num_cycles number of cycles to run the projections for defaults to 1
 #'
 run_dynamod_projection <- function(df, num_phases = 12, num_cycles = 1) {
+
+    library(mmage)
 
   # Ensure Data is a tibble
   df <- as_tibble(df)
@@ -192,8 +197,7 @@ get_param <- function(..., num_phases = 12) {
 ##  - Runs the dynamod projection ------------------------------#
 run_projection <- function(..., num_phases = 12, num_cycles = 1) {
   dfx <- list(...)
-  tryCatch(
-    {
+  tryCatch({
       length_male <- length_female <- 4 # Change this
       mat <- mmage::fmat(dfx$params, length_female, length_male)
       res <- feig(mat$A, left = TRUE)
@@ -231,8 +235,10 @@ get_results <- function(...) {
     male_juvenile_avg_population <- sum(average_population[5])
     male_sub_avg_population <- sum(average_population[6])
     male_adult_avg_population <- sum(average_population[7:8])
-    total_female_population_avg <- female_adult_avg_population + female_juvenile_avg_population + female_sub_avg_population
-    total_male_population_avg <- male_adult_avg_population + male_juvenile_avg_population + male_sub_avg_population
+    total_female_population_avg <- female_adult_avg_population + \
+                      female_juvenile_avg_population + female_sub_avg_population
+    total_male_population_avg <- male_adult_avg_population + \
+                        male_juvenile_avg_population + male_sub_avg_population
     return(
       tibble::tibble(
         iso3 = x$iso3,

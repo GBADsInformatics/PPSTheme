@@ -130,8 +130,11 @@ kable(as.data.frame(livestock_report))
 # Methods
  
 ## Aquaculture
+
+
  
 ## Crops 
+
  
  
 ## Livestock 

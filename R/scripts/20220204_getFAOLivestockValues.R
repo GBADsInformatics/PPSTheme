@@ -53,22 +53,21 @@ params <- list(
 # Load Data ---------------------------------------------------------------
 # For now create local version
 
-if (!file.exists('livestock_data.Rds')) {
-# Load the data
-data <- purrr::map(
-  params$file_paths,
-  ~ arrow::read_parquet(get_gbads_file(.x,
-    dir = params$data_dir
-  )) %>%
-    janitor::clean_names() %>%
-    dplyr::filter(year %in% params$use_years) %>%
-    clean_countries() %>%
-    sanitize_columns()
-)
-saveRDS(data, 'livestock_data.Rds')
-
+if (!file.exists("livestock_data.Rds")) {
+  # Load the data
+  data <- purrr::map(
+    params$file_paths,
+    ~ arrow::read_parquet(get_gbads_file(.x,
+      dir = params$data_dir
+    )) %>%
+      janitor::clean_names() %>%
+      dplyr::filter(year %in% params$use_years) %>%
+      clean_countries() %>%
+      sanitize_columns()
+  )
+  saveRDS(data, "livestock_data.Rds")
 } else {
-    data <- readRDS('livestock_data.Rds')
+  data <- readRDS("livestock_data.Rds")
 }
 
 
@@ -184,7 +183,7 @@ livestock$yield <- livestock$yield %>%
   )) %>%
   ungroup() %>%
   mutate(
-    lbw_kg = yield_kg * 1 / carcass_pct
+    lbw_kg = yield_kg / carcass_pct
   ) %>%
   separate(item, c("item", "animal"), sep = "_", extra = "merge", fill = "left") %>%
   mutate(
@@ -200,7 +199,7 @@ livestock$yield <- livestock$yield %>%
 # Some cattle are said to have LBW of 1106
 # Remove Malysia - Huge outlier due to low carcass pct
 # Remove Niger - Appear to be consistently way too high
-livestock$yield[(livestock$yield$iso3_code %in% c('mys', 'ner')) & livestock$yield$animal == 'cattle', ] <- NA
+livestock$yield[(livestock$yield$iso3_code %in% c("mys", "ner")) & livestock$yield$animal == "cattle", ] <- NA
 
 
 
@@ -279,7 +278,7 @@ match_live_weight_items <- list(
   pig = c(1034, 1056, 1035),
   rabbit = c(1140, 1145, 1141),
   sheep = c(976, 1013, 977),
-  turkey = c(1079, 1088, 1080),
+  turkey = c(1079, 1088, 1080)
 )
 
 # Match all tables to the stock codes
@@ -319,7 +318,7 @@ setdiff(names(match_live_weight_items), livestock$prices$animal)
 
 livestock$production$animal <- purrr::imap_chr(
   livestock$production$animal,
-  ~ifelse(is.na(.x), rownames(matches)[matches$stock_code ==livestock$production$item_code[.y]], .x)
+  ~ ifelse(is.na(.x), rownames(matches)[matches$stock_code == livestock$production$item_code[.y]], .x)
 )
 
 table(livestock$production$item, livestock$production$animal)
@@ -342,7 +341,9 @@ setdiff(names(match_live_weight_items), unique(livestock$yield$animal))
 
 # Create Livestock DF -----------------------------------------------------
 # Match the Live Weight Price Item Codes to the stock items
-livestock <- livestock[c('production', 'yield', 'value_of_production', 'prices')]
+livestock <- livestock[c("production", "yield", "value_of_production", "prices")]
+
+
 
 livestock_df <- purrr::reduce(livestock, full_join,
   by = c("iso3_code", "faost_code", "area", "year", "item", "animal")
@@ -383,15 +384,21 @@ livestock_df <- livestock_df %>%
     )
   ) %>%
   mutate(
-    stock_value_lcu = ifelse(item == "stock", producer_price_lcu_tonne * lbw_kg, 0),
-    stock_value_slc = ifelse(item == "stock", producer_price_slc_tonne * lbw_kg, 0),
-    stock_value_usd = ifelse(item == "stock", producer_price_usd_tonne * lbw_kg, 0)
+    stock_value_lcu = ifelse(item == "stock", producer_price_lcu_tonne * tonnes, 0),
+    stock_value_slc = ifelse(item == "stock", producer_price_slc_tonne * tonnes, 0),
+    stock_value_usd = ifelse(item == "stock", producer_price_usd_tonne * tonnes, 0)
   )
 
+# Check values
+aggregate(livestock_df$stock_value_usd, livestock_df["year"], sum, na.rm = TRUE)
 
 
-# Get in Constant Dollars
-exchange_rates <- arrow::read_parquet(get_gbads_file("Exchange_rate_E_All_Data.parquet", dir = here::here("data", "FAOSTAT"))) %>%
+# Constant Dollars --------------------------------------------------------
+exchange_rates <- arrow::read_parquet(
+  get_gbads_file("Exchange_rate_E_All_Data.parquet",
+    dir = here::here("data", "FAOSTAT")
+  )
+) %>%
   janitor::clean_names() %>%
   select(area_code, year, value)
 
@@ -400,9 +407,9 @@ exchange_rates <- arrow::read_parquet(get_gbads_file("Exchange_rate_E_All_Data.p
 # type and product
 mean_usd_prices_2014_2016 <- filter(livestock_df, year %in% 2014:2016) %>%
   ungroup() %>%
-  select(iso3_code, faost_code, item, animal,  year, producer_price_slc_tonne) %>%
+  select(iso3_code, faost_code, item, animal, year, producer_price_slc_tonne) %>%
   left_join(exchange_rates, by = c("faost_code" = "area_code", "year")) %>%
-  group_by(iso3_code,animal, item ) %>%
+  group_by(iso3_code, animal, item) %>%
   summarise(
     mean_slc_price_per_tonne_2014_2016 = mean(producer_price_slc_tonne, na.rm = TRUE),
     mean_usd_conversion_2014_2016 = mean(value, na.rm = TRUE),
@@ -413,14 +420,32 @@ mean_usd_prices_2014_2016 <- filter(livestock_df, year %in% 2014:2016) %>%
   )
 
 
-# Append the average prices to the existing dataframe
 
+# Missing Prices ----------------------------------------------------------
+stock_items <- mean_usd_prices_2014_2016$item == "stock"
+aggregate(mean_usd_prices_2014_2016$producer_price_usd_per_tonne_2014_2016[stock_items],
+  list(mean_usd_prices_2014_2016$animal[stock_items]), summary,
+  na.rm = TRUE
+)
+
+
+
+
+# Append the average prices to the existing dataframe
 livestock_df <- livestock_df %>%
   left_join(mean_usd_prices_2014_2016) %>%
   mutate(
     stock_value_constant_2014_2016_usd = ifelse(item == "stock",
-                                                producer_price_usd_per_tonne_2014_2016 * tonnes, 0)
+      producer_price_usd_per_tonne_2014_2016 * tonnes, 0
+    )
   )
+
+
+aggregate(livestock_df$stock_value_constant_2014_2016_usd, livestock_df["year"], sum, na.rm = TRUE)
+tapply(livestock_df$stock_value_constant_2014_2016_usd,
+  livestock_df["animal"],
+  FUN = summary
+)
 
 
 

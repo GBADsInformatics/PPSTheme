@@ -49,7 +49,7 @@ file_name <- function(source, tags,
     dir.create(base_dir)
   }
   file.path(base_dir, paste0(
-    iso_date(), "_", source, "_",
+     source, "_",
     paste(tags, collapse = "_"), extension
   ))
 }

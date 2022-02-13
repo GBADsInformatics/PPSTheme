@@ -128,12 +128,17 @@ kable(as.data.frame(livestock_report))
 
  
 # Methods
+
+<!--- Add diagrams of the workflow ---> 
  
 ## Aquaculture
 
 
+
+
  
 ## Crops 
+
 
  
  
@@ -146,9 +151,32 @@ kable(as.data.frame(livestock_report))
  
 ## Tables  
 
+```{r, echo=FALSE, results='asis'}
+tables <- Sys.glob(here::here('output', 'tables', 'tab_*.png'))
+
+for (table in tables) {
+  cat(
+    '![](', trimws(table), ')\n\n\n\n', sep = ''
+  )
+}
+
+```
+
+
 
 ## Figures  
 
+```{r, echo=FALSE, results='asis'}
+
+figures <- Sys.glob(here::here('output', 'figures', '*.png'))
+
+for (figure in figures) {
+  cat(
+    '![](', trimws(figure), ')\n\n\n\n', sep = ''
+  )
+}
+
+```
 
 
 

@@ -29,6 +29,15 @@ library(logging)
 
 
 
+# Logging -----------------------------------------------------------------
+basicConfig()
+addHandler(writeToFile, logger="Analysis",
+           file=here::here('data', 'output', 'FAOSTAT_Livestock_Value.log')
+
+)
+
+
+
 # Source Files  -----------------------------------------------------------
 source(here::here("R", "utils", "FAOSTAT_helper_functions.R"))
 
@@ -53,7 +62,7 @@ params <- list(
 # Load Data ---------------------------------------------------------------
 # For now create local version
 
-if (!file.exists("livestock_data.Rds")) {
+if (!file.exists(here::here("livestock_data.Rds"))) {
   # Load the data
   data <- purrr::map(
     params$file_paths,
@@ -65,9 +74,9 @@ if (!file.exists("livestock_data.Rds")) {
       clean_countries() %>%
       sanitize_columns()
   )
-  saveRDS(data, "livestock_data.Rds")
+  saveRDS(data, here::here("livestock_data.Rds"))
 } else {
-  data <- readRDS("livestock_data.Rds")
+  data <- readRDS( here::here("livestock_data.Rds"))
 }
 
 
@@ -215,6 +224,8 @@ livestock$value_of_production <- livestock$value_of_production %>%
     animal = trimws(animal),
     item = tolower(item)
   )
+# aggregate(livestock$value_of_production$gross_production_value_constant_2014_2016_thousand_us*1000, by = livestock$value_of_production['year'], FUN=sum, na.rm = TRUE)
+
 
 livestock$production <- livestock$production %>%
   filter(element %in% c("stocks", "producing_animals_slaughtered", "production")) %>%
@@ -350,7 +361,9 @@ livestock_df <- purrr::reduce(livestock, full_join,
 )
 
 
-
+aggregate(livestock_df$gross_production_value_constant_2014_2016_thousand_us*1000,
+          by = livestock_df['year'],
+          FUN=  sum, na.rm = TRUE)
 
 
 # Live Weights ------------------------------------------------------------
@@ -441,11 +454,15 @@ livestock_df <- livestock_df %>%
   )
 
 
-aggregate(livestock_df$stock_value_constant_2014_2016_usd, livestock_df["year"], sum, na.rm = TRUE)
-tapply(livestock_df$stock_value_constant_2014_2016_usd,
+aggregate(livestock_df$gross_production_value_constant_2014_2016_thousand_us*1000,
+          by = livestock_df['year'],
+          FUN=  sum, na.rm = TRUE)
+
+loginfo(aggregate(livestock_df$stock_value_constant_2014_2016_usd, livestock_df["year"], sum, na.rm = TRUE))
+loginfo(tapply(livestock_df$stock_value_constant_2014_2016_usd,
   livestock_df["animal"],
   FUN = summary
-)
+))
 
 
 

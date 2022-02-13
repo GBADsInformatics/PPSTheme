@@ -18,11 +18,10 @@ livestock value estimation manuscript.
     #> LICENSE.md
     #> NAMESPACE
     #> PPSTheme.Rproj
-    #> R/as2-calculation.R
     #> R/mmage_funcs.R
-    #> R/o1-calculation.R
     #> R/scripts/20220201_getFAOAquacultureValues.R
     #> R/scripts/20220201_getFAOCropValues.R
+    #> R/scripts/20220204_getFAOLivestockValues.R
     #> R/utils/FAOSTAT_helper_functions.R
     #> R/utils/conversion_functions.R
     #> R/utils/data_loading_functions.R
@@ -31,6 +30,7 @@ livestock value estimation manuscript.
     #> README.md
     #> data/.gitignore
     #> data/FAOSTAT.dvc
+    #> data/FAO_Global_Aquaculture_Production.dvc
     #> data/codes/FAOSTAT/20211021_FAOSTAT_Country_Codes.csv
     #> data/codes/FAOSTAT/20211021_FAOSTAT_Item_Codes.csv
     #> data/codes/FAOSTAT/FAOSTAT_Country_Codes.rds
@@ -41,6 +41,7 @@ livestock value estimation manuscript.
     #> data/codes/FAOSTAT/FAOSTAT_Meat_Live_Weight_Codes.rds
     #> data/codes/FAOSTAT/FAOSTAT_Vop_Item_Codes.Rds
     #> data/codes/FAOSTAT/FAOSTAT_Vop_Items_Non-Indigenous_Codes.Rds
+    #> data/output.dvc
     #> docs/global-value-livestock-aquaculture.Rmd
     #> mmage_2.4-3.tar.gz
     #> references.bib
@@ -145,79 +146,72 @@ Table: Metadata
 
 #### Livestock Production and Values (FAO[3])
 
-| iso3_code          | faost_code        | area              | year                | item_code         | item                                     | animal                          | head              | tonnes        | gross_production_value_constant_2014_2016_thousand_i                                                                                                    | gross_production_value_constant_2014_2016_thousand_slc                                                                                                             | gross_production_value_constant_2014_2016_thousand_us                                                                                        | gross_production_value_current_thousand_slc                                                                                                          | gross_production_value_current_thousand_us                    | producer_price_index_2014_2016_100                                                                        | producer_price_lcu_tonne                           | producer_price_slc_tonne                              | producer_price_usd_tonne                        | yield_kg                                                 | carcass_pct                     | lbw_kg                                                                             | stock_value_lcu                                                                                  | stock_value_slc                                                                                     | stock_value_usd                                                                        | mean_slc_price_per_tonne_2014_2016                  | mean_usd_conversion_2014_2016                                                           | producer_price_usd_per_tonne_2014_2016                                                                             | stock_value_constant_2014_2016_usd                                                                                      | date     | contributor                                     | format      | language | source                                                                                                                                                                             |
-|:-------------------|:------------------|:------------------|:--------------------|:------------------|:-----------------------------------------|:--------------------------------|:------------------|:--------------|:--------------------------------------------------------------------------------------------------------------------------------------------------------|:-------------------------------------------------------------------------------------------------------------------------------------------------------------------|:---------------------------------------------------------------------------------------------------------------------------------------------|:-----------------------------------------------------------------------------------------------------------------------------------------------------|:--------------------------------------------------------------|:----------------------------------------------------------------------------------------------------------|:---------------------------------------------------|:------------------------------------------------------|:------------------------------------------------|:---------------------------------------------------------|:--------------------------------|:-----------------------------------------------------------------------------------|:-------------------------------------------------------------------------------------------------|:----------------------------------------------------------------------------------------------------|:---------------------------------------------------------------------------------------|:----------------------------------------------------|:----------------------------------------------------------------------------------------|:-------------------------------------------------------------------------------------------------------------------|:------------------------------------------------------------------------------------------------------------------------|:---------|:------------------------------------------------|:------------|:---------|:-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| ISO 3166-1 alpha-3 | FAOSTAT Area Code | FAOSTAT Area Name | Year in YYYY format | FAOSTAT item code | FAOSTAT production item name (lowercase) | english name for livestock type | Number of animals | Metric Tonnes | Gross production value of item in constant thousand 2014 2016 international dollars, for a certain item calculated to average 100 between 2014 and 2016 | Gross production value of item in constant 2014 2016 in thousand standard local currency units, for a certain item calculated to average 100 between 2014 and 2016 | Gross production value of item in constant thousand 2014 2016 US dollars, for a certain item calculated to average 100 between 2014 and 2016 | Gross production value of item in current thousand standard local currency units, for a certain item calculated to average 100 between 2014 and 2016 | Gross production value of item in current thousand US dollars | An FAOSTAT Items producer price index, for a certain item calculated to average 100 between 2014 and 2016 | Producer price of item in local currency per tonne | Producer price of item in national currency per tonne | Producer price of item in current USD per tonne | Animal yield/carcass weight calculated from FAOSTAT data | FAO carcass % conversion factor | Adult live body weight equivalent in kg, calculated via yield_kg/(carcass_pct/100) | Value of animal stock in local currency units, calculated via producer_price_lcu_tonne \* tonnes | Value of animal stock in standard currency units, calculated via producer_price_slc_tonne \* tonnes | Value of animal stock in US dollars, calculated via producer_price_usd_tonne \* tonnes | mean slc price per tonne averaged over 2014 to 2016 | Mean conversion of slc to US dollars from 2014 to 2016 using the annual exchange rantes | Producer price per tonne in USD, calculated via mean_slc_price_per_tonne_2014_2016 / mean_usd_conversion_2014_2016 | Value of animal stock in constant 2014 2016 US dollars, calculated via producer_price_usd_per_tonne_2014_2016 \* tonnes | 20220204 | Gabriel Dennis CSIRO, <gabriel.dennis@csiro.au> | Arrow Table | English  | \[FAO.\] Crops and livestock products.\[Accessed 2022-01-28.\] <https://fenixservices.fao.org/faostat/static/bulkdownloads/Production_Crops_Livestock_E_All_Data_(Normalized).zip> |
+| iso3_code          | faost_code        | area              | year                | item_code         | item                                     | animal                          | head              | tonnes        | gross_production_value_constant_2014_2016_thousand_i                                                                                                    | gross_production_value_constant_2014_2016_thousand_slc                                                                                                             | gross_production_value_constant_2014_2016_thousand_us                                                                                        | gross_production_value_current_thousand_slc                                                                                                          | gross_production_value_current_thousand_us                    | producer_price_index_2014_2016_100                                                                        | producer_price_lcu_tonne                           | producer_price_slc_tonne                              | producer_price_usd_tonne                        | yield_kg                                                 | carcass_pct                     | lbw_kg                                                                             | stock_value_lcu                                                                                  | stock_value_slc                                                                                     | stock_value_usd                                                                        | mean_slc_price_per_tonne_2014_2016                  | mean_usd_conversion_2014_2016                                                           | producer_price_usd_per_tonne_2014_2016                                                                             | stock_value_constant_2014_2016_usd                                                                                      | date     | contributor                                     | format      | language | source                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             | year_range        | frequency |
+|:-------------------|:------------------|:------------------|:--------------------|:------------------|:-----------------------------------------|:--------------------------------|:------------------|:--------------|:--------------------------------------------------------------------------------------------------------------------------------------------------------|:-------------------------------------------------------------------------------------------------------------------------------------------------------------------|:---------------------------------------------------------------------------------------------------------------------------------------------|:-----------------------------------------------------------------------------------------------------------------------------------------------------|:--------------------------------------------------------------|:----------------------------------------------------------------------------------------------------------|:---------------------------------------------------|:------------------------------------------------------|:------------------------------------------------|:---------------------------------------------------------|:--------------------------------|:-----------------------------------------------------------------------------------|:-------------------------------------------------------------------------------------------------|:----------------------------------------------------------------------------------------------------|:---------------------------------------------------------------------------------------|:----------------------------------------------------|:----------------------------------------------------------------------------------------|:-------------------------------------------------------------------------------------------------------------------|:------------------------------------------------------------------------------------------------------------------------|:---------|:------------------------------------------------|:------------|:---------|:-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|:------------------|:----------|
+| ISO 3166-1 alpha-3 | FAOSTAT Area Code | FAOSTAT Area Name | Year in YYYY format | FAOSTAT item code | FAOSTAT production item name (lowercase) | english name for livestock type | Number of animals | Metric Tonnes | Gross production value of item in constant thousand 2014 2016 international dollars, for a certain item calculated to average 100 between 2014 and 2016 | Gross production value of item in constant 2014 2016 in thousand standard local currency units, for a certain item calculated to average 100 between 2014 and 2016 | Gross production value of item in constant thousand 2014 2016 US dollars, for a certain item calculated to average 100 between 2014 and 2016 | Gross production value of item in current thousand standard local currency units, for a certain item calculated to average 100 between 2014 and 2016 | Gross production value of item in current thousand US dollars | An FAOSTAT Items producer price index, for a certain item calculated to average 100 between 2014 and 2016 | Producer price of item in local currency per tonne | Producer price of item in national currency per tonne | Producer price of item in current USD per tonne | Animal yield/carcass weight calculated from FAOSTAT data | FAO carcass % conversion factor | Adult live body weight equivalent in kg, calculated via yield_kg/(carcass_pct/100) | Value of animal stock in local currency units, calculated via producer_price_lcu_tonne \* tonnes | Value of animal stock in standard currency units, calculated via producer_price_slc_tonne \* tonnes | Value of animal stock in US dollars, calculated via producer_price_usd_tonne \* tonnes | mean slc price per tonne averaged over 2014 to 2016 | Mean conversion of slc to US dollars from 2014 to 2016 using the annual exchange rantes | Producer price per tonne in USD, calculated via mean_slc_price_per_tonne_2014_2016 / mean_usd_conversion_2014_2016 | Value of animal stock in constant 2014 2016 US dollars, calculated via producer_price_usd_per_tonne_2014_2016 \* tonnes | 20220211 | Gabriel Dennis CSIRO, <gabriel.dennis@csiro.au> | Arrow Table | English  | \[FAO.\] Crops and livestock products.\[Accessed 2022-01-28.\] <https://fenixservices.fao.org/faostat/static/bulkdownloads/Production_Crops_Livestock_E_All_Data_(Normalized).zip> - - \[FAO.\] Value of Agricultural Production.\[Accessed 2022-01-28.\]<https://fenixservices.fao.org/faostat/static/bulkdownloads/Value_of_Production_E_All_Data_(Normalized).zip> - - \[FAO.\] Prices: Producer Prices.\[Accessed 2022-01-28.\] <http://fenixservices.fao.org/faostat/static/bulkdownloads/Prices_E_All_Data_(Normalized).zip> | From:1996 to 1997 | Yearly    |
 
-\[FAO.\] Value of Agricultural Production.\[Accessed
-2022-01-28.\]<https://fenixservices.fao.org/faostat/static/bulkdownloads/Value_of_Production_E_All_Data_(Normalized).zip>
-
-\[FAO.\] Prices: Producer Prices.\[Accessed 2022-01-28.\]
-<http://fenixservices.fao.org/faostat/static/bulkdownloads/Prices_E_All_Data_(Normalized).zip>
-\|
-
-    #> The data contains 200311 observations of the following 28 variables:
-    #>   - iso3_code: 202 entries, such as chn (0.97%); tur (0.89%); egy (0.88%) and 199 others (0 missing)
-    #>   - faost_code: n = 200311, Mean = 125.91, SD = 72.52, Median = 123.00, MAD = 93.40, range: [1, 299], Skewness = 0.02, Kurtosis = -1.09, 0% missing
-    #>   - area: 201 entries, such as china (0.97%); turkey (0.89%); egypt (0.88%) and 198 others (871 missing)
-    #>   - year: n = 200311, Mean = 2006.59, SD = 7.48, Median = 2007.00, MAD = 8.90, range: [1994, 2019], Skewness = -0.02, Kurtosis = -1.20, 0% missing
-    #>   - item_code: n = 200311, Mean = 1019.46, SD = 78.96, Median = 1034.00, MAD = 81.54, range: [866, 1166], Skewness = -0.59, Kurtosis = -0.38, 0% missing
-    #>   - item: 10 entries, such as stock (36.29%); meat (32.14%); offals (11.17%) and 7 others (0 missing)
-    #>   - animal: 70 entries, such as cattle (7.40%); sheep (6.86%); goat (6.81%) and 67 others (0 missing)
-    #>   - head: n = 200311, Mean = 2.68e+08, SD = 6.59e+09, Median = , MAD = 4.72e+05, range: [0, 569077421000], Skewness = 60.29, Kurtosis = 4117.83, 37.68% missing
-    #>   - tonnes: n = 200311, Mean = 2.84e+05, SD = 2.55e+06, Median = , MAD = 4431.49, range: [0, 99083289], Skewness = 21.45, Kurtosis = 591.27, 52.42% missing
-    #>   - gross_production_value_constant_2014_2016_thousand_i: n = 200311, Mean = 5.10e+05, SD = 2.49e+06, Median = , MAD = 33576.44, range: [3, 49196398], Skewness = 10.32, Kurtosis = 130.66, 90.01% missing
-    #>   - gross_production_value_constant_2014_2016_thousand_slc: n = 200311, Mean = 6.31e+08, SD = 7.32e+09, Median = , MAD = 1.01e+06, range: [1, 275162149725], Skewness = 20.84, Kurtosis = 550.96, 79.69% missing
-    #>   - gross_production_value_constant_2014_2016_thousand_us: n = 200311, Mean = 7.76e+05, SD = 4.45e+06, Median = , MAD = 58553.80, range: [1, 155583048], Skewness = 18.99, Kurtosis = 496.00, 80.35% missing
-    #>   - gross_production_value_current_thousand_slc: n = 200311, Mean = 1.69e+09, SD = 2.64e+11, Median = , MAD = 6.22e+05, range: [1, 52128784998300], Skewness = 197.43, Kurtosis = 38994.76, 80.52% missing
-    #>   - gross_production_value_current_thousand_us: n = 200311, Mean = 6.29e+05, SD = 3.83e+06, Median = , MAD = 46655.94, range: [1, 207738084], Skewness = 25.64, Kurtosis = 986.92, 81.21% missing
-    #>   - producer_price_index_2014_2016_100: n = 200311, Mean = 87.25, SD = 1277.08, Median = , MAD = 32.62, range: [0, 283661], Skewness = 179.18, Kurtosis = 37347.72, 66.65% missing
-    #>   - producer_price_lcu_tonne: n = 200311, Mean = 1.13e+07, SD = 2.09e+08, Median = , MAD = 22259.76, range: [70, 1.125e+10], Skewness = 31.29, Kurtosis = 1188.89, 86.82% missing
-    #>   - producer_price_slc_tonne: n = 200311, Mean = 9.78e+05, SD = 7.85e+06, Median = , MAD = 11783.70, range: [0, 404521000], Skewness = 22.66, Kurtosis = 813.07, 86.82% missing
-    #>   - producer_price_usd_tonne: n = 200311, Mean = 2162.59, SD = 2035.07, Median = , MAD = 1211.28, range: [24, 33996], Skewness = 3.15, Kurtosis = 19.59, 87.18% missing
-    #>   - yield_kg: n = 200311, Mean = Inf, SD = , Median = , MAD = 20.61, range: [0, Inf], Skewness = , Kurtosis = , 83.28% missing
-    #>   - carcass_pct: n = 200311, Mean = 60.86, SD = 13.35, Median = , MAD = 14.83, range: [31, 97], Skewness = 0.23, Kurtosis = -1.45, 84.41% missing
-    #>   - lbw_kg: n = 200311, Mean = 115.83, SD = 166.18, Median = , MAD = 43.84, range: [0, 1106.58], Skewness = 1.67, Kurtosis = 2.06, 84.41% missing
-    #>   - stock_value_lcu: n = 200311, Mean = 0.00, SD = 0.00, Median = , MAD = 0.00, range: [0, 0], Skewness = , Kurtosis = , 36.29% missing
-    #>   - stock_value_slc: n = 200311, Mean = 0.00, SD = 0.00, Median = , MAD = 0.00, range: [0, 0], Skewness = , Kurtosis = , 36.29% missing
-    #>   - stock_value_usd: n = 200311, Mean = 0.00, SD = 0.00, Median = , MAD = 0.00, range: [0, 0], Skewness = , Kurtosis = , 36.29% missing
-    #>   - mean_slc_price_per_tonne_2014_2016: n = 200311, Mean = 1.69e+06, SD = 1.01e+07, Median = , MAD = 19355.84, range: [160, 113709500], Skewness = 8.45, Kurtosis = 77.40, 86.86% missing
-    #>   - mean_usd_conversion_2014_2016: n = 200311, Mean = 872.89, SD = 3541.90, Median = , MAD = 14.58, range: [0.30, 28622.67], Skewness = 6.02, Kurtosis = 38.45, 1.34% missing
-    #>   - producer_price_usd_per_tonne_2014_2016: n = 200311, Mean = 2892.79, SD = 3719.50, Median = , MAD = 1487.00, range: [96.49, 68142.33], Skewness = 8.91, Kurtosis = 125.57, 86.86% missing
-    #>   - stock_value_constant_2014_2016_usd: n = 200311, Mean = 0.00, SD = 0.00, Median = , MAD = 0.00, range: [0, 0], Skewness = , Kurtosis = , 36.29% missing
+    #> The data contains 131219 observations of the following 27 variables:
+    #>   - iso3_code: 202 entries, such as chn (0.90%); egy (0.83%); tur (0.82%) and 199 others (48 missing)
+    #>   - faost_code: n = 131219, Mean = 126.62, SD = 72.77, Median = , MAD = 94.89, range: [1, 299], Skewness = 0.02, Kurtosis = -1.09, 0.04% missing
+    #>   - area: 201 entries, such as china (0.90%); egypt (0.83%); turkey (0.82%) and 198 others (609 missing)
+    #>   - item: 6 entries, such as stock (30.78%); meat (26.80%); offals (15.76%) and 3 others (48 missing)
+    #>   - animal: 24 entries, such as cattle (17.37%); goat (14.82%); sheep (14.43%) and 21 others (48 missing)
+    #>   - year: n = 131219, Mean = 2007.56, SD = 6.91, Median = , MAD = 8.90, range: [1996, 2019], Skewness = -9.86e-03, Kurtosis = -1.20, 0.04% missing
+    #>   - head: n = 131219, Mean = 2.74e+08, SD = 6.75e+09, Median = , MAD = 4.78e+05, range: [0, 569077421000], Skewness = 59.67, Kurtosis = 4007.65, 11.96% missing
+    #>   - tonnes: n = 131219, Mean = 3.66e+05, SD = 2.99e+06, Median = , MAD = 7497.99, range: [0, 1.38e+08], Skewness = 20.50, Kurtosis = 549.04, 9.19% missing
+    #>   - yield_kg: n = 131219, Mean = 61.79, SD = 84.76, Median = , MAD = 20.46, range: [0, 457.80], Skewness = 1.57, Kurtosis = 1.80, 76.45% missing
+    #>   - carcass_pct: n = 131219, Mean = 0.61, SD = 0.13, Median = , MAD = 0.15, range: [0.31, 0.97], Skewness = 0.23, Kurtosis = -1.45, 78.04% missing
+    #>   - lbw_kg: n = 131219, Mean = 146.19, SD = 170.92, Median = , MAD = 56.44, range: [0, 900], Skewness = 0.85, Kurtosis = -0.58, 71.69% missing
+    #>   - gross_production_value_constant_2014_2016_thousand_i: n = 131219, Mean = 5.19e+05, SD = 2.54e+06, Median = , MAD = 34351.84, range: [3, 49196398], Skewness = 10.27, Kurtosis = 128.69, 85.90% missing
+    #>   - gross_production_value_constant_2014_2016_thousand_slc: n = 131219, Mean = 6.50e+08, SD = 7.53e+09, Median = , MAD = 1.03e+06, range: [1, 275162149725], Skewness = 20.50, Kurtosis = 528.93, 71.35% missing
+    #>   - gross_production_value_constant_2014_2016_thousand_us: n = 131219, Mean = 7.90e+05, SD = 4.52e+06, Median = , MAD = 59395.18, range: [1, 155583048], Skewness = 18.88, Kurtosis = 489.78, 72.28% missing
+    #>   - gross_production_value_current_thousand_slc: n = 131219, Mean = 1.83e+09, SD = 2.74e+11, Median = , MAD = 6.68e+05, range: [1, 52128784998300], Skewness = 189.97, Kurtosis = 36102.16, 72.46% missing
+    #>   - gross_production_value_current_thousand_us: n = 131219, Mean = 6.47e+05, SD = 3.94e+06, Median = , MAD = 48196.36, range: [1, 207738084], Skewness = 25.20, Kurtosis = 944.10, 73.44% missing
+    #>   - producer_price_index_2014_2016_100: n = 131219, Mean = 90.18, SD = 1322.48, Median = , MAD = 29.65, range: [0, 283661], Skewness = 173.05, Kurtosis = 34830.40, 52.53% missing
+    #>   - producer_price_lcu_tonne: n = 131219, Mean = 1.21e+07, SD = 2.18e+08, Median = , MAD = 21601.48, range: [80, 1.125e+10], Skewness = 30.09, Kurtosis = 1098.53, 81.41% missing
+    #>   - producer_price_slc_tonne: n = 131219, Mean = 1.05e+06, SD = 8.17e+06, Median = , MAD = 12317.44, range: [0, 404521000], Skewness = 21.69, Kurtosis = 747.23, 81.42% missing
+    #>   - producer_price_usd_tonne: n = 131219, Mean = 2205.93, SD = 2066.51, Median = , MAD = 1245.38, range: [33, 33996], Skewness = 3.06, Kurtosis = 18.48, 81.90% missing
+    #>   - stock_value_lcu: n = 131219, Mean = 8.78e+11, SD = 8.01e+13, Median = , MAD = 0.00, range: [0, 16321509020323868], Skewness = 151.08, Kurtosis = 25522.56, 23.40% missing
+    #>   - stock_value_slc: n = 131219, Mean = 2.00e+11, SD = 9.88e+12, Median = , MAD = 0.00, range: [0, 1612566265665600], Skewness = 95.84, Kurtosis = 11816.71, 23.40% missing
+    #>   - stock_value_usd: n = 131219, Mean = 1.93e+08, SD = 3.67e+09, Median = , MAD = 0.00, range: [0, 3.70e+11], Skewness = 55.78, Kurtosis = 4205.12, 23.61% missing
+    #>   - mean_slc_price_per_tonne_2014_2016: n = 131219, Mean = 1.74e+06, SD = 1.01e+07, Median = , MAD = 20532.28, range: [160, 113709500], Skewness = 8.37, Kurtosis = 76.76, 80.84% missing
+    #>   - mean_usd_conversion_2014_2016: n = 131219, Mean = 872.52, SD = 3536.15, Median = , MAD = 14.58, range: [0.30, 28622.67], Skewness = 6.02, Kurtosis = 38.32, 1.57% missing
+    #>   - producer_price_usd_per_tonne_2014_2016: n = 131219, Mean = 2899.56, SD = 3689.42, Median = , MAD = 1477.76, range: [96.49, 68142.33], Skewness = 8.90, Kurtosis = 125.82, 80.84% missing
+    #>   - stock_value_constant_2014_2016_usd: n = 131219, Mean = 3.07e+08, SD = 5.66e+09, Median = , MAD = 0.00, range: [0, 4.02e+11], Skewness = 40.31, Kurtosis = 1981.30, 22.95% missing
 
 |     | Variable                                               |  n_Obs | percentage_Missing |         Mean |           SD | Median |          MAD |          Min |          Max |    Skewness |      Kurtosis | n_Entries | n_Missing |
 |:----|:-------------------------------------------------------|-------:|-------------------:|-------------:|-------------:|-------:|-------------:|-------------:|-------------:|------------:|--------------:|----------:|----------:|
-| 3   | iso3_code                                              | 200311 |          0.0000000 |           NA |           NA |     NA |           NA |           NA |           NA |          NA |            NA |       202 |         0 |
-| 2   | faost_code                                             | 200311 |          0.0000000 | 1.259100e+02 | 7.251848e+01 |    123 | 9.340380e+01 |    1.0000000 | 2.990000e+02 |   0.0218909 |    -1.0900497 |        NA |        NA |
-| 7   | area                                                   | 200311 |          0.4348238 |           NA |           NA |     NA |           NA |           NA |           NA |          NA |            NA |       201 |       871 |
-| 6   | year                                                   | 200311 |          0.0000000 | 2.006594e+03 | 7.480702e+00 |   2007 | 8.895600e+00 | 1994.0000000 | 2.019000e+03 |  -0.0155982 |    -1.1988776 |        NA |        NA |
-| 5   | item_code                                              | 200311 |          0.0000000 | 1.019465e+03 | 7.896444e+01 |   1034 | 8.154300e+01 |  866.0000000 | 1.166000e+03 |  -0.5863436 |    -0.3817816 |        NA |        NA |
-| 4   | item                                                   | 200311 |          0.0000000 |           NA |           NA |     NA |           NA |           NA |           NA |          NA |            NA |        10 |         0 |
-| 1   | animal                                                 | 200311 |          0.0000000 |           NA |           NA |     NA |           NA |           NA |           NA |          NA |            NA |        70 |         0 |
-| 13  | head                                                   | 200311 |         37.6764132 | 2.679166e+08 | 6.588579e+09 |     NA | 4.721948e+05 |    0.0000000 | 5.690774e+11 |  60.2909629 |  4117.8317523 |        NA |        NA |
-| 14  | tonnes                                                 | 200311 |         52.4214846 | 2.839963e+05 | 2.550687e+06 |     NA | 4.431491e+03 |    0.0000000 | 9.908329e+07 |  21.4505800 |   591.2672666 |        NA |        NA |
-| 28  | gross_production_value_constant_2014_2016_thousand_i   | 200311 |         90.0130297 | 5.095206e+05 | 2.493317e+06 |     NA | 3.357644e+04 |    3.0000000 | 4.919640e+07 |  10.3167956 |   130.6592868 |        NA |        NA |
-| 16  | gross_production_value_constant_2014_2016_thousand_slc | 200311 |         79.6925780 | 6.309110e+08 | 7.315334e+09 |     NA | 1.014619e+06 |    1.0000000 | 2.751621e+11 |  20.8353185 |   550.9625566 |        NA |        NA |
-| 17  | gross_production_value_constant_2014_2016_thousand_us  | 200311 |         80.3545487 | 7.761366e+05 | 4.445052e+06 |     NA | 5.855380e+04 |    1.0000000 | 1.555830e+08 |  18.9858539 |   496.0013921 |        NA |        NA |
-| 18  | gross_production_value_current_thousand_slc            | 200311 |         80.5167964 | 1.694088e+09 | 2.639258e+11 |     NA | 6.217016e+05 |    1.0000000 | 5.212878e+13 | 197.4303638 | 38994.7562236 |        NA |        NA |
-| 19  | gross_production_value_current_thousand_us             | 200311 |         81.2102181 | 6.291121e+05 | 3.825258e+06 |     NA | 4.665594e+04 |    1.0000000 | 2.077381e+08 |  25.6409202 |   986.9185048 |        NA |        NA |
-| 15  | producer_price_index_2014_2016_100                     | 200311 |         66.6488610 | 8.725273e+01 | 1.277076e+03 |     NA | 3.261720e+01 |    0.0000000 | 2.836610e+05 | 179.1805793 | 37347.7203648 |        NA |        NA |
-| 23  | producer_price_lcu_tonne                               | 200311 |         86.8174988 | 1.125374e+07 | 2.093573e+08 |     NA | 2.225976e+04 |   70.0000000 | 1.125000e+10 |  31.2940212 |  1188.8917421 |        NA |        NA |
-| 24  | producer_price_slc_tonne                               | 200311 |         86.8234895 | 9.775881e+05 | 7.848634e+06 |     NA | 1.178370e+04 |    0.0000000 | 4.045210e+08 |  22.6559317 |   813.0705316 |        NA |        NA |
-| 27  | producer_price_usd_tonne                               | 200311 |         87.1764406 | 2.162592e+03 | 2.035066e+03 |     NA | 1.211284e+03 |   24.0000000 | 3.399600e+04 |   3.1487170 |    19.5861803 |        NA |        NA |
-| 20  | yield_kg                                               | 200311 |         83.2799996 |          Inf |          NaN |     NA | 2.060814e+01 |    0.0000000 |          Inf |         NaN |           NaN |        NA |        NA |
-| 21  | carcass_pct                                            | 200311 |         84.4107413 | 6.085732e+01 | 1.335080e+01 |     NA | 1.482600e+01 |   31.0000000 | 9.700000e+01 |   0.2263450 |    -1.4485352 |        NA |        NA |
-| 22  | lbw_kg                                                 | 200311 |         84.4107413 | 1.158310e+02 | 1.661846e+02 |     NA | 4.384060e+01 |    0.0000000 | 1.106579e+03 |   1.6659638 |     2.0610907 |        NA |        NA |
-| 10  | stock_value_lcu                                        | 200311 |         36.2940627 | 0.000000e+00 | 0.000000e+00 |     NA | 0.000000e+00 |    0.0000000 | 0.000000e+00 |         NaN |           NaN |        NA |        NA |
-| 11  | stock_value_slc                                        | 200311 |         36.2940627 | 0.000000e+00 | 0.000000e+00 |     NA | 0.000000e+00 |    0.0000000 | 0.000000e+00 |         NaN |           NaN |        NA |        NA |
-| 12  | stock_value_usd                                        | 200311 |         36.2940627 | 0.000000e+00 | 0.000000e+00 |     NA | 0.000000e+00 |    0.0000000 | 0.000000e+00 |         NaN |           NaN |        NA |        NA |
-| 25  | mean_slc_price_per_tonne_2014_2016                     | 200311 |         86.8564382 | 1.686366e+06 | 1.011813e+07 |     NA | 1.935584e+04 |  160.0000000 | 1.137095e+08 |   8.4544716 |    77.4034708 |        NA |        NA |
-| 8   | mean_usd_conversion_2014_2016                          | 200311 |          1.3409149 | 8.728852e+02 | 3.541896e+03 |     NA | 1.458246e+01 |    0.2958489 | 2.862267e+04 |   6.0213687 |    38.4502871 |        NA |        NA |
-| 26  | producer_price_usd_per_tonne_2014_2016                 | 200311 |         86.8564382 | 2.892790e+03 | 3.719503e+03 |     NA | 1.487000e+03 |   96.4874233 | 6.814233e+04 |   8.9146881 |   125.5720324 |        NA |        NA |
-| 9   | stock_value_constant_2014_2016_usd                     | 200311 |         36.2940627 | 0.000000e+00 | 0.000000e+00 |     NA | 0.000000e+00 |    0.0000000 | 0.000000e+00 |         NaN |           NaN |        NA |        NA |
+| 3   | iso3_code                                              | 131219 |          0.0365801 |           NA |           NA |     NA |           NA |           NA |           NA |          NA |            NA |       202 |        48 |
+| 2   | faost_code                                             | 131219 |          0.0365801 | 1.266204e+02 | 7.276729e+01 |     NA | 9.488640e+01 |    1.0000000 | 2.990000e+02 |   0.0154792 |    -1.0904881 |        NA |        NA |
+| 6   | area                                                   | 131219 |          0.4641096 |           NA |           NA |     NA |           NA |           NA |           NA |          NA |            NA |       201 |       609 |
+| 4   | item                                                   | 131219 |          0.0365801 |           NA |           NA |     NA |           NA |           NA |           NA |          NA |            NA |         6 |        48 |
+| 1   | animal                                                 | 131219 |          0.0365801 |           NA |           NA |     NA |           NA |           NA |           NA |          NA |            NA |        24 |        48 |
+| 5   | year                                                   | 131219 |          0.0365801 | 2.007560e+03 | 6.914304e+00 |     NA | 8.895600e+00 | 1996.0000000 | 2.019000e+03 |  -0.0098648 |    -1.2016301 |        NA |        NA |
+| 9   | head                                                   | 131219 |         11.9647307 | 2.740580e+08 | 6.748602e+09 |     NA | 4.775677e+05 |    0.0000000 | 5.690774e+11 |  59.6733184 |  4007.6501982 |        NA |        NA |
+| 8   | tonnes                                                 | 131219 |          9.1899801 | 3.655330e+05 | 2.988353e+06 |     NA | 7.497992e+03 |    0.0000000 | 1.379568e+08 |  20.5010035 |   549.0367369 |        NA |        NA |
+| 20  | yield_kg                                               | 131219 |         76.4485326 | 6.178687e+01 | 8.476246e+01 |     NA | 2.045988e+01 |    0.0000000 | 4.578000e+02 |   1.5698676 |     1.7962393 |        NA |        NA |
+| 21  | carcass_pct                                            | 131219 |         78.0405277 | 6.089239e-01 | 1.333268e-01 |     NA | 1.482600e-01 |    0.3100000 | 9.700000e-01 |   0.2267946 |    -1.4517749 |        NA |        NA |
+| 16  | lbw_kg                                                 | 131219 |         71.6938858 | 1.461899e+02 | 1.709247e+02 |     NA | 5.643764e+01 |    0.0000000 | 9.000000e+02 |   0.8465214 |    -0.5791894 |        NA |        NA |
+| 27  | gross_production_value_constant_2014_2016_thousand_i   | 131219 |         85.9029561 | 5.187439e+05 | 2.539509e+06 |     NA | 3.435184e+04 |    3.0000000 | 4.919640e+07 |  10.2663353 |   128.6932661 |        NA |        NA |
+| 15  | gross_production_value_constant_2014_2016_thousand_slc | 131219 |         71.3456131 | 6.498522e+08 | 7.532200e+09 |     NA | 1.032282e+06 |    1.0000000 | 2.751621e+11 |  20.5040812 |   528.9322395 |        NA |        NA |
+| 17  | gross_production_value_constant_2014_2016_thousand_us  | 131219 |         72.2784048 | 7.903696e+05 | 4.520192e+06 |     NA | 5.939518e+04 |    1.0000000 | 1.555830e+08 |  18.8810931 |   489.7769699 |        NA |        NA |
+| 18  | gross_production_value_current_thousand_slc            | 131219 |         72.4643535 | 1.826532e+09 | 2.742951e+11 |     NA | 6.683309e+05 |    1.0000000 | 5.212878e+13 | 189.9667128 | 36102.1641410 |        NA |        NA |
+| 19  | gross_production_value_current_thousand_us             | 131219 |         73.4405841 | 6.472795e+05 | 3.941642e+06 |     NA | 4.819636e+04 |    1.0000000 | 2.077381e+08 |  25.2037660 |   944.1037590 |        NA |        NA |
+| 14  | producer_price_index_2014_2016_100                     | 131219 |         52.5305024 | 9.017501e+01 | 1.322481e+03 |     NA | 2.965200e+01 |    0.0000000 | 2.836610e+05 | 173.0458614 | 34830.3973209 |        NA |        NA |
+| 24  | producer_price_lcu_tonne                               | 131219 |         81.4104665 | 1.205346e+07 | 2.177791e+08 |     NA | 2.160148e+04 |   80.0000000 | 1.125000e+10 |  30.0854882 |  1098.5309228 |        NA |        NA |
+| 25  | producer_price_slc_tonne                               | 131219 |         81.4165632 | 1.052035e+06 | 8.173627e+06 |     NA | 1.231744e+04 |    0.0000000 | 4.045210e+08 |  21.6939585 |   747.2279480 |        NA |        NA |
+| 26  | producer_price_usd_tonne                               | 131219 |         81.8997249 | 2.205934e+03 | 2.066514e+03 |     NA | 1.245384e+03 |   33.0000000 | 3.399600e+04 |   3.0603352 |    18.4826685 |        NA |        NA |
+| 11  | stock_value_lcu                                        | 131219 |         23.3975263 | 8.779119e+11 | 8.006253e+13 |     NA | 0.000000e+00 |    0.0000000 | 1.632151e+16 | 151.0758342 | 25522.5614141 |        NA |        NA |
+| 12  | stock_value_slc                                        | 131219 |         23.4005746 | 2.001742e+11 | 9.875646e+12 |     NA | 0.000000e+00 |    0.0000000 | 1.612566e+15 |  95.8377091 | 11816.7107066 |        NA |        NA |
+| 13  | stock_value_usd                                        | 131219 |         23.6086238 | 1.928891e+08 | 3.666185e+09 |     NA | 0.000000e+00 |    0.0000000 | 3.696460e+11 |  55.7820156 |  4205.1214003 |        NA |        NA |
+| 22  | mean_slc_price_per_tonne_2014_2016                     | 131219 |         80.8404271 | 1.741903e+06 | 1.005043e+07 |     NA | 2.053228e+04 |  160.0000000 | 1.137095e+08 |   8.3680247 |    76.7628108 |        NA |        NA |
+| 7   | mean_usd_conversion_2014_2016                          | 131219 |          1.5683704 | 8.725217e+02 | 3.536149e+03 |     NA | 1.458246e+01 |    0.2958489 | 2.862267e+04 |   6.0150984 |    38.3172324 |        NA |        NA |
+| 23  | producer_price_usd_per_tonne_2014_2016                 | 131219 |         80.8404271 | 2.899562e+03 | 3.689425e+03 |     NA | 1.477756e+03 |   96.4874233 | 6.814233e+04 |   8.8960687 |   125.8224660 |        NA |        NA |
+| 10  | stock_value_constant_2014_2016_usd                     | 131219 |         22.9456100 | 3.074802e+08 | 5.655661e+09 |     NA | 0.000000e+00 |    0.0000000 | 4.020543e+11 |  40.3063136 |  1981.2951440 |        NA |        NA |
 
 # Methods
+
+<!--- Add diagrams of the workflow --->
 
 ## Aquaculture
 
@@ -230,6 +224,10 @@ Table: Metadata
 <!--- Add automated results to this section --->
 
 ## Tables
+
+![](C:/Users/DEN173/Projects/GBADS/PPSTheme/output/tables/tab_aquaculture_value_2006-2018.png)
+![](C:/Users/DEN173/Projects/GBADS/PPSTheme/output/tables/tab_bra_chn_ind_usa_values_2006-2018.png)
+![](C:/Users/DEN173/Projects/GBADS/PPSTheme/output/tables/tab_livestock_value_2006-2018.png)
 
 ## Figures
 
@@ -300,6 +298,8 @@ Table: Metadata
 -   Malte Grosser (2019). snakecase: Convert Strings into any Case. R
     package version 0.11.0.
     <https://CRAN.R-project.org/package=snakecase>
+-   Mario Frasca (2019). logging: R Logging Package. R package version
+    0.10-108. <https://CRAN.R-project.org/package=logging>
 -   Matthieu Lesnoff (2021). mmage: A R package for sex-and-age
     population matrix models. R package version 2.4-3.
 -   Michael C. J. Kao, Markus Gesmann and Filippo Gheri (2022). FAOSTAT:
@@ -312,12 +312,19 @@ Table: Metadata
 -   R Core Team (2021). R: A language and environment for statistical
     computing. R Foundation for Statistical Computing, Vienna, Austria.
     URL <https://www.R-project.org/>.
+-   Richard Iannone and Mauricio Vargas (2022). pointblank: Data
+    Validation and Organization of Metadata for Local and Remote Tables.
+    R package version 0.10.0.
+    <https://CRAN.R-project.org/package=pointblank>
 -   Sam Firke (2021). janitor: Simple Tools for Examining and Cleaning
     Dirty Data. R package version 2.1.0.
     <https://CRAN.R-project.org/package=janitor>
 -   Stefan Milton Bache and Hadley Wickham (2022). magrittr: A
     Forward-Pipe Operator for R. R package version 2.0.2.
     <https://CRAN.R-project.org/package=magrittr>
+-   Tony Fischetti (2021). assertr: Assertive Programming for R Analysis
+    Pipelines. R package version 2.8.
+    <https://CRAN.R-project.org/package=assertr>
 -   Wickham et al., (2019). Welcome to the tidyverse. Journal of Open
     Source Software, 4(43), 1686, <https://doi.org/10.21105/joss.01686>
 -   Yihui Xie (2021). knitr: A General-Purpose Package for Dynamic

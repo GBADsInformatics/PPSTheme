@@ -235,10 +235,8 @@ get_results <- function(...) {
     male_juvenile_avg_population <- sum(average_population[5])
     male_sub_avg_population <- sum(average_population[6])
     male_adult_avg_population <- sum(average_population[7:8])
-    total_female_population_avg <- female_adult_avg_population + \
-                      female_juvenile_avg_population + female_sub_avg_population
-    total_male_population_avg <- male_adult_avg_population + \
-                        male_juvenile_avg_population + male_sub_avg_population
+    total_female_population_avg <- female_adult_avg_population + female_juvenile_avg_population + female_sub_avg_population
+    total_male_population_avg <- male_adult_avg_population + male_juvenile_avg_population + male_sub_avg_population
     return(
       tibble::tibble(
         iso3 = x$iso3,

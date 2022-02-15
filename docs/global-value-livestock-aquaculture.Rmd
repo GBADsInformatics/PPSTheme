@@ -1183,26 +1183,25 @@ set.seed(0)
 # Create Scatter Plot of Income Levels 
 ##############################################
 p <- ggplot(livestock_productivity %>% filter(year == 2015)) +
-  geom_point(aes(x = usd_percap, y = productivity, color = income_level)) 
-
-p
-
-+
+  geom_point(aes(x = usd_percap, y = productivity, color = income_level)) + 
   scale_size_manual(values = setNames(c(2, 4), c("smaller", "larger"))) + 
-  scale_color_manual(values = setNames(pal_lancet()(4), levels(livestock_prod$income_level_iso3c))) +
+  scale_color_manual(values = setNames(pal_lancet()(5), levels(livestock_productivity$income_level))) +
   scale_y_continuous(
-    breaks = c(1, 5, 10, 25, 50, 70, 100) / 100,
+    breaks = c(5, 10, 25, 50, 70, 100) / 100,
     labels = scales::percent_format(accuracy = 1)
   ) +
   scale_x_sqrt(
-    breaks = c(1, 5, 10, 20, 30, 50, 80) * 1e3,
+    breaks = c( 5, 10, 20, 30, 50, 80) * 1e3,
     labels = scales::dollar_format()
   ) +
-  scale_color_manual(values = setNames(pal_jco()(4), levels(livestock_value_percap$income_level_iso3c))) +
+  scale_color_manual(values = setNames(pal_jco()(5), levels(livestock_productivity$income_level))) +
    ggrepel::geom_text_repel(
-    data = livestock_prod %>%
-      filter(ISO3_CODE %in% gates_countries),  # Only Show targeted countries 
-    aes(x = usd_percap, y = value, label = country, color = income_level_iso3c),
+    data = livestock_productivity %>%
+      filter(iso3_code %in% c('USA', 'AUS', 'IDN', 'BRA', 
+                              'CHN', 'MEX', 'URY', 'ETH', 
+                              'TUR', 'VIE', 'RWA', 'KEN',
+                              'PHL', 'ARG', 'CAN', 'NZL', 'GBR'), year == 2015),  # Only Show targeted countries 
+    aes(x = usd_percap, y = productivity, label = country, color = income_level),
     size = 5,
     nudge_y = 0.03,
     force = 2,
@@ -1210,9 +1209,12 @@ p
   ) +
   labs(
     title = "GDP Per Capita vs Livestock Productivity (2015)",
-    subtitle = "Values are in current USD. World Bank Income classifications are from 2020.",
+    subtitle = "",
     x = "GDP per capita ($)",
     y = "Livestock productivity (% of livestock outputs)",
+    caption = paste("1. All values in 2014-2016 constant USD", 
+                    "2. World Bank income classifications are from 2020", 
+                    "3. Livestock productivity is defined as being the % of livestock value made up from output values", sep = '\n'),
     color = " ", 
     size = ''
   ) +
@@ -1230,10 +1232,13 @@ p
     plot.title = element_text(face = "bold.italic", size = 30),
     plot.subtitle = element_text(face = "italic", size = 20),
     axis.text.y = element_text(size = 20, face = "bold.italic"),
-    axis.text.x = element_text(size = 20, face = "bold.italic")
+    axis.text.x = element_text(size = 20, face = "bold.italic"), 
+    plot.caption = element_text(size = 12, face = 'italic', hjust = 0)
   )
 
-p
+ggsave(plot = p, filename = here::here("output", "figures", "FIG-world-bank_gdp_percap_livestock_productivity_2015.png"), 
+       width = 20, height = 12, dpi = 350)
+ 
 ```
 
 > As can be noted, as a countries income level increases, the trend is for their

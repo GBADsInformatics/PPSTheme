@@ -174,7 +174,7 @@ carcass_pct <- params$conversion_factors %>%
   drop_na(carcass_pct) %>%
   assertr::verify((carcass_pct <= 1) & (carcass_pct > 0))
 
-# tapply(carcass_pct$carcass_pct, carcass_pct$animal_en, FUN = summary)
+tapply(carcass_pct$carcass_pct, carcass_pct$animal_en, FUN = summary)
 
 
 

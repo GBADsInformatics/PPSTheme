@@ -41,7 +41,8 @@ cat(
  This repository contains all R code and data for the *GBADS* global livestock 
  value estimation manuscript. 
 
-## Files 
+## Files
+
 ```{bash, echo=FALSE}
 git ls-tree -r HEAD --name-only|grep  -v '^\.'
 ```
@@ -140,7 +141,6 @@ kable(as.data.frame(livestock_report))
 ## Crops 
 
 
- 
  
 ## Livestock 
  

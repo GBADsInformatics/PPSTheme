@@ -1525,15 +1525,18 @@ change <- df %>%
 
 
 # Get world map
-world <- ne_countries(returnclass = "sf") %>%
+world <- ne_countries(returnclass = "sf") 
+
+world_value <- world %>%
   left_join(change, by = c("iso_a3" = "iso3_code")) %>% 
-  drop_na(animal)
+  drop_na(change_vals, animal)
 
 
-p <- ggplot(world) +
-  geom_sf(fill = "#808080", color = "#D5E4EB") +
-  geom_sf(aes(fill = change_vals), color = "#D5E4EB") +
+p <- ggplot() +
+  geom_sf(data = world, fill = "#808080", color = "#D5E4EB") +
+  geom_sf(data = world_value, aes(fill = change_vals), color = "#D5E4EB") +
   coord_sf(ylim = c(-55, 78)) +
+  facet_wrap(vars(animal)) + 
   theme_economist() +
   scale_fill_manual(
     values = setNames(
@@ -1541,7 +1544,6 @@ p <- ggplot(world) +
       c("&lt; -2.5", "-2.5 to 0", "0 to 1", "1 to 2.5", "2.5 to 5", "5 to 10", "&gt;10", "NA")
     )
   ) +
-  facet_wrap(vars(animal)) + 
   labs(
     title = "Average Livestock and Aquaculture Output Value Change (%) per year between 2005 and 2018",
     fill = "",

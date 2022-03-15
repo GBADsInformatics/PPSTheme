@@ -16,7 +16,7 @@ Data cleaning and biomass calculations were coded in python to assist in the ing
 ### Use
 * `/data`
 	* `<date>_liveWeightFAO.csv` is the original csv file that provides live weights for livestock animals according to: https://www.fao.org/economic/the-statistics-division-ess/methodology/methodology-systems/technical-conversion-factors-for-agricultural-commodities/en/
-	* `<date>_liveWeightFAO_cleaned.csv` is the cleaned livestock live weights. Information about cleaning and rational can be found in FIXME.
+	* `<date>_liveWeightFAO_cleaned.csv` is the cleaned livestock live weights. Information about cleaning and rational can be found in `/data`.
 	* `<date>_biomass_liveWeight_faostat.csv` is the output file that has all biomass estimates calculated using the GBADs API. Information about the API call can be found in `src/BiomassCalc.py`.
 * `/src`
 	* `cleanFaoConversion.py` maps countries to FAO country names and converts all live weights to kg. To run you must specify the input file as a command line argument. The input file used is `<date>_liveWeightFAO.csv`. The output file is `<date>_liveWeightFAO_cleaned.csv`.

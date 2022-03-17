@@ -104,7 +104,7 @@ source(here::here('R', 'table-functions.R'))
 
 ```{r files}
 # Set the environment variable so the figure names can be altered
-
+knitr::knit_exit()
 Sys.setenv(RMD_FIG_PATH = here::here('output', 'figures'))
 
 ```
@@ -115,22 +115,22 @@ Sys.setenv(RMD_FIG_PATH = here::here('output', 'figures'))
 # This code chunk sets up all the parameters, themes and color 
 # palletes that are used in the following plots. 
 
-figure_opts <- list(
-  figure_themes  = list(
-    stacked_area_chart = theme(
-    legend.position = "bottom",
-    legend.title = element_text(size = 18, face = "bold.italic"),
-    legend.text = element_text(size = 20, face = "italic"),
-    plot.title = element_text(face = "bold.italic", size = 30),
-    plot.subtitle = element_text(face = "italic", size = 20),
-    axis.text.y = element_text(size = 20, face = "bold.italic"),
-    axis.title = element_text(hjust = 0.5), 
-    axis.text.x = element_text(size = 20, face = "bold.italic")
-    )), 
-  figure_pallets = list(), 
-  figure_dimensions = list(height = 12, width = 20, dpi = 350)
-)
-
+# figure_opts <- list(
+#   figure_themes  = list(
+#     stacked_area_chart = theme(
+#     legend.position = "bottom",
+#     legend.title = element_text(size = 18, face = "bold.italic"),
+#     legend.text = element_text(size = 20, face = "italic"),
+#     plot.title = element_text(face = "bold.italic", size = 30),
+#     plot.subtitle = element_text(face = "italic", size = 20),
+#     axis.text.y = element_text(size = 20, face = "bold.italic"),
+#     axis.title = element_text(hjust = 0.5), 
+#     axis.text.x = element_text(size = 20, face = "bold.italic")
+#     )), 
+#   figure_pallets = list(), 
+#   figure_dimensions = list(height = 12, width = 20, dpi = 350)
+# )
+# 
 
 
 ```
@@ -673,6 +673,35 @@ asset <-  stacked_area.plot(df_positions,
 
 ```
 
+
+```{r}
+# Table containing the values of each variable 
+
+df %>% 
+  spread(id_col, value) %>% 
+  filter(year %in% 1996:2018) %>% 
+  mutate(total = rowSums(across(Aquaculture:Livestock), na.rm = TRUE)) %>% 
+  mutate_at(c("Aquaculture", "Crops", "Livestock"), ~paste0(scales::dollar(.x, scale = 1e-9, accuracy = 3), ' (', scales::percent(.x/total, accuracy = 2), ')')) %>% 
+  mutate(total = scales::dollar(total, scale = 1e-9, accuracy = 3)) %>% 
+  generate_kbl(
+    col_names = c("Year", rep("Value (Billion USD)", 4)), 
+    caption = "<b><i>Global Aquaculture, Crop and Livestock Values (1996 - 2018)</i></b>", 
+    header_spec_fun = function(x) {
+       kableExtra::add_header_above(x, 
+      header = c(" " = 1, "Aquaculture" = 1, "Crops" = 1, "Livestock" = 1, 'Total' = 1), bold = TRUE)
+    }, 
+    footnotes = c("All values in 2014-2016 constant US dollars", 
+                  "The value of assets is not included in the estimated Aquaculture and Crop Values.", 
+                   sapply(trimws(strsplit(sources$lvst,  "-  -" , fixed = TRUE)[[1]]), function(x) paste0("Source: ", x) ), 
+                   sources$aqua), 
+    output_name = 'tab_aquaculture_crop_livestock_value_1996-2018.png'
+  )
+```
+
+
+
+
+
 ```{r sac_grid_global_livestock_crop_aquaculture_1996-2018}
 
 # ----------------------------------------------------
@@ -1061,20 +1090,6 @@ p <- ggplot(livestock_value_percap %>%
 
 p
 ```
-
-> This plot currently does not contain values for prominant gates countries such as 
-tanzania, and ethiopia as price data is not available for those countries in 
-the majority of the years used 
-
-```{r}
-livestock_df %>% 
-    filter(ISO3_CODE %in% c("TZA", "ETH"), year == 2015, item == 'stock' ) %>% 
-    DT::datatable(
-        select(., ISO3_CODE, year, item, animal, producer_price_usd_per_tonne_2014_2016)
-    )
-    
-```
-
 
 
 

@@ -9,3 +9,4 @@ _targets/
 *.png
 ^_* # Directories which start wiht underscore 
 docs/*
+inst/doc

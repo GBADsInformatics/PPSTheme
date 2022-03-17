@@ -23,7 +23,8 @@
 # Stacked Area Charts -----------------------------------------------------
 # Function to create a stacked area chart
 
-
+library(ggthemes)
+library(ggplot2)
 th <-  theme(
 legend.position = "bottom",
 legend.title = element_text(size = 18, face = "bold.italic"),

@@ -1,24 +1,24 @@
 params <-
-list(libraries = c("magrittr", "tidyr", "dplyr", "stringr", "arrow", 
-"here", "FAOSTAT", "ggthemes", "ggplot2", "sf", "glue", "purrr", 
-"rnaturalearth", "rnaturalearthdata", "ggpubr", "wbstats", "knitr", 
-"ggsci", "ggtext", "viridis", "filenamer", "hrbrthemes", "DT", 
-"kableExtra", "forcats"), cutoff_year = 1996L, final_year = 2018L, 
-    file_names = list(aqua = "FAO_Global_Aquaculture_Production", 
-        crps = "FAOSTAT_Crop_Values", lvst = "FAOSTAT_Livestock_Values"), 
+list(libraries = c("magrittr", "tidyr", "dplyr", "stringr", "arrow",
+"here", "FAOSTAT", "ggthemes", "ggplot2", "sf", "glue", "purrr",
+"rnaturalearth", "rnaturalearthdata", "ggpubr", "wbstats", "knitr",
+"ggsci", "ggtext", "viridis", "filenamer", "hrbrthemes", "DT",
+"kableExtra", "forcats"), cutoff_year = 1996L, final_year = 2018L,
+    file_names = list(aqua = "FAO_Global_Aquaculture_Production",
+        crps = "FAOSTAT_Crop_Values", lvst = "FAOSTAT_Livestock_Values"),
     output_dir = "C:/Users/DEN173/Projects/GBADS/PPSTheme/data/output")
 
 ## ----setup, include=FALSE--------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 #################################################################
 # Load Libraries
 #################################################################
-sapply(params$libraries, 
+sapply(params$libraries,
        function(x) {
          if (!require(x, character.only = TRUE)) {
            renv::install(x)
            library(x, character.only = TRUE)
          }
-       } 
+       }
 )
 
 
@@ -48,7 +48,7 @@ knitr::opts_chunk$set(
 
 
 #################################################################
-# Helper functions 
+# Helper functions
 #################################################################
 source(here::here('R', 'plotting-functions.R'))
 source(here::here('R', 'table-functions.R'))
@@ -63,8 +63,8 @@ Sys.setenv(RMD_FIG_PATH = here::here('output', 'figures'))
 
 ## ----figure_setup----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-# This code chunk sets up all the parameters, themes and color 
-# palletes that are used in the following plots. 
+# This code chunk sets up all the parameters, themes and color
+# palletes that are used in the following plots.
 
 figure_opts <- list(
   figure_themes  = list(
@@ -75,10 +75,10 @@ figure_opts <- list(
     plot.title = element_text(face = "bold.italic", size = 30),
     plot.subtitle = element_text(face = "italic", size = 20),
     axis.text.y = element_text(size = 20, face = "bold.italic"),
-    axis.title = element_text(hjust = 0.5), 
+    axis.title = element_text(hjust = 0.5),
     axis.text.x = element_text(size = 20, face = "bold.italic")
-    )), 
-  figure_pallets = list(), 
+    )),
+  figure_pallets = list(),
   figure_dimensions = list(height = 12, width = 20, dpi = 350)
 )
 
@@ -88,62 +88,62 @@ figure_opts <- list(
 
 ## ----load_data, echo=FALSE-------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-# Get the names of each parquet data file 
+# Get the names of each parquet data file
 output_files <- list.files(params$output_dir, recursive = TRUE, full.names = TRUE)
 
-# Load the data into a list 
+# Load the data into a list
 data <- purrr::map(
-    params$file_names, 
+    params$file_names,
     ~arrow::read_parquet(
       grep(.x, output_files, value = TRUE), as_data_frame = FALSE
     )
 )
 
 # Extract sources
-sources <- purrr::map(data, 
+sources <- purrr::map(data,
                       ~.x$metadata$source)
 
-data <- purrr::map(data, 
+data <- purrr::map(data,
                    ~collect(.x))
 
 
 ## ----precompute_values-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-# Pre compute values which will be necessary in the remaining 
+# Pre compute values which will be necessary in the remaining
 # figures and tables
 computed_data <- list(
-  
+
   # Aquaculture
-  aqua = data$aqua %>% 
-    group_by(iso3_code, year) %>% 
+  aqua = data$aqua %>%
+    group_by(iso3_code, year) %>%
     summarise(
-      output_value = sum(aquaculture_constant_2014_2016_constant_usd_value, na.rm = TRUE), 
-      output_tonnes = sum(tonnes, na.rm = TRUE), 
-      id_col = 'aquaculture', 
-      .groups = 'drop'
-    ), 
-  
-  # Livestock
-  lvst = data$lvst %>% 
-    group_by(iso3_code, year) %>% 
-    summarise(
-      output_value = sum(gross_production_value_constant_2014_2016_thousand_us, na.rm = TRUE)* 1000, 
-      asset_value = sum(stock_value_constant_2014_2016_usd, na.rm = TRUE), 
-      output_tonnes = sum(ifelse(item != 'stock', tonnes, 0), na.rm = TRUE),  
-      asset_tonnes = sum(ifelse(item == 'stock', lbw_kg, 0), na.rm = TRUE) * 1000,  
-      id_col = 'livestock', 
+      output_value = sum(aquaculture_constant_2014_2016_constant_usd_value, na.rm = TRUE),
+      output_tonnes = sum(tonnes, na.rm = TRUE),
+      id_col = 'aquaculture',
       .groups = 'drop'
     ),
-  
- # Crops 
-  crps = data$crps %>% 
-    group_by(iso3_code, year) %>% 
+
+  # Livestock
+  lvst = data$lvst %>%
+    group_by(iso3_code, year) %>%
     summarise(
-      output_value = sum(gross_production_value_constant_2014_2016_thousand_us, na.rm = TRUE) * 1000, 
-      output_tonnes = sum(tonnes,  na.rm = TRUE),  
+      output_value = sum(gross_production_value_constant_2014_2016_thousand_us, na.rm = TRUE)* 1000,
+      asset_value = sum(stock_value_constant_2014_2016_usd, na.rm = TRUE),
+      output_tonnes = sum(ifelse(item != 'stock', tonnes, 0), na.rm = TRUE),
+      asset_tonnes = sum(ifelse(item == 'stock', lbw_kg, 0), na.rm = TRUE) * 1000,
+      id_col = 'livestock',
+      .groups = 'drop'
+    ),
+
+ # Crops
+  crps = data$crps %>%
+    group_by(iso3_code, year) %>%
+    summarise(
+      output_value = sum(gross_production_value_constant_2014_2016_thousand_us, na.rm = TRUE) * 1000,
+      output_tonnes = sum(tonnes,  na.rm = TRUE),
       id_col = 'crops',
       .groups = 'drop'
-    ) 
+    )
 )
 
 
@@ -153,50 +153,50 @@ computed_data <- list(
 # This table shows the highest impact countries in each section
 high_impact_countries <- c("bra", "chn", "ind", "usa")
 
-asset_animals <- data$lvst %>% filter(year %in% 2006:2018, iso3_code %in% high_impact_countries, 
-                                     stock_value_constant_2014_2016_usd > 0) %>% 
-  pull(animal) %>% 
-  na.omit() %>% 
-  unique() %>% 
+asset_animals <- data$lvst %>% filter(year %in% 2006:2018, iso3_code %in% high_impact_countries,
+                                     stock_value_constant_2014_2016_usd > 0) %>%
+  pull(animal) %>%
+  na.omit() %>%
+  unique() %>%
   sort()
 
-output_types <- data$lvst %>% filter(year %in% 2006:2018, iso3_code %in% high_impact_countries, 
-                                     stock_value_constant_2014_2016_usd == 0, 
-                                     gross_production_value_constant_2014_2016_thousand_us > 0) %>% 
-  unite(types, animal, item, sep = ' ') %>% 
-  pull(types) %>% 
-  na.omit() %>% 
-  unique() %>% 
+output_types <- data$lvst %>% filter(year %in% 2006:2018, iso3_code %in% high_impact_countries,
+                                     stock_value_constant_2014_2016_usd == 0,
+                                     gross_production_value_constant_2014_2016_thousand_us > 0) %>%
+  unite(types, animal, item, sep = ' ') %>%
+  pull(types) %>%
+  na.omit() %>%
+  unique() %>%
   sort()
-  
+
 # Format table data
-tbl_data_countries <- computed_data$lvst %>% 
-  filter(year > 2005, year < 2019,  iso3_code %in% high_impact_countries) %>% 
-  arrange(desc(year)) %>% 
-  select(iso3_code, year, asset_value, output_value, output_tonnes) %>% 
+tbl_data_countries <- computed_data$lvst %>%
+  filter(year > 2005, year < 2019,  iso3_code %in% high_impact_countries) %>%
+  arrange(desc(year)) %>%
+  select(iso3_code, year, asset_value, output_value, output_tonnes) %>%
   mutate_at(vars(contains('value')), ~ifelse(.x == 0, NA, .x))
 
-tbl_data_global <- computed_data$lvst %>% 
-  filter(year > 2005, year < 2019) %>% 
-  group_by(year) %>% 
-  summarise_if(is.numeric, sum, na.rm = TRUE) %>% 
-  arrange(desc(year)) %>% 
-  select(year, asset_value, output_value, output_tonnes) %>% 
+tbl_data_global <- computed_data$lvst %>%
+  filter(year > 2005, year < 2019) %>%
+  group_by(year) %>%
+  summarise_if(is.numeric, sum, na.rm = TRUE) %>%
+  arrange(desc(year)) %>%
+  select(year, asset_value, output_value, output_tonnes) %>%
   mutate_at(vars(contains('value')), ~ifelse(.x == 0, NA, .x))
 
 
 # Join countries in correct configuration and append the total columns
-dfs <- lapply(high_impact_countries, 
-       function(x) filter(tbl_data_countries, iso3_code == x) %>% 
-         left_join(tbl_data_global, by = "year", suffix = c("", "_global")) %>% 
+dfs <- lapply(high_impact_countries,
+       function(x) filter(tbl_data_countries, iso3_code == x) %>%
+         left_join(tbl_data_global, by = "year", suffix = c("", "_global")) %>%
          mutate(
-         asset_value = paste0(scales::dollar(asset_value, scale = 1e-9, suffix='', accuracy = .1), ' (',  scales::percent(asset_value/asset_value_global, accuracy = .1), ')'),  
-         output_value = paste0(scales::dollar(output_value, scale = 1e-9, suffix='', accuracy = .1), ' (',  scales::percent(output_value/output_value_global, accuracy = .1), ')'),  
+         asset_value = paste0(scales::dollar(asset_value, scale = 1e-9, suffix='', accuracy = .1), ' (',  scales::percent(asset_value/asset_value_global, accuracy = .1), ')'),
+         output_value = paste0(scales::dollar(output_value, scale = 1e-9, suffix='', accuracy = .1), ' (',  scales::percent(output_value/output_value_global, accuracy = .1), ')'),
          output_tonnes = paste0(scales::comma(output_tonnes, scale = 1e-6, suffix='', accuracy = .1), ' (',  scales::percent(output_tonnes/output_tonnes_global, accuracy = .1), ')')
-         ) %>% 
+         ) %>%
          mutate(
            asset_value = str_replace_all(asset_value, 'NA \\(NA\\)', '-')
-         ) %>% 
+         ) %>%
          select(-iso3_code, -contains('global'))
 )
 
@@ -205,29 +205,29 @@ dfs <- lapply(high_impact_countries,
 
 # Generate table as a PDF
 tbl_colnames <- c("Value (billion)", "Value (billion)", "Tonnes (million)")
-purrr::reduce(dfs, full_join, by = 'year') %>% 
+purrr::reduce(dfs, full_join, by = 'year') %>%
   kableExtra::kbl(col.names = c("Year",rep(tbl_colnames, length(high_impact_countries))),
-                  booktabs = TRUE, 
+                  booktabs = TRUE,
                   align = c('l', rep('c', 12)),
-                  caption = "<b><i>Estimated Livestock Asset and Output Values and Tonnes <br> for Brazil, China, India and the USA (2006-2018) as a % of the global value. </b></i>", 
-                  midrule = TRUE, 
-                  bottomrule = TRUE) %>% 
-  kableExtra::kable_classic(font_size = 12, bootstrap_options = "striped", full_width = F) %>% 
-  kableExtra::column_spec(1:13, border_left = TRUE) %>% 
-  kableExtra::column_spec(1, bold = TRUE) %>% 
-  kableExtra::row_spec(0, italic = TRUE, align = 'c') %>% 
-   kableExtra::row_spec(13, extra_css = "border-bottom: 1px solid;") %>% 
-  kableExtra::add_header_above(c(" " = 1, rep(c("Asset" = 1, "Output" = 2), 4)), 
-                               italic = TRUE, bold = TRUE) %>% 
+                  caption = "<b><i>Estimated Livestock Asset and Output Values and Tonnes <br> for Brazil, China, India and the USA (2006-2018) as a % of the global value. </b></i>",
+                  midrule = TRUE,
+                  bottomrule = TRUE) %>%
+  kableExtra::kable_classic(font_size = 12, bootstrap_options = "striped", full_width = F) %>%
+  kableExtra::column_spec(1:13, border_left = TRUE) %>%
+  kableExtra::column_spec(1, bold = TRUE) %>%
+  kableExtra::row_spec(0, italic = TRUE, align = 'c') %>%
+   kableExtra::row_spec(13, extra_css = "border-bottom: 1px solid;") %>%
+  kableExtra::add_header_above(c(" " = 1, rep(c("Asset" = 1, "Output" = 2), 4)),
+                               italic = TRUE, bold = TRUE) %>%
   kableExtra::add_header_above(
     c(" " = 1, "Brazil" = 3, "China" = 3, "India" = 3, "USA" =  3), bold = TRUE, font_size = 18
-  ) %>% 
-  kableExtra::add_footnote(c("All values in constant 2014-2016 US dollars.", 
-                             "Asset values currently not available for India.", 
-                             paste0("Livestock Asset Values available for ", paste(asset_animals, collapse = ', '), '.'), 
+  ) %>%
+  kableExtra::add_footnote(c("All values in constant 2014-2016 US dollars.",
+                             "Asset values currently not available for India.",
+                             paste0("Livestock Asset Values available for ", paste(asset_animals, collapse = ', '), '.'),
                              paste0("Livestock Output Values available for ", paste(output_types, collapse = ', '), '.'),
                              sapply(trimws(strsplit(sources$lvst,  "-  -" , fixed = TRUE)[[1]]), function(x) paste0("Source: ", x) )),
-                           notation = "number")  %>% 
+                           notation = "number")  %>%
   kableExtra::save_kable(here::here('output', 'tables', "tab_bra_chn_ind_usa_values_2006-2018.png"))
 
 
@@ -236,21 +236,21 @@ purrr::reduce(dfs, full_join, by = 'year') %>%
 
 # Function to generate Kables
 generate_kbl <- function(df, col_names, caption, header_spec_fun, footnotes, output_name = NULL) {
-  table <- df %>% 
+  table <- df %>%
     kableExtra::kbl(col.names = col_names,
-                  booktabs = TRUE, 
+                  booktabs = TRUE,
                   align = c('l', rep('c', length(col_names)-1)),
-                  caption = caption, 
-                  midrule = TRUE, 
-                  bottomrule = TRUE) %>% 
-  kableExtra::kable_classic(font_size = 13, bootstrap_options = "striped", full_width = F) %>% 
-  kableExtra::column_spec(1:ncol(df), border_left = TRUE, border_right = TRUE) %>% 
-  kableExtra::column_spec(1, bold = TRUE) %>% 
-  kableExtra::row_spec(0, italic = TRUE, align = 'c') %>% 
-  kableExtra::row_spec(nrow(df), extra_css = "border-bottom: 1px solid;") %>% 
-  header_spec_fun() %>% 
+                  caption = caption,
+                  midrule = TRUE,
+                  bottomrule = TRUE) %>%
+  kableExtra::kable_classic(font_size = 13, bootstrap_options = "striped", full_width = F) %>%
+  kableExtra::column_spec(1:ncol(df), border_left = TRUE, border_right = TRUE) %>%
+  kableExtra::column_spec(1, bold = TRUE) %>%
+  kableExtra::row_spec(0, italic = TRUE, align = 'c') %>%
+  kableExtra::row_spec(nrow(df), extra_css = "border-bottom: 1px solid;") %>%
+  header_spec_fun() %>%
   kableExtra::add_footnote(footnotes,
-                           notation = "number")  
+                           notation = "number")
   if (!is.null(output_name)) {
     kableExtra::save_kable(table, here::here('output', 'tables', output_name))
   } else{
@@ -262,68 +262,68 @@ generate_kbl <- function(df, col_names, caption, header_spec_fun, footnotes, out
 
 ## ----tab_tab_aquaculture_value_2006-2018-----------------------------------------------------------------------------------------------------------------------------------------------------------
 
-# Format table data 
-aqua_tbl <- data$aqua %>% 
-  filter(year %in% 2006:2018) %>% 
+# Format table data
+aqua_tbl <- data$aqua %>%
+  filter(year %in% 2006:2018) %>%
   group_by(year) %>%
   summarise(
-    value = scales::dollar(sum(aquaculture_constant_2014_2016_constant_usd_value, na.rm = TRUE), accuracy = 3, scale = 1e-9, suffix = ' B'), 
-    tonnes = scales::comma(sum(tonnes, na.rm = TRUE), accuracy = .1, scale = 1e-6, suffix = ' M'), 
+    value = scales::dollar(sum(aquaculture_constant_2014_2016_constant_usd_value, na.rm = TRUE), accuracy = 3, scale = 1e-9, suffix = ' B'),
+    tonnes = scales::comma(sum(tonnes, na.rm = TRUE), accuracy = .1, scale = 1e-6, suffix = ' M'),
     .groups = 'drop'
-  ) %>% 
-  arrange(desc(year)) 
+  ) %>%
+  arrange(desc(year))
 
 
 
 
 ## ----tab_livestock_value_2006-2018-----------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-lvst_table <- computed_data$lvst %>% 
-  filter(year %in% 2006:2018) %>% 
-  group_by(year) %>% 
-  summarise_if(is.numeric, ~sum(.x, na.rm = TRUE), .groups = 'drop') %>% 
-  arrange(desc(year)) %>% 
+lvst_table <- computed_data$lvst %>%
+  filter(year %in% 2006:2018) %>%
+  group_by(year) %>%
+  summarise_if(is.numeric, ~sum(.x, na.rm = TRUE), .groups = 'drop') %>%
+  arrange(desc(year)) %>%
   select(year, asset_value, output_value, output_tonnes)
 
 
-asset_animals <- data$lvst %>% filter(year %in% 2006:2018, 
-                                     stock_value_constant_2014_2016_usd > 0) %>% 
-  pull(animal) %>% 
-  na.omit() %>% 
-  unique() %>% 
+asset_animals <- data$lvst %>% filter(year %in% 2006:2018,
+                                     stock_value_constant_2014_2016_usd > 0) %>%
+  pull(animal) %>%
+  na.omit() %>%
+  unique() %>%
   sort()
 
-output_types <- data$lvst %>% filter(year %in% 2006:2018, 
-                                     stock_value_constant_2014_2016_usd == 0, 
-                                     gross_production_value_constant_2014_2016_thousand_us > 0) %>% 
-  unite(types, animal, item, sep = ' ') %>% 
-  pull(types) %>% 
-  na.omit() %>% 
-  unique() %>% 
+output_types <- data$lvst %>% filter(year %in% 2006:2018,
+                                     stock_value_constant_2014_2016_usd == 0,
+                                     gross_production_value_constant_2014_2016_thousand_us > 0) %>%
+  unite(types, animal, item, sep = ' ') %>%
+  pull(types) %>%
+  na.omit() %>%
+  unique() %>%
   sort()
-  
+
 # Format columns
-lvst_table  <- lvst_table %>% 
-  mutate_at(vars(contains('output_value')), ~scales::dollar(.x, scale = 1e-9, suffix = ' B', accuracy = .1)) %>% 
-  mutate_at(vars(contains('asset_value')), ~scales::dollar(.x, scale = 1e-9, suffix = ' B', accuracy = .1)) %>% 
+lvst_table  <- lvst_table %>%
+  mutate_at(vars(contains('output_value')), ~scales::dollar(.x, scale = 1e-9, suffix = ' B', accuracy = .1)) %>%
+  mutate_at(vars(contains('asset_value')), ~scales::dollar(.x, scale = 1e-9, suffix = ' B', accuracy = .1)) %>%
   mutate_at(vars(contains('output_tonnes')), ~scales::comma(.x, scale = 1e-6, accuracy = .1,  suffix = ' M'))
 
 tbl_df <- left_join(lvst_table, aqua_tbl,  by = c("year"))
 
 # Generate the table
-generate_kbl(tbl_df, 
-             col_names = c("Year", "Value", rep(c("Value", "Tonnes"), 2)), 
-             caption = "<b><i>Estimated Global Livestock and Aquaculture Asset and Output Values ($) and Quantities (tonnes) (2006-2018). </b></i>", 
-             header_spec_fun = function(x) {   kableExtra::add_header_above(x, c(" " = 1, "Asset" = 1, rep(c("Output" = 2), 2)), 
-                                                                        italic = TRUE, bold = TRUE) %>% 
-               kableExtra::add_header_above(c(" " = 1, "Livestock" = 3, "Aquaculture" = 2), 
+generate_kbl(tbl_df,
+             col_names = c("Year", "Value", rep(c("Value", "Tonnes"), 2)),
+             caption = "<b><i>Estimated Global Livestock and Aquaculture Asset and Output Values ($) and Quantities (tonnes) (2006-2018). </b></i>",
+             header_spec_fun = function(x) {   kableExtra::add_header_above(x, c(" " = 1, "Asset" = 1, rep(c("Output" = 2), 2)),
+                                                                        italic = TRUE, bold = TRUE) %>%
+               kableExtra::add_header_above(c(" " = 1, "Livestock" = 3, "Aquaculture" = 2),
                                                                         italic = TRUE, bold = TRUE, font_size = 18)
-             
-               }             , 
-             footnotes = c("All values in constant 2014-2016 US dollars.", 
+
+               }             ,
+             footnotes = c("All values in constant 2014-2016 US dollars.",
                            paste0("Livestock Asset Values available for ", paste(asset_animals, collapse = ', '), '.'), paste0("Livestock Output Values available for ", paste(output_types, collapse = ', '), '.'),
-                           sapply(trimws(strsplit(sources$lvst,  "-  -" , fixed = TRUE)[[1]]), function(x) paste0("Source: ", x) ), 
-                            paste0("Source :", sources$aqua)), 
+                           sapply(trimws(strsplit(sources$lvst,  "-  -" , fixed = TRUE)[[1]]), function(x) paste0("Source: ", x) ),
+                            paste0("Source :", sources$aqua)),
              output_name = "tab_livestock_aqua_value_2006-2018.png")
 
 
@@ -334,36 +334,36 @@ generate_kbl(tbl_df,
 lvst_types <- c("cattle", "pigs", "chickens", "sheep")
 
 
-lvst_table <- data$lvst%>% 
-  filter(year %in% 2006:2018, animal %in% lvst_types, ) %>% 
-  group_by(year, animal, item) %>% 
+lvst_table <- data$lvst%>%
+  filter(year %in% 2006:2018, animal %in% lvst_types, ) %>%
+  group_by(year, animal, item) %>%
   summarise(
-    asset_value = sum(stock_value_constant_2014_2016_usd, na.rm = TRUE), 
-    output_value = sum(gross_production_value_constant_2014_2016_thousand_us, na.rm = TRUE) * 1e3, 
+    asset_value = sum(stock_value_constant_2014_2016_usd, na.rm = TRUE),
+    output_value = sum(gross_production_value_constant_2014_2016_thousand_us, na.rm = TRUE) * 1e3,
     output_tonnes = sum(tonnes, na.rm = TRUE), .groups = 'drop'
-  ) %>% 
-  arrange(desc(year)) %>% 
-  select(year,animal, item,  asset_value, output_value, output_tonnes) %>% 
+  ) %>%
+  arrange(desc(year)) %>%
+  select(year,animal, item,  asset_value, output_value, output_tonnes) %>%
   filter((output_value > 0) | (asset_value > 0))
 
 
 
 # Format columns
-lvst_table  <- lvst_table %>% 
-  mutate_at(vars(contains('output_value')), ~scales::dollar(.x, scale = 1e-9, suffix = ' B', accuracy = .1)) %>% 
-  mutate_at(vars(contains('asset_value')), ~scales::dollar(.x, scale = 1e-9, suffix = ' B', accuracy = .1)) %>% 
+lvst_table  <- lvst_table %>%
+  mutate_at(vars(contains('output_value')), ~scales::dollar(.x, scale = 1e-9, suffix = ' B', accuracy = .1)) %>%
+  mutate_at(vars(contains('asset_value')), ~scales::dollar(.x, scale = 1e-9, suffix = ' B', accuracy = .1)) %>%
   mutate_at(vars(contains('output_tonnes')), ~scales::comma(.x, scale = 1e-6, accuracy = .1,  suffix = ' M'))
 
 
 types <- list("stock", "meat", "milk")
 
 
-# Split and realig each 
+# Split and realig each
 cattle_df <- lvst_table %>%
-  filter(animal == 'cattle') 
+  filter(animal == 'cattle')
 
 
-df_list <- purrr::map(types, 
+df_list <- purrr::map(types,
                       function(x) {
                         tmp <- filter(cattle_df, item == x)
                         if (tmp$item[1] != 'stock') {
@@ -371,7 +371,7 @@ df_list <- purrr::map(types,
                         } else {
                           tmp <- select(tmp, -output_value, -output_tonnes)
                         }
-                        return(tmp %>% 
+                        return(tmp %>%
                                  select(-animal, -item))
                       })
 
@@ -382,11 +382,11 @@ dfs <- purrr::reduce(df_list, full_join, by = 'year')
 
 
 # Generate the table
-generate_kbl(dfs, 
-             col_names = c("Year", "Value", rep(c("Value", "Tonnes"), 2)), 
-             caption = "<b><i>Estimated Global Cattle Asset Value, Output Value and Output Tonnes by Output Type (2006-2018). </b></i>", 
-             header_spec_fun = function(x) kableExtra::add_header_above(x, c(" " = 1, "Asset" = 1, "Meat" = 2, "Milk" = 2), 
-                                                                        italic = TRUE, bold = TRUE), 
+generate_kbl(dfs,
+             col_names = c("Year", "Value", rep(c("Value", "Tonnes"), 2)),
+             caption = "<b><i>Estimated Global Cattle Asset Value, Output Value and Output Tonnes by Output Type (2006-2018). </b></i>",
+             header_spec_fun = function(x) kableExtra::add_header_above(x, c(" " = 1, "Asset" = 1, "Meat" = 2, "Milk" = 2),
+                                                                        italic = TRUE, bold = TRUE),
              footnotes = c("All values in constant 2014-2016 US dollars.",
                            sapply(trimws(strsplit(sources$lvst,  "-  -" , fixed = TRUE)[[1]]), function(x) paste0("Source: ", x) )))
 
@@ -394,24 +394,24 @@ generate_kbl(dfs,
 
 ## ----tab_crop_values_2006-2018---------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-crop_tbl <- computed_data$crps %>% 
-  filter(year %in% 2006:2018) %>% 
-  group_by(year) %>% 
+crop_tbl <- computed_data$crps %>%
+  filter(year %in% 2006:2018) %>%
+  group_by(year) %>%
   summarise_if(
     is.numeric, sum, na.rm = TRUE
-  )  %>% 
-  arrange(desc(year)) %>% 
-  mutate_at(vars(contains('output_value')), ~scales::dollar(.x, scale = 1e-9, suffix = ' B', accuracy = .1)) %>% 
-  mutate_at(vars(contains('output_tonnes')), ~scales::comma(.x, scale = 1e-6, suffix = ' M', accuracy = .1)) 
+  )  %>%
+  arrange(desc(year)) %>%
+  mutate_at(vars(contains('output_value')), ~scales::dollar(.x, scale = 1e-9, suffix = ' B', accuracy = .1)) %>%
+  mutate_at(vars(contains('output_tonnes')), ~scales::comma(.x, scale = 1e-6, suffix = ' M', accuracy = .1))
 
 
 generate_kbl(
-  crop_tbl, 
-  col_names = c("Year", "Value", "Tonnes"), 
-  caption = "<b><i>Global Crop Output Values and Tonnes (2006-2018)</i></b>", 
-  header_spec_fun = function(x) kableExtra::row_spec(x, 0, bold = TRUE, italic = TRUE), 
-  footnotes = c("All values in constant 2014-2016 US dollars.", 
-                 sapply(trimws(strsplit(sources$lvst,  "-  -" , fixed = TRUE)[[1]]), function(x) paste0("Source: ", x) )), 
+  crop_tbl,
+  col_names = c("Year", "Value", "Tonnes"),
+  caption = "<b><i>Global Crop Output Values and Tonnes (2006-2018)</i></b>",
+  header_spec_fun = function(x) kableExtra::row_spec(x, 0, bold = TRUE, italic = TRUE),
+  footnotes = c("All values in constant 2014-2016 US dollars.",
+                 sapply(trimws(strsplit(sources$lvst,  "-  -" , fixed = TRUE)[[1]]), function(x) paste0("Source: ", x) )),
   output_name = 'tab_crop_value_2006-2018.png'
 )
 
@@ -419,41 +419,41 @@ generate_kbl(
 
 ## ----tab_crop_value_by_type_2006-2018--------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-crop_tbl <- data$crps %>% 
-  filter(year %in% 2006:2018) %>% 
-  group_by(year, group) %>% 
+crop_tbl <- data$crps %>%
+  filter(year %in% 2006:2018) %>%
+  group_by(year, group) %>%
   summarise(
-    output_value = sum(gross_production_value_constant_2014_2016_thousand_us, na.rm = TRUE) * 1000, 
-    output_tonnes = sum(tonnes, na.rm = TRUE), 
+    output_value = sum(gross_production_value_constant_2014_2016_thousand_us, na.rm = TRUE) * 1000,
+    output_tonnes = sum(tonnes, na.rm = TRUE),
     .groups = 'drop'
   )
 
 crp_groups <-  sort(unique(crop_tbl$group))
 crp_tbls <- purrr::map(
-  crp_groups, 
-  ~filter(crop_tbl, group == .x) %>% 
+  crp_groups,
+  ~filter(crop_tbl, group == .x) %>%
     select(-group)
 )
-crp_df <- purrr::reduce(crp_tbls, full_join, by = 'year') %>% 
-  mutate_at(vars(contains('output_value')), ~scales::dollar(.x, scale = 1e-9, suffix = ' B', accuracy = .1)) %>% 
-  mutate_at(vars(contains('output_tonnes')), ~scales::comma(.x, scale = 1e-6, suffix = ' M', accuracy = .1)) %>% 
+crp_df <- purrr::reduce(crp_tbls, full_join, by = 'year') %>%
+  mutate_at(vars(contains('output_value')), ~scales::dollar(.x, scale = 1e-9, suffix = ' B', accuracy = .1)) %>%
+  mutate_at(vars(contains('output_tonnes')), ~scales::comma(.x, scale = 1e-6, suffix = ' M', accuracy = .1)) %>%
   arrange(desc(year))
 
 
-crp_groups <- gsub('coffe', 'coffee', crp_groups) %>% 
-  gsub("_", " ", .) %>% 
+crp_groups <- gsub('coffe', 'coffee', crp_groups) %>%
+  gsub("_", " ", .) %>%
   stringr::str_to_title(.)
 
 generate_kbl(
-  crp_df, 
+  crp_df,
   col_names = c("Year", rep(c("Value", "Tonnes"), length(crp_groups))),
-  caption = '<b><i>Global Crop Production Output Values and Tonnes by Crop Type (2006 - 2018)</i></b>', 
+  caption = '<b><i>Global Crop Production Output Values and Tonnes by Crop Type (2006 - 2018)</i></b>',
   header_spec_fun = function(x) {
-    kableExtra::add_header_above(x, 
+    kableExtra::add_header_above(x,
       header = c(" " = 1, sapply(crp_groups, function(x) x = 2)), bold = TRUE)
-  }, 
-  footnotes = c("All values in constant 2014-2016 US dollars.", 
-                 sapply(trimws(strsplit(sources$lvst,  "-  -" , fixed = TRUE)[[1]]), function(x) paste0("Source: ", x) )), 
+  },
+  footnotes = c("All values in constant 2014-2016 US dollars.",
+                 sapply(trimws(strsplit(sources$lvst,  "-  -" , fixed = TRUE)[[1]]), function(x) paste0("Source: ", x) )),
   output_name = 'tab_crop_value_by_type_2006-2018.png'
 )
 
@@ -468,77 +468,79 @@ generate_kbl(
 pct <- scales::percent_format(accuracy = 1)
 
 # Get the data in correct form for a stacked area chart
-df <- bind_rows(computed_data) %>% 
-  mutate(iso3_code = tolower(iso3_code)) %>% 
-  relocate(id_col, .before = everything()) %>% 
+df <- bind_rows(computed_data) %>%
+  mutate(iso3_code = tolower(iso3_code)) %>%
+  relocate(id_col, .before = everything()) %>%
   mutate(
     total  = rowSums(select(., contains('value')), na.rm = TRUE)
-  ) %>% 
-  group_by(id_col, year) %>% 
+  ) %>%
+  group_by(id_col, year) %>%
   summarise(
-    value = sum(total, na.rm = TRUE), 
+    value = sum(total, na.rm = TRUE),
     .groups = 'drop'
-  ) %>% 
- mutate(id_col = str_to_title(id_col)) 
+  ) %>%
+ mutate(id_col = str_to_title(id_col))
 
-# Get the positions 
-df_positions <- stacked_area.get_position(df, value, year,id_col, str_to_title(c("aquaculture", "crops", "livestock"))) %>% 
-  filter(year > 1995, year < 2019) 
+# Get the positions
+df_positions <- stacked_area.get_position(df, value, year,id_col, str_to_title(c("aquaculture", "crops", "livestock"))) %>%
+  filter(year > 1995, year < 2019)
 
 df_positions <- mutate(df_positions, key = fct_reorder(key,  value, sum,  desc = TRUE))
 
-# Color pallet 
+# Color pallet
 color_pal <- setNames(
   c(
     RColorBrewer::brewer.pal(3, "Blues")[3],
-    "#006400", 
-    plasma(8, direction = -1)[4]), 
+    "#006400",
+    plasma(8, direction = -1)[4]),
   levels(df_positions$key)
 )
 
-# Create the plot 
+# Create the plot
 total <- stacked_area.plot(df_positions, keys = key, color_pal[levels(df_positions$key)],
-                  title = "", 
-                  x = "", 
-                  y = "", 
+                  title = "",
+                  x = "",
+                  y = "",
                   fill = "")
 
 key_animals <- c('cattle', 'pig', 'chicken', 'sheep')
 
 dfs <- list(computed_data$aqua, computed_data$crps, data$lvst %>%
               mutate(
-                animal = ifelse(animal %in% key_animals, animal, 'Other Livestock') %>% 
-                         str_to_title(.), 
+                animal = ifelse(animal %in% key_animals, animal, 'Other Livestock') %>%
+                         str_to_title(.),
                 item = ifelse(item == 'stock', item, 'output')
-              ) %>% 
-              group_by(year, animal) %>% 
+              ) %>%
+              group_by(year, animal) %>%
               summarise(
-                output_value = sum(ifelse(item != 'stock', gross_production_value_constant_2014_2016_thousand_us, 0), na.rm = TRUE) * 1000,  
+                output_value = sum(ifelse(item != 'stock', gross_production_value_constant_2014_2016_thousand_us, 0), na.rm = TRUE) * 1000,
                 asset_value = sum(ifelse(item == 'stock', stock_value_constant_2014_2016_usd, 0), na.rm = TRUE), .groups = 'drop'
-              ) 
+              )
             )
 
 
 
-df_positions <- bind_rows(list(dfs[[1]] %>% group_by(year, id_col) %>% summarise(output_value = sum(output_value, na.rm = TRUE)), 
-                               dfs[[2]] %>% group_by(year, id_col) %>% summarise(output_value = sum(output_value, na.rm = TRUE)), 
-                               dfs[[3]])) %>% 
+df_positions <- bind_rows(list(dfs[[1]] %>% group_by(year, id_col) %>%
+                                   summarise(output_value = sum(output_value, na.rm = TRUE)),
+                               dfs[[2]] %>% group_by(year, id_col) %>%
+                                   summarise(output_value = sum(output_value, na.rm = TRUE)),
+                               dfs[[3]])) %>%
   mutate(
     id_col = str_to_title(ifelse(is.na(id_col), animal, id_col))
   )
 
 output_levels <- c("Aquaculture",
-                   aggregate(dfs[[3]]$output_value, dfs[[3]]['animal'], FUN=sum, na.rm = TRUE) %>% 
-                     arrange(x) %>% 
+                   aggregate(dfs[[3]]$output_value, dfs[[3]]['animal'], FUN=sum, na.rm = TRUE) %>%
+                     arrange(x) %>%
                      pull(animal), "Crops")
 
 
-df_positions <- df_positions %>% 
+df_positions <- df_positions %>%
   mutate(
     id_col = factor(id_col, levels = output_levels, ordered = TRUE)
-  ) %>% 
-  stacked_area.get_position(output_value, year, id_col, levels(.$id_col)) %>% 
-  rename(value = output_value) 
+  ) %>%
+  stacked_area.get_position(output_value, year, id_col, levels(.$id_col)) %>%
+  rename(value = output_value)
 
 cpal <- setNames(
   c(
@@ -550,59 +552,59 @@ cpal <- setNames(
 )
 
 
-# Plot the output value 
-output <- stacked_area.plot(df_positions %>% filter(year %in% 1996:2018), 
-                  keys = key, 
-                  color_pal = cpal, 
-                  fill = '', 
-                   fill = "", 
-    x = '', 
+# Plot the output value
+output <- stacked_area.plot(df_positions %>% filter(year %in% 1996:2018),
+                  keys = key,
+                  color_pal = cpal,
+                  fill = '',
+                   fill = "",
+    x = '',
     y = '' )
 
 
 
 
-df_positions <- dfs[[3]] %>% 
-  drop_na() %>% 
+df_positions <- dfs[[3]] %>%
+  drop_na() %>%
   mutate(
-    animal = forcats::fct_reorder(animal, asset_value, sum, na.rm = TRUE) 
-  ) %>% 
-  stacked_area.get_position(asset_value, year, animal, levels(.$animal)) %>% 
-  rename(value = asset_value) %>% 
-  drop_na() %>% 
+    animal = forcats::fct_reorder(animal, asset_value, sum, na.rm = TRUE)
+  ) %>%
+  stacked_area.get_position(asset_value, year, animal, levels(.$animal)) %>%
+  rename(value = asset_value) %>%
+  drop_na() %>%
   mutate(animal = droplevels(animal))
 
-# Plot the asset values 
-asset <-  stacked_area.plot(df_positions, 
-    keys = key, 
-    color_pal = cpal, 
-    fill = "", 
-    x = '', 
-    y = '', 
+# Plot the asset values
+asset <-  stacked_area.plot(df_positions,
+    keys = key,
+    color_pal = cpal,
+    fill = "",
+    x = '',
+    y = '',
   )
 
 
 
 ## --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-# Table containing the values of each variable 
+# Table containing the values of each variable
 
-df %>% 
-  spread(id_col, value) %>% 
-  filter(year %in% 1996:2018) %>% 
-  mutate(total = rowSums(across(Aquaculture:Livestock), na.rm = TRUE)) %>% 
-  mutate_at(c("Aquaculture", "Crops", "Livestock"), ~paste0(scales::dollar(.x, scale = 1e-9, accuracy = 3), ' (', scales::percent(.x/total, accuracy = 2), ')')) %>% 
-  mutate(total = scales::dollar(total, scale = 1e-9, accuracy = 3)) %>% 
+df %>%
+  spread(id_col, value) %>%
+  filter(year %in% 1996:2018) %>%
+  mutate(total = rowSums(across(Aquaculture:Livestock), na.rm = TRUE)) %>%
+  mutate_at(c("Aquaculture", "Crops", "Livestock"), ~paste0(scales::dollar(.x, scale = 1e-9, accuracy = 3), ' (', scales::percent(.x/total, accuracy = 2), ')')) %>%
+  mutate(total = scales::dollar(total, scale = 1e-9, accuracy = 3)) %>%
   generate_kbl(
-    col_names = c("Year", rep("Value (Billion USD)", 4)), 
-    caption = "<b><i>Global Aquaculture, Crop and Livestock Values (1996 - 2018)</i></b>", 
+    col_names = c("Year", rep("Value (Billion USD)", 4)),
+    caption = "<b><i>Global Aquaculture, Crop and Livestock Values (1996 - 2018)</i></b>",
     header_spec_fun = function(x) {
-       kableExtra::add_header_above(x, 
+       kableExtra::add_header_above(x,
       header = c(" " = 1, "Aquaculture" = 1, "Crops" = 1, "Livestock" = 1, 'Total' = 1), bold = TRUE)
-    }, 
-    footnotes = c("All values in 2014-2016 constant US dollars", 
-                  "The value of assets is not included in the estimated Aquaculture and Crop Values.", 
-                   sapply(trimws(strsplit(sources$lvst,  "-  -" , fixed = TRUE)[[1]]), function(x) paste0("Source: ", x) ), 
-                   sources$aqua), 
+    },
+    footnotes = c("All values in 2014-2016 constant US dollars",
+                  "The value of assets is not included in the estimated Aquaculture and Crop Values.",
+                   sapply(trimws(strsplit(sources$lvst,  "-  -" , fixed = TRUE)[[1]]), function(x) paste0("Source: ", x) ),
+                   sources$aqua),
     output_name = 'tab_aquaculture_crop_livestock_value_1996-2018.png'
   )
 
@@ -611,27 +613,27 @@ df %>%
 
 # ----------------------------------------------------
 # Figure 2
-# 
-# Create a 2 row plot with multicolumn on the second row 
-# Labels: 
+#
+# Create a 2 row plot with multicolumn on the second row
+# Labels:
 # A - Total Global Farmed Animal and Crop Production.
 # B - Global Livestock Asset Values.
 # C - Global Livestock, Crop and Aquaculture Values.
 
 
-ggarrange(total, 
+ggarrange(total,
             asset,
-            output, 
-            ncol = 1, 
+            output,
+            ncol = 1,
             common.legend = FALSE,
-            legend = 'bottom', 
-            labels = c("A - Total Global Farmed Animal and Crop Production.", 
-                       "B - Global Livestock Asset Values.", 
-                       "C - Global Livestock, Crop and Aquaculture Output Values."), 
-            label.x = c(-0.10, 0, -0.14), 
+            legend = 'bottom',
+            labels = c("A - Total Global Farmed Animal and Crop Production.",
+                       "B - Global Livestock Asset Values.",
+                       "C - Global Livestock, Crop and Aquaculture Output Values."),
+            label.x = c(-0.10, 0, -0.14),
             font.label = list(size = 22, face = 'bold.italic')
-) %>% 
-  ggsave(plot = ., filename = here::here('output', 'figures', "FIG-sac_grid_global_livestock_crop_aquaculture_1996-2018.png"), 
+) %>%
+  ggsave(plot = ., filename = here::here('output', 'figures', "FIG-sac_grid_global_livestock_crop_aquaculture_1996-2018.png"),
          width = 14, height = 18, units = "in", dpi = 400)
 
 
@@ -643,22 +645,22 @@ knitr::knit_exit()
 
 pie_data <- list()
 
-pie_data$lvst <- data$lvst %>% 
+pie_data$lvst <- data$lvst %>%
   mutate(
     animal = str_to_title(ifelse(animal %in% c('cattle', 'chicken', 'goat', 'sheep', 'pig'), animal, 'Other Animals'))
-      ) %>% 
-  group_by(year, animal) %>% 
+      ) %>%
+  group_by(year, animal) %>%
   mutate(
-    asset_value = ifelse(item == 'stock', stock_value_constant_2014_2016_usd, 0), 
+    asset_value = ifelse(item == 'stock', stock_value_constant_2014_2016_usd, 0),
     output_value = gross_production_value_constant_2014_2016_thousand_us * 1000
-  ) %>% 
+  ) %>%
   summarise(value = sum(asset_value,  na.rm = TRUE) + sum(output_value, na.rm = TRUE))
-  
-pie_data$aqua <- computed_data$aqua %>% 
-  group_by(year) %>% 
+
+pie_data$aqua <- computed_data$aqua %>%
+  group_by(year) %>%
   summarise(
     value = sum(output_value, na.rm = TRUE), .groups = 'drop'
-  ) %>% 
+  ) %>%
   mutate(
     animal = 'Aquaculture'
   )
@@ -681,7 +683,7 @@ yearly_value_pie_chart <- function(df, year_val) {
   df <- df %>%
     filter(year == year_val) %>%
     mutate(
-      sector = str_to_title(sector)JkJ,
+      sector = str_to_title(sector),
       value_label = scales::dollar_format(
         scale = 1e-9, suffix = "B",
         largest_with_cents = 0
@@ -819,44 +821,44 @@ df <- bind_rows(lvst, crps) %>%
 
 ## ----tab_countries_value_by_type_2015--------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-lvst_tbl <- data$lvst %>% 
-  filter(iso3_code %in% c('bra', 'aus', 'usa', 'can', 'nzl', 'ury', 'chn', 'arg'), 
-         year == 2015, 
-         animal %in% c("cattle", "sheep", "pig", "chicken"))  %>% 
-  group_by(area, animal, year) %>% 
+lvst_tbl <- data$lvst %>%
+  filter(iso3_code %in% c('bra', 'aus', 'usa', 'can', 'nzl', 'ury', 'chn', 'arg'),
+         year == 2015,
+         animal %in% c("cattle", "sheep", "pig", "chicken"))  %>%
+  group_by(area, animal, year) %>%
   summarise(
-    asset_value = sum(ifelse(item == 'stock', stock_value_constant_2014_2016_usd, 0), na.rm = TRUE), 
+    asset_value = sum(ifelse(item == 'stock', stock_value_constant_2014_2016_usd, 0), na.rm = TRUE),
     output_value = sum(ifelse(item != 'stock', gross_production_value_current_thousand_us * 1e3, 0 ),  na.rm = TRUE), .groups = 'drop'
-  ) %>% 
+  ) %>%
   mutate(
     value = asset_value +  output_value
-  ) %>% 
-  select(-asset_value, -output_value) %>% 
-  spread(animal, value) %>% 
+  ) %>%
+  select(-asset_value, -output_value) %>%
+  spread(animal, value) %>%
   mutate(
     total_val = rowSums(.[, c("cattle", "sheep", "pig", "chicken")], na.rm = TRUE)
-  ) %>% 
-  ungroup() 
+  ) %>%
+  ungroup()
 
 
 lvst_tbl[, c(3:(ncol(lvst_tbl)-1))] <- lvst_tbl[, c(3:(ncol(lvst_tbl)-1))]/lvst_tbl$total_val
 
-lvst_tbl %>% 
-  select(-year) %>% 
+lvst_tbl %>%
+  select(-year) %>%
   mutate_at(
    c("cattle", "sheep", "pig", "chicken"), ~scales::percent(.x, accuracy = .1)
-  ) %>% 
+  ) %>%
   dplyr::mutate(
     `total_val` = scales::dollar(total_val, scale = 1e-9, suffix = ' B', accuracy = .1)
-  ) %>% 
+  ) %>%
   mutate(
     area = str_to_title(str_replace_all(area, '_', ' '))
-  ) %>% 
+  ) %>%
   generate_kbl(
-    col_names = c("Country", "Cattle", "Chickens", "Pigs", "Sheep", "Total"), 
-    caption = "<b>Percentage of Countries Livestock Value by Livestock Type (2015)</b>", 
-    header_spec_fun = function(x) x, 
-    footnotes = "All values in 2014-2016 US Dollars.", 
+    col_names = c("Country", "Cattle", "Chickens", "Pigs", "Sheep", "Total"),
+    caption = "<b>Percentage of Countries Livestock Value by Livestock Type (2015)</b>",
+    header_spec_fun = function(x) x,
+    footnotes = "All values in 2014-2016 US Dollars.",
     output_name = here::here('output', 'tables', 'tab_countries_value_by_type_2015.png')
   )
 
@@ -894,7 +896,7 @@ livestock_value_percap <- livestock_df %>%
 
 
 #################################################################
-# Add Income Level to countries 
+# Add Income Level to countries
 #################################################################
 
 set.seed(0)
@@ -908,16 +910,16 @@ livestock_value_percap <- livestock_value_percap %>%
   )
 
 #################################################################
-#  Targeted countries to show in this plot 
-#  Make these point larger 
+#  Targeted countries to show in this plot
+#  Make these point larger
 #################################################################
 gates_countries <- c("ETH", "BRA", "AUS", "TZA", "IND", "CHN", "IDN", "GBR", "USA")
 
 
-p <- ggplot(livestock_value_percap %>% 
+p <- ggplot(livestock_value_percap %>%
                 mutate(
                     point_size = case_when(
-                        ISO3_CODE %in% gates_countries ~ "larger", 
+                        ISO3_CODE %in% gates_countries ~ "larger",
                         TRUE ~ "smaller"
                     )
                 )) +
@@ -934,7 +936,7 @@ p <- ggplot(livestock_value_percap %>%
   ) +
   ggrepel::geom_text_repel(
     data = livestock_value_percap %>%
-      filter(ISO3_CODE %in% gates_countries),  # Only Show targeted countries 
+      filter(ISO3_CODE %in% gates_countries),  # Only Show targeted countries
     aes(x = usd_percap, y = value_prop, label = country, color = income_level_iso3c),
     size = 5,
     nudge_y = 0.02,
@@ -943,13 +945,13 @@ p <- ggplot(livestock_value_percap %>%
   ) +
   theme_ipsum_pub() +
   scale_color_manual(values = setNames(pal_jco()(4), levels(livestock_value_percap$income_level_iso3c))) +
-  guides(size = guide_none()) + 
+  guides(size = guide_none()) +
   labs(
     title = "GDP Per Capita vs Livestock Value Proportion (2015)",
     subtitle = "Values are in current USD. World Bank Income classifications are from 2020",
     x = "GDP per capita ($)",
     y = "Livestock (%)",
-    color = " ", 
+    color = " ",
     size = ""
   ) +
   theme(
@@ -984,15 +986,15 @@ wb_data <- left_join(population, income_percap) %>%
 
 ## ----world-bank_gdp_percap_livestock_productivity_2015---------------------------------------------------------------------------------------------------------------------------------------------
 
-# This figure shows a comparison of the GDP per capita of different countries 
-# Vs their Livestock Productivity 
-# Where Livestock productivity is simply evaluated as the ratio of the current 
-# value that is garnered from output/assets 
-# This will eavily biase towards higher income countries as prices are more 
+# This figure shows a comparison of the GDP per capita of different countries
+# Vs their Livestock Productivity
+# Where Livestock productivity is simply evaluated as the ratio of the current
+# value that is garnered from output/assets
+# This will eavily biase towards higher income countries as prices are more
 # prevalanet there
 
 
-# World Bank Income Levels 
+# World Bank Income Levels
 incomes <- wbstats::wb_countries() %>%
   drop_na(income_level_iso3c)
 
@@ -1001,66 +1003,66 @@ incomes <- wbstats::wb_countries() %>%
 
 ##################################################
 # Calculate the livestock productivity
-# 
-# Only include items for which both asset values 
+#
+# Only include items for which both asset values
 # and output values are recorded for at any time.
 ##################################################
-livestock_productivity <- data$lvst %>% 
-  select(iso3_code, area, year, 
+livestock_productivity <- data$lvst %>%
+  select(iso3_code, area, year,
          animal, item,
          gross_production_value_constant_2014_2016_thousand_us,
-         stock_value_constant_2014_2016_usd) %>% 
+         stock_value_constant_2014_2016_usd) %>%
   mutate(
-    output_value = ifelse(item != 'stock', 1e3*gross_production_value_constant_2014_2016_thousand_us, 0), 
+    output_value = ifelse(item != 'stock', 1e3*gross_production_value_constant_2014_2016_thousand_us, 0),
     asset_value = ifelse(item == 'stock', stock_value_constant_2014_2016_usd, 0)
-  ) %>% 
-  select(-gross_production_value_constant_2014_2016_thousand_us, 
-         -stock_value_constant_2014_2016_usd) %>% 
-  group_by(iso3_code, area, year, animal) %>% 
+  ) %>%
+  select(-gross_production_value_constant_2014_2016_thousand_us,
+         -stock_value_constant_2014_2016_usd) %>%
+  group_by(iso3_code, area, year, animal) %>%
   summarise(
-    output_value = sum(output_value, na.rm = TRUE), 
+    output_value = sum(output_value, na.rm = TRUE),
     asset_value = sum(asset_value, na.rm = TRUE), .groups = 'drop'
-  ) %>% 
+  ) %>%
   filter(
     output_value > 0, asset_value > 0 # Filter for both asset and output value available
-  ) %>% 
+  ) %>%
   group_by(
     iso3_code, year
-  ) %>% 
+  ) %>%
   summarise(
     productivity = sum(output_value, na.rm = TRUE)/(sum(asset_value, na.rm = TRUE) + sum(output_value, na.rm = TRUE))
   )
-  
-  
+
+
 ###################################################
 # Add Income Levels to each country
 ###################################################
-livestock_productivity <- livestock_productivity %>% 
+livestock_productivity <- livestock_productivity %>%
   mutate(
     iso3_code = toupper(iso3_code)
-  ) %>% 
+  ) %>%
   left_join(
-    incomes %>% select(iso3c, country, income_level), 
+    incomes %>% select(iso3c, country, income_level),
     by = c("iso3_code" = "iso3c")
-  ) %>% 
+  ) %>%
   mutate(
-    income_level = factor(income_level, 
+    income_level = factor(income_level,
                           levels = c("High income", "Upper middle income", "Lower middle income", "Low income", "Not classified"),
                           ordered = TRUE)
-  ) %>% 
+  ) %>%
   left_join(wb_data, by  = c('iso3_code' = 'iso3c', "year"))
 
 
-# Set Seed so Labels are reproducible 
+# Set Seed so Labels are reproducible
 set.seed(0)
 
 
 ##############################################
-# Create Scatter Plot of Income Levels 
+# Create Scatter Plot of Income Levels
 ##############################################
 p <- ggplot(livestock_productivity %>% filter(year == 2015)) +
-  geom_point(aes(x = usd_percap, y = productivity, color = income_level)) + 
-  scale_size_manual(values = setNames(c(2, 4), c("smaller", "larger"))) + 
+  geom_point(aes(x = usd_percap, y = productivity, color = income_level)) +
+  scale_size_manual(values = setNames(c(2, 4), c("smaller", "larger"))) +
   scale_color_manual(values = setNames(pal_lancet()(5), levels(livestock_productivity$income_level))) +
   scale_y_continuous(
     breaks = c(5, 10, 25, 50, 70, 100) / 100,
@@ -1073,10 +1075,10 @@ p <- ggplot(livestock_productivity %>% filter(year == 2015)) +
   scale_color_manual(values = setNames(pal_jco()(5), levels(livestock_productivity$income_level))) +
    ggrepel::geom_text_repel(
     data = livestock_productivity %>%
-      filter(iso3_code %in% c('USA', 'AUS', 'IDN', 'BRA', 
-                              'CHN', 'MEX', 'URY', 'ETH', 
+      filter(iso3_code %in% c('USA', 'AUS', 'IDN', 'BRA',
+                              'CHN', 'MEX', 'URY', 'ETH',
                               'TUR', 'VIE', 'RWA', 'KEN',
-                              'PHL', 'ARG', 'CAN', 'NZL', 'GBR'), year == 2015),  # Only Show targeted countries 
+                              'PHL', 'ARG', 'CAN', 'NZL', 'GBR'), year == 2015),  # Only Show targeted countries
     aes(x = usd_percap, y = productivity, label = country, color = income_level),
     size = 5,
     nudge_y = 0.03,
@@ -1088,19 +1090,19 @@ p <- ggplot(livestock_productivity %>% filter(year == 2015)) +
     subtitle = "",
     x = "GDP per capita ($)",
     y = "Livestock productivity (% of livestock outputs)",
-    caption = paste("1. All values in 2014-2016 constant USD", 
-                    "2. World Bank income classifications are from 2020", 
+    caption = paste("1. All values in 2014-2016 constant USD",
+                    "2. World Bank income classifications are from 2020",
                     "3. Livestock productivity is defined as being the % of livestock value made up from output values", sep = '\n'),
-    color = " ", 
+    color = " ",
     size = ''
   ) +
-  guides(size = guide_none()) + 
-  theme_ipsum_pub() + 
+  guides(size = guide_none()) +
+  theme_ipsum_pub() +
   theme(
     legend.position = "bottom",
-    panel.grid.major = element_blank(), 
+    panel.grid.major = element_blank(),
     panel.grid.minor = element_blank(),
-    panel.border = element_rect(fill = NA), 
+    panel.border = element_rect(fill = NA),
     legend.title = element_text(size = 18, face = "italic"),
     legend.text = element_text(size = 20, face = "italic"),
     axis.title.y = element_text(hjust = 0.5, face = "italic", size = 22),
@@ -1108,13 +1110,13 @@ p <- ggplot(livestock_productivity %>% filter(year == 2015)) +
     plot.title = element_text(face = "bold.italic", size = 30),
     plot.subtitle = element_text(face = "italic", size = 20),
     axis.text.y = element_text(size = 20, face = "bold.italic"),
-    axis.text.x = element_text(size = 20, face = "bold.italic"), 
+    axis.text.x = element_text(size = 20, face = "bold.italic"),
     plot.caption = element_text(size = 12, face = 'italic', hjust = 0)
   )
 
-ggsave(plot = p, filename = here::here("output", "figures", "FIG-world-bank_gdp_percap_livestock_productivity_2015.png"), 
+ggsave(plot = p, filename = here::here("output", "figures", "FIG-world-bank_gdp_percap_livestock_productivity_2015.png"),
        width = 20, height = 12, dpi = 350)
- 
+
 
 
 ## ----world-bank_gdp_percap_livestock_productivity_type_2015----------------------------------------------------------------------------------------------------------------------------------------
@@ -1122,66 +1124,66 @@ ggsave(plot = p, filename = here::here("output", "figures", "FIG-world-bank_gdp_
 
 ##################################################
 # Calculate the livestock productivity
-# 
-# Only include items for which both asset values 
+#
+# Only include items for which both asset values
 # and output values are recorded for at any time.
 ##################################################
-livestock_productivity_type <- data$lvst %>% 
-  select(iso3_code, area, year, 
+livestock_productivity_type <- data$lvst %>%
+  select(iso3_code, area, year,
          animal, item,
          gross_production_value_constant_2014_2016_thousand_us,
-         stock_value_constant_2014_2016_usd) %>% 
+         stock_value_constant_2014_2016_usd) %>%
   mutate(
-    output_value = ifelse(item != 'stock', 1e3*gross_production_value_constant_2014_2016_thousand_us, 0), 
+    output_value = ifelse(item != 'stock', 1e3*gross_production_value_constant_2014_2016_thousand_us, 0),
     asset_value = ifelse(item == 'stock', stock_value_constant_2014_2016_usd, 0)
-  ) %>% 
-  select(-gross_production_value_constant_2014_2016_thousand_us, 
-         -stock_value_constant_2014_2016_usd) %>% 
-  group_by(iso3_code, area, year, animal) %>% 
+  ) %>%
+  select(-gross_production_value_constant_2014_2016_thousand_us,
+         -stock_value_constant_2014_2016_usd) %>%
+  group_by(iso3_code, area, year, animal) %>%
   summarise(
-    output_value = sum(output_value, na.rm = TRUE), 
+    output_value = sum(output_value, na.rm = TRUE),
     asset_value = sum(asset_value, na.rm = TRUE), .groups = 'drop'
-  ) %>% 
+  ) %>%
   filter(
-     asset_value > 0 # Filter for both asset  value 
-  ) %>% 
+     asset_value > 0 # Filter for both asset  value
+  ) %>%
   mutate(
     productivity = output_value/(output_value + asset_value)
   )
-  
+
 
 
 ###################################################
 # Add Income Levels to each country
 ###################################################
-livestock_productivity_type <- livestock_productivity_type %>% 
+livestock_productivity_type <- livestock_productivity_type %>%
   mutate(
     iso3_code = toupper(iso3_code)
-  ) %>% 
+  ) %>%
   left_join(
-    incomes %>% select(iso3c, country, income_level), 
+    incomes %>% select(iso3c, country, income_level),
     by = c("iso3_code" = "iso3c")
-  ) %>% 
+  ) %>%
   mutate(
-    income_level = factor(income_level, 
+    income_level = factor(income_level,
                           levels =c("High income", "Upper middle income", "Lower middle income", "Low income"),
                           ordered = TRUE)
-  ) %>% 
+  ) %>%
   left_join(wb_data, by = c("iso3_code" = "iso3c", "year"))
 
 
-# Set Seed so Labels are reproducible 
+# Set Seed so Labels are reproducible
 set.seed(0)
 
 
 
 #
-# Create Facetted plot on Animals 
-# 
- 
-p <- livestock_productivity_type %>% 
-  filter(year == 2015, animal %in% c("cattle", "chicken", "pig", "sheep")) %>% 
-  mutate(animal = str_to_title(animal)) %>% 
+# Create Facetted plot on Animals
+#
+
+p <- livestock_productivity_type %>%
+  filter(year == 2015, animal %in% c("cattle", "chicken", "pig", "sheep")) %>%
+  mutate(animal = str_to_title(animal)) %>%
   ggplot() +
   geom_point(aes(x = usd_percap, y = productivity, color = income_level),
     size = 2
@@ -1202,20 +1204,20 @@ p <- livestock_productivity_type %>%
     subtitle = "Values are in current USD. World Bank Income classifications are from 2020.",
     x = "GDP per capita ($)",
     y = "Livestock Output (% of total livestock value)",
-    color = " ", 
+    color = " ",
     caption = "1. This plot only includes livestock for which a country had recorded a live animal price in FAOSTAT."
   ) + theme(
-    axis.title.x =  element_text(hjust = 0.5, face = 'bold.italic', size = 15), 
-    axis.title.y =  element_text(hjust = 0.5, face = 'bold.italic', size = 15), 
-    plot.caption =  element_text(hjust = 0, face = 'italic', size = 10), 
+    axis.title.x =  element_text(hjust = 0.5, face = 'bold.italic', size = 15),
+    axis.title.y =  element_text(hjust = 0.5, face = 'bold.italic', size = 15),
+    plot.caption =  element_text(hjust = 0, face = 'italic', size = 10),
     strip.text = element_text(hjust = 0.5, face = 'bold.italic', size = 15)
   )
 
   ggplot2::ggsave(
     filename = here::here('output', 'figures','FIG-world-bank_gdp_percap_livestock_productivity_type_2015.png'),
-    plot = p, 
-    dpi = 350, 
-    height = 12, 
+    plot = p,
+    dpi = 350,
+    height = 12,
     width = 18
   )
 
@@ -1273,7 +1275,7 @@ p <- ggplot(world) +
   labs(
     title = "Average Livestock Asset Value Change (%) per year between 2005 and 2018",
     fill = "",
-    subtitle = "All values in constant 2014-2016 USD.", 
+    subtitle = "All values in constant 2014-2016 USD.",
     caption = fig_captions()
   ) +
   guides(fill = guide_legend(nrow = 1)) +
@@ -1296,29 +1298,29 @@ p
 
 ## ----livestock-asset-pct-change_bar----------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-change %>% 
-    drop_na() %>% 
-    filter(avg_change < 20, ISO3_CODE %in% c(gates_countries, c("IRL", "CAN"))) %>% 
+change %>%
+    drop_na() %>%
+    filter(avg_change < 20, ISO3_CODE %in% c(gates_countries, c("IRL", "CAN"))) %>%
     mutate(
-        area = recode(area, "United Kingdom of Great Britain and Northern Ireland" = "UK", 
-                      "United Republic of Tanzania" = "Tanzania", 
-                      "China, mainland" = "China", 
-                      "United States of America" = "USA") 
-    ) %>% 
-    ggplot(aes(y = fct_reorder(area, avg_change, .desc = FALSE), x = avg_change)) + 
-    geom_col(width = 0.6, position = "identity") + 
-    scale_x_continuous(labels = scales::percent_format(scale = 1, accuracy = .1)) + 
-    geom_text(aes(x = avg_change - 0.15*sign(avg_change), label = scales::percent(avg_change, scale = 1, accuracy = .1)),size = 7, color = "white") + 
-    theme_ipsum_pub() + 
+        area = recode(area, "United Kingdom of Great Britain and Northern Ireland" = "UK",
+                      "United Republic of Tanzania" = "Tanzania",
+                      "China, mainland" = "China",
+                      "United States of America" = "USA")
+    ) %>%
+    ggplot(aes(y = fct_reorder(area, avg_change, .desc = FALSE), x = avg_change)) +
+    geom_col(width = 0.6, position = "identity") +
+    scale_x_continuous(labels = scales::percent_format(scale = 1, accuracy = .1)) +
+    geom_text(aes(x = avg_change - 0.15*sign(avg_change), label = scales::percent(avg_change, scale = 1, accuracy = .1)),size = 7, color = "white") +
+    theme_ipsum_pub() +
     labs(
-        x = NULL, y = NULL, 
-        title = "Livestock asset value average annual % change (2005-2018)", 
-        subtitle = "All Values reported in 2014-2016 Constant US Dollars.", 
+        x = NULL, y = NULL,
+        title = "Livestock asset value average annual % change (2005-2018)",
+        subtitle = "All Values reported in 2014-2016 Constant US Dollars.",
         caption = fig_captions(descr = "Livestock asset value percentage change from 2005 to 2018 in constant 2014-2016 US Dollars")
     ) +
     theme(
         axis.text.y = element_text(size = 20, face = 'bold.italic'),
-        axis.text.x = element_blank(), 
+        axis.text.x = element_blank(),
         plot.title = element_markdown(size = 30, face = 'italic'),
         plot.subtitle = element_markdown(size = 22, face = 'italic'),
         panel.grid.minor =  element_blank()
@@ -1328,13 +1330,13 @@ change %>%
 ## ----world-map_output-value-change_by_type_2005-2018-----------------------------------------------------------------------------------------------------------------------------------------------
 
 
-df <- data$lvst %>% 
-  filter(year %in% 2005:2018, animal %in% c('cattle', 'chicken', 'pig', 'sheep')) %>% 
-  group_by(iso3_code, year, animal) %>% 
+df <- data$lvst %>%
+  filter(year %in% 2005:2018, animal %in% c('cattle', 'chicken', 'pig', 'sheep')) %>%
+  group_by(iso3_code, year, animal) %>%
   summarise(
-    output_value = sum(ifelse(item != 'stock', gross_production_value_constant_2014_2016_thousand_us*1e3, 0), na.rm = TRUE), 
+    output_value = sum(ifelse(item != 'stock', gross_production_value_constant_2014_2016_thousand_us*1e3, 0), na.rm = TRUE),
     asset_value = sum(ifelse(item == 'stock', stock_value_constant_2014_2016_usd, 0), na.rm = TRUE)
-  ) %>% 
+  ) %>%
   mutate(total_value = output_value + asset_value)
 
 
@@ -1346,7 +1348,7 @@ change <- df %>%
   group_by(iso3_code, animal) %>%
   arrange(year) %>%
   mutate(
-    total_value_change = get_change(total_value, year), 
+    total_value_change = get_change(total_value, year),
     ) %>%
   summarise(
     avg_change = mean(total_value_change, na.rm = TRUE), .groups = "drop"
@@ -1355,18 +1357,18 @@ change <- df %>%
     change_vals = as.factor(cut(avg_change,
       breaks = c(-Inf, -2.5, 0, 1, 2.5, 5, 10, Inf),
       labels = c("&lt;-2.5", "-2.5 to 0", "0 to 1", "1 to 2.5", "2.5 to 5", "5 to 10", "&gt;10")
-    )), 
-    iso3_code = toupper(iso3_code), 
+    )),
+    iso3_code = toupper(iso3_code),
     animal = str_to_title(animal)
-  )  %>% 
+  )  %>%
   drop_na(animal)
 
 
 # Get world map
-world <- ne_countries(returnclass = "sf") 
+world <- ne_countries(returnclass = "sf")
 
 world_value <- world %>%
-  left_join(change, by = c("iso_a3" = "iso3_code")) %>% 
+  left_join(change, by = c("iso_a3" = "iso3_code")) %>%
   drop_na(change_vals, animal)
 
 
@@ -1374,7 +1376,7 @@ p <- ggplot() +
   geom_sf(data = world, fill = "#808080", color = "#D5E4EB") +
   geom_sf(data = world_value, aes(fill = change_vals), color = "#D5E4EB") +
   coord_sf(ylim = c(-55, 78)) +
-  facet_wrap(vars(animal)) + 
+  facet_wrap(vars(animal)) +
   theme_economist() +
   scale_fill_manual(
     values = setNames(
@@ -1399,40 +1401,40 @@ p <- ggplot() +
     axis.line.x = element_blank(),
     plot.subtitle = element_markdown(size = 15, hjust = 0, face = "italic"),
     plot.title = element_text(size = 20, face = "bold.italic"),
-    plot.caption = element_text(size = 13, face = "italic", hjust = 0), 
+    plot.caption = element_text(size = 13, face = "italic", hjust = 0),
     strip.text = element_markdown(face = 'bold', vjust = 1)
   )
 
-ggsave(plot = p, filename = here::here("output", "figures", "world-map_output-value-change_by_type_2005-2018.png"), 
+ggsave(plot = p, filename = here::here("output", "figures", "world-map_output-value-change_by_type_2005-2018.png"),
        width = 20, height = 12, dpi = 350)
- 
+
 
 
 
 ## ----average-annual-output-value-change_bar--------------------------------------------------------------------------------------------------------------------------------------------------------
-change %>% 
-    drop_na() %>% 
-    filter(avg_change < 20, ISO3_CODE %in% c(gates_countries, c("IRL", "CAN"))) %>% 
+change %>%
+    drop_na() %>%
+    filter(avg_change < 20, ISO3_CODE %in% c(gates_countries, c("IRL", "CAN"))) %>%
     mutate(
-        area = recode(area, "United Kingdom of Great Britain and Northern Ireland" = "UK", 
-                      "United Republic of Tanzania" = "Tanzania", 
-                      "China, mainland" = "China", 
-                      "United States of America" = "USA") 
-    ) %>% 
-    ggplot(aes(y = fct_reorder(area, avg_change, .desc = FALSE), x = avg_change)) + 
-    geom_col(width = 0.6, position = "identity") + 
-    scale_x_continuous(labels = scales::percent_format(scale = 1, accuracy = .1)) + 
-    geom_text(aes(x = avg_change - 0.25*sign(avg_change), label = scales::percent(avg_change, scale = 1, accuracy = .1)),size = 7, color = "white") + 
-    theme_ipsum_pub() + 
+        area = recode(area, "United Kingdom of Great Britain and Northern Ireland" = "UK",
+                      "United Republic of Tanzania" = "Tanzania",
+                      "China, mainland" = "China",
+                      "United States of America" = "USA")
+    ) %>%
+    ggplot(aes(y = fct_reorder(area, avg_change, .desc = FALSE), x = avg_change)) +
+    geom_col(width = 0.6, position = "identity") +
+    scale_x_continuous(labels = scales::percent_format(scale = 1, accuracy = .1)) +
+    geom_text(aes(x = avg_change - 0.25*sign(avg_change), label = scales::percent(avg_change, scale = 1, accuracy = .1)),size = 7, color = "white") +
+    theme_ipsum_pub() +
     labs(
-        x = NULL, y = NULL, 
-        title = "Livestock output value average annual % change (2005-2018)", 
-        subtitle = "All Values reported in 2014-2016 Constant US Dollars.", 
+        x = NULL, y = NULL,
+        title = "Livestock output value average annual % change (2005-2018)",
+        subtitle = "All Values reported in 2014-2016 Constant US Dollars.",
         caption = fig_captions(descr = "Livestock output value percentage change from 2005 to 2018 in constant 2014-2016 US Dollars")
     ) +
     theme(
         axis.text.y = element_text(size = 20, face = 'bold.italic'),
-        axis.text.x = element_blank(), 
+        axis.text.x = element_blank(),
         plot.title = element_markdown(size = 30, face = 'italic'),
         plot.subtitle = element_markdown(size = 22, face = 'italic'),
         panel.grid.minor =  element_blank()
@@ -1936,4 +1938,3 @@ p <- ggplot(df, aes(x = year, y = value, fill = sector)) +
     axis.text.x = element_text(size = 18, face = "italic")
   )
 p
-

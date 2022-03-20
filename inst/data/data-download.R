@@ -1,6 +1,6 @@
-#! /usr/bin/env Rscript
+#!/usr/bin/Rscript --vanilla
 
-################################################################
+###################################################
 # Project: GBADS: Global Burden of Animal Disease
 #
 # Author: Gabriel Dennis
@@ -24,7 +24,10 @@
 ####################################
 
 if (!require(renv)) {
-    install.packages('renv', repos='http://cran.us.r-project.org')
+    install.packages(
+        'renv',
+        repos='http://cran.us.r-project.org'
+    )
 }
 
 # Load Libraries ----------------------------------------------------------
@@ -34,7 +37,7 @@ renv::activate(project = '.')
 # Project Configurations --------------------------------------------------
 config <- config::get()
 data_urls <- c(config$data$source$urls$faostat,
-                    config$data$source$urls$fao)
+               config$data$source$urls$fao)
 
 
 # Parse Command Line Arguments for different data sources -----------------
@@ -43,7 +46,8 @@ parser <- argparse::ArgumentParser(
                         'used in this manuscript.')
 )
 
-parser$add_argument('-d', '--data', help = 'Name of which dataset to download.',
+parser$add_argument('-d', '--data',
+                    help = 'Name of which dataset to download.',
                     choices = names(data_urls),
                     required = TRUE)
 
@@ -53,11 +57,13 @@ args <- parser$parse_args()
 
 # Download the data -------------------------------------------------------
 data_dir <-  ifelse(args$data != 'global_aquaculture_production',
-                   config$data$source$faostat, config$data$source$fao)
+                    config$data$source$faostat, config$data$source$fao)
 
 destdir <- here::here(data_dir, args$data)
 
-if (!dir.exists(destdir)) dir.create(destdir, recursive = TRUE)
+if (!dir.exists(destdir)) {
+    dir.create(destdir, recursive = TRUE)
+}
 
 destfile <-  here::here(destdir, paste0(config$date,'_',  args$data,'.zip'))
 
@@ -80,7 +86,7 @@ if (args$data != 'global_aquaculture_production') {
         tools::file_path_sans_ext(destfile),
         full.names = TRUE), value = TRUE)
 
-    data <- readr::read_csv(csv_file) %>%
+    data <- readr::read_csv(csv_file) |>
         janitor::clean_names()
 
     arrow::write_parquet(data, here::here(config$data$processsed$faostat,
@@ -91,7 +97,3 @@ if (args$data != 'global_aquaculture_production') {
 
 # Exit --------------------------------------------------------------------
 quit(status = 0)
-
-
-
-

@@ -8,5 +8,3 @@
 
 # Version of R used 
 FROM rocker/rstudio:4.1.2
-
-

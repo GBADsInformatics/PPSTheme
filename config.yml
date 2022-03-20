@@ -1,21 +1,27 @@
+# Default project configuration
+# This config file stores the locations of
+# all relavent folders and urls
 default:
     date: !expr  format(Sys.Date(), format = '%Y%m%d')
     data:
+        # Location of data source directories
         source:
             faostat: !expr here::here('data', 'source', 'faostat')
             fao: !expr here::here('data', 'source', 'fao')
             urls:
+                # URL location of source data
                 faostat:
                     crops_and_livestock_products: 'https://fenixservices.fao.org/faostat/static/bulkdownloads/Production_Crops_Livestock_E_All_Data_(Normalized).zip'
                     value_of_production: 'https://fenixservices.fao.org/faostat/static/bulkdownloads/Value_of_Production_E_All_Data_(Normalized).zip'
                     producer_prices: 'https://fenixservices.fao.org/faostat/static/bulkdownloads/Prices_E_All_Data_(Normalized).zip'
                 fao:
-                    global_aquaculture_production:  'https://www.fao.org/fishery/static/Data/Aquaculture_2021.1.2.zip' 
+                    global_aquaculture_production:  'https://www.fao.org/fishery/static/Data/Aquaculture_2021.1.2.zip'
         processed:
+            # Processed data directory locations
             faostat: !expr here::here('data', 'processed', 'faostat')
             fao: !expr here::here('data', 'processed', 'fao')
-
     code:
+        # Code and documentation locations
         functions: !expr here::here('R')
         scripts: !expr here::here('inst')
         documentation: !expr here::here('vignettes')

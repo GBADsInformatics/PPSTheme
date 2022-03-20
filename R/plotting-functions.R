@@ -218,6 +218,3 @@ pie_chart.yearly_value <- function(df, date, id_col,color_pal, title ="", subtit
         )
     return(chart)
 }
-
-
-

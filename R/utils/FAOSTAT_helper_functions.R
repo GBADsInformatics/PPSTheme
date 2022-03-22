@@ -21,7 +21,6 @@
 
 
 ## 0 - Libraries  ------------------------------#
-library(magrittr)
 library(readr)
 library(arrow)
 library(rjson)
@@ -127,6 +126,20 @@ get_fao_metadata <- function(dataset_codes,
 
 
 # - Cleans FAOSTAT countries -------------------------------------------------------------------
+#' clean_countries
+#'
+#' Cleans the countries imported from faostat by removing multiple versions
+#' of China for any one year and removing countries which invalid ISO3 codes
+#'
+#' @param df a dataframe containing the correct columns
+#' @param code_col column name containing faostat codes
+#' @param year_col column name containing years as %Y format
+#' @param value_col column name containing the faostat values
+#'
+#' @return dataframe with double counted and missing values removed
+#' @export
+#'
+#' @examples
 clean_countries <- function(df,
                             code_col = "area_code",
                             year_col = "year",
@@ -155,11 +168,24 @@ clean_countries <- function(df,
 
 
 ##  - Sanitize character columns if necessary ------------------------------#
-sanitize_columns <- function(df) {
-  df %>%
-    mutate_if(
-      ~ is.character(.x),
-      ~ iconv(.x, "UTF-8", "ASCII") %>%
-        snakecase::to_any_case()
+#' sanitize_columns
+#'
+#' this function sanitizes character columns by removing unusual characters
+#' and turns selected colums to snakecase
+#'
+#' @param df a dataframe
+#' @param exclude character vector containing which column names will be excluded
+#'
+#' @return a dataframe which only has ASCII characters in its character columns
+#'
+#' @examples
+#' sanitize_columns(data.frame(a = "a"))
+sanitize_columns <- function(df, exclude = NULL) {
+  character_cols <- sapply(df, class)
+  character_cols <- names(character_cols)[character_cols == 'character']
+  df |>
+    mutate_at(
+        setdiff(character_cols, exclude),
+        ~snakecase::to_any_case(.x)
     )
 }

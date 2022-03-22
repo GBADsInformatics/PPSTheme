@@ -5,6 +5,7 @@ R_DIR=R/
 SCRIPT_DIR=inst/
 SOURCE_DATA_DIR=data/source/
 PROCESSED_DATA_DIR=data/processed/
+OUTPUT_DATA_DIR=data/output/
 FIGURE_DIR=output/figures/
 TABLE_DIR=output/tables/
 
@@ -13,21 +14,30 @@ TABLE_DIR=output/tables/
 #
 # Downloads the latest datasets
 # ---------------------------------------
+
+# TODO: Turn this into a single make
+
+# Downloads the FAOSTAT VOP Table
 $(PROCESSED_DATA_DIR)faostat/value_of_production.parquet:
 	Rscript $(SCRIPT_DIR)/data/data-download.R --data value_of_production
 
+# Downloads the FAOSTAT Producer Prices table
 $(PROCESSED_DATA_DIR)faostat/producer_prices.parquet:
 	Rscript --vanilla $(SCRIPT_DIR)/data/data-download.R --data producer_prices 
 
+# Downloads the FAOSTAT Crops and Livestock Products Table
 $(PROCESSED_DATA_DIR)faostat/crops_and_livestock_products.parquet:
 	Rscript --vanilla $(SCRIPT_DIR)/data/data-download.R --data crops_and_livestock_products 
 
+# Downloads the FAOSTAT GLobal Aquaculture production database
 global_aquaculture_production:
 	Rscript --vanilla $(SCRIPT_DIR)/data/data-download.R --data global_aquaculture_production
 
+# World bank LCU to PPP conversion 
 $(PROCESSED_DATA_DIR)world_bank/ppp_conversion.parquet:
 	Rscript --vanilla $(SCRIPT_DIR)/data/data-download.R --data ppp_conversion
 
+# World Bank Population Indicator
 $(PROCESSED_DATA_DIR)world_bank/population.parquet:
 	Rscript --vanilla $(SCRIPT_DIR)/data/data-download.R --data population
 
@@ -37,6 +47,11 @@ FAOSTATConversionFactorData:
 #----------------------------------------
 # Codes
 #----------------------------------------
+
+# Downloads the correspondence file between FAO and CPC codes 
+data/codes/FAOSTAT/CPCtoFCL_codes.xlsx:
+	wget -O data/codes/FAOSTAT/CPCtoFCL_codes.xlsx 'https://www.fao.org/fileadmin/templates/ess/classifications/Correspondence_CPCtoFCL.xlsx'
+
 data/codes/FAOSTAT/FAOSTAT-CPC_cropItemCodes.rds:
 	Rscript --vanilla $(SCRIPT_DIR)/codes/get-faostat-crop-codes.R 
 
@@ -45,17 +60,17 @@ data/codes/FAOSTAT/FAOSTAT-CPC_cropItemCodes.rds:
 # ---------------------------------------
 #
 # Reproduces the livestock value table
-$(PROCESSED_DATA_DIR)faostat/faostat_livestock_values.parquet:
+$(OUTPUT_DATA_DIR)faostat/faostat_livestock_values.parquet:
 	Rscript --vanilla $(SCRIPT_DIR)/values/getFAOLivestockValues.R
 		
 
 # Reproduces the aquaculture value table 
-$(PROCESSED_DATA_DIR)fao/fao_global_aquaculture_production_values.parquet:
-	Rscript --vanilla $(SCRIPT_DIR)/values/getFAOAquacultureValues.R 
+$(OUTPUT_DATA_DIR)fao/fao_aquaculture_values.parquet:
+	Rscript --vanilla $(SCRIPT_DIR)/values/get-fao-aquaculture-values.R 
 
 # Reproduces the crop values tables
-$(PROCESSED_DATA_DIR)faostat/faostat_crop_values.parquet:
-	Rscript --vanilla $(SCRIPT_DIR)/values/getFAOCropValues.R
+$(OUTPUT_DATA_DIR)faostat/faostat_crop_values.parquet:
+	Rscript --vanilla $(SCRIPT_DIR)/values/get-fao-crop-values.R
 
 
 #--------------------------------------

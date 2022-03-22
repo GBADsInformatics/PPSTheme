@@ -6,36 +6,36 @@ default:
     data:
         # Location of data source directories
         source:
-            faostat_dir: !expr here::here('data', 'source', 'faostat')
-            fao_dir: !expr here::here('data', 'source', 'fao')
-            world_bank_dir: !expr here::here('data', 'source', 'world_bank')
+            faostat_dir: data/source/faostat
+            fao_dir: data/source/fao
+            world_bank_dir: data/source/world_bank
             # URL location of source data
             tables:
                 crops_and_livestock_products:
                     url: 'https://fenixservices.fao.org/faostat/static/bulkdownloads/Production_Crops_Livestock_E_All_Data_(Normalized).zip'
-                    dir: !expr here::here('data', 'source', 'faostat', 'crops_and_livestock_products')
+                    dir: data', 'source', 'faostat', 'crops_and_livestock_products')
                     type: 'zip'
                 value_of_production:
                     url: 'https://fenixservices.fao.org/faostat/static/bulkdownloads/Value_of_Production_E_All_Data_(Normalized).zip'
-                    dir: !expr here::here('data', 'source', 'faostat', 'value_of_production')
+                    dir: data', 'source', 'faostat', 'value_of_production')
                     type: 'zip'
                 producer_prices:
                     url: 'https://fenixservices.fao.org/faostat/static/bulkdownloads/Prices_E_All_Data_(Normalized).zip'
-                    dir: !expr here::here('data', 'source', 'faostat', 'producer_prices')
+                    dir: data', 'source', 'faostat', 'producer_prices')
                     type: 'zip'
                 global_aquaculture_production:
                     url: 'https://www.fao.org/fishery/static/Data/Aquaculture_2021.1.2.zip'
-                    dir: !expr here::here('data', 'source', 'faostat', 'global_aquculture_production')
+                    dir: data/source/faostat/global_aquculture_production
                     type: 'zip'
                 # Purchasing power parity to International (USD) $
                 ppp_conversion:
                     url: 'https://api.worldbank.org/v2/country/all/indicator/PA.NUS.PPP?downloadformat=csv'
-                    dir: !expr here::here('data', 'source', 'world_bank', 'ppp_conversion')
+                    dir: data', 'source', 'world_bank', 'ppp_conversion')
                     type: 'zip'
                 # Global population
                 population:
                     url: 'https://api.worldbank.org/v2/country/all/indicator/SP.POP.TOTL?downloadformat=csv'
-                    dir: !expr here::here('data', 'source', 'world_bank', 'population')
+                    dir: data/source/world_bank/population
                     type: 'zip'
 
         processed:
@@ -54,8 +54,12 @@ default:
                 items:
                     item_codes: !expr here::here('data', 'codes', 'FAOSTAT', 'FAOSTAT_Item_Codes.Rds')
                 country_codes: !expr here::here('data', 'codes', 'FAOSTAT', 'FAOSTAT_Country_Codes.Rds')
+                crops: data/codes/FAOSTAT/FAOSTAT-CPC_cropItemCodes.rds 
             cpc:
                 url: 'https://www.fao.org/fileadmin/templates/ess/classifications/Correspondence_CPCtoFCL.xlsx'
+        output:
+            crop_values: data/output/faostat/faostat_crop_values.parquet
+            aquaculture_values: data/output/fao/fao_aquaculture_values.parquet
     code:
         # Code and documentation locations
         functions: !expr here::here('R')

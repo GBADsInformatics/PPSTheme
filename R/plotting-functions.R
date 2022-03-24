@@ -26,14 +26,14 @@
 library(ggthemes)
 library(ggplot2)
 th <-  theme(
-legend.position = "bottom",
-legend.title = element_text(size = 18, face = "bold.italic"),
-legend.text = element_text(size = 20, face = "italic"),
-plot.title = element_text(face = "bold.italic", size = 25),
-plot.subtitle = element_text(face = "italic", size = 20),
-axis.text.y = element_text(size = 20, face = "bold.italic"),
-axis.title = element_text(hjust = 0.5),
-axis.text.x = element_text(size = 20, face = "bold.italic")
+    legend.position = "bottom",
+    legend.title = element_text(size = 18, face = "bold.italic"),
+    legend.text = element_text(size = 20, face = "italic"),
+    plot.title = element_text(face = "bold.italic", size = 25),
+    plot.subtitle = element_text(face = "italic", size = 20),
+    axis.text.y = element_text(size = 20, face = "bold.italic"),
+    axis.title = element_text(hjust = 0.5),
+    axis.text.x = element_text(size = 20, face = "bold.italic")
 )
 
 

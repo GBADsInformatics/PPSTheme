@@ -37,6 +37,18 @@ default:
                     url: 'https://api.worldbank.org/v2/country/all/indicator/SP.POP.TOTL?downloadformat=csv'
                     dir: data/source/world_bank/population
                     type: 'zip'
+                gdp_per_capita_ppp: 
+                    url:   'https://api.worldbank.org/v2/country/all/indicator/NY.GDP.PCAP.PP.CD?downloadformat=csv'
+                    dir: data/source/world_bank/gdp_per_capita_ppp
+                    type: 'zip'
+                income_classification_history:
+                    url: http://dataank.worldbank.org/data/download/site-content/OGHIST.xlsxb
+                    dir: data/source/world_bank/income_classification_history
+                    file_name: OGHIST.xlsx
+                    type: 'xlsx'
+
+
+ 
 
         processed:
             # Processed data directory locations
@@ -48,6 +60,8 @@ default:
                 producer_prices: !expr here::here('data', 'processed', 'faostat', 'producer_prices.parquet')
                 ppp_conversion: !expr here::here('data', 'processed', 'world_bank', 'ppp_conversion.parquet')
                 population: !expr here::here('data', 'processed', 'world_bank', 'population.parquet')
+                gdp_per_capita_ppp: !expr here::here('data', 'processed', 'world_bank', 'gdp_per_capita_ppp.parquet')
+
         codes:
             faostat:
                 dir: !expr here::here('data', 'codes', 'FAOSTAT')
@@ -60,6 +74,7 @@ default:
         output:
             crop_values: data/output/faostat/faostat_crop_values.parquet
             aquaculture_values: data/output/fao/fao_aquaculture_values.parquet
+            livestock_values: data/output/FAOSTAT/FAOSTAT_Livestock_Values.parquet
     code:
         # Code and documentation locations
         functions: !expr here::here('R')

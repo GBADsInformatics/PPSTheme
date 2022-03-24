@@ -780,7 +780,8 @@ lvst <- livestock_df %>%
   filter(animal %in% c("cattle", "chicken", "pig", "sheep", "goat")) %>%
   mutate(
     Asset = stock_value_constant_2014_2016_usd,
-    Output = ifelse(!is.na(`gross_production_value_constant_2014-2016_thousand_us`), `gross_production_value_constant_2014-2016_thousand_us` * 1000, aquaculture_constant_2014_2016_constant_usd_value),
+    Output = ifelse(!is.na(`gross_production_value_constant_2014-2016_thousand_us`),
+                    `gross_production_value_constant_2014-2016_thousand_us` * 1000, aquaculture_constant_2014_2016_constant_usd_value),
   ) %>%
   group_by(year, animal) %>%
   summarise(
@@ -903,7 +904,8 @@ set.seed(0)
 livestock_value_percap <- livestock_value_percap %>%
   left_join(incomes, by = c("ISO3_CODE" = "iso3c")) %>%
   mutate(
-    income_level_iso3c = plyr::mapvalues(income_level_iso3c, c("HIC", "LIC", "LMC", "UMC"), c("High Income", "Low Income", "Low Middle Income", "Upper Middle Income"))
+    income_level_iso3c = plyr::mapvalues(income_level_iso3c,
+                                         c("HIC", "LIC", "LMC", "UMC"), c("High Income", "Low Income", "Low Middle Income", "Upper Middle Income"))
   ) %>%
   mutate(
     income_level_iso3c = factor(income_level_iso3c, levels = c("High Income", "Upper Middle Income", "Low Middle Income", "Low Income"))
@@ -1261,6 +1263,7 @@ change <- df %>%
 
 world <- ne_countries(returnclass = "sf") %>%
   left_join(change, by = c("iso_a3" = "ISO3_CODE"))
+
 p <- ggplot(world) +
   geom_sf(fill = "#808080", color = "#D5E4EB") +
   geom_sf(aes(fill = change_vals), color = "#D5E4EB") +
@@ -1473,9 +1476,6 @@ world_map_tev <- function(df, date) {
       )
     )
 
-
-
-
   ggplot(data = world) +
     geom_sf(fill = "#808080", color = "#D5E4EB") +
     geom_sf(data = world_value, aes(fill = value_bins), color = "#D5E4EB") +
@@ -1509,8 +1509,6 @@ world_map_tev <- function(df, date) {
       plot.title = element_text(size = 25, face = "bold.italic"),
       plot.caption = element_text(size = 13, face = "italic")
     )
-
-  # Save and append to logs
 }
 
 

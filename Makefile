@@ -41,6 +41,13 @@ $(PROCESSED_DATA_DIR)world_bank/ppp_conversion.parquet:
 $(PROCESSED_DATA_DIR)world_bank/population.parquet:
 	Rscript --vanilla $(SCRIPT_DIR)/data/data-download.R --data population
 
+
+# World Bank GDP Per Capita PPP Indicator
+$(PROCESSED_DATA_DIR)world_bank/gdp_per_capita_ppp.parquet:
+	Rscript --vanilla $(SCRIPT_DIR)/data/data-download.R --data gdp_per_capita_ppp
+
+
+
 FAOSTATConversionFactorData:
 	# Fao Conversion factors
 
@@ -78,6 +85,14 @@ $(OUTPUT_DATA_DIR)faostat/faostat_crop_values.parquet:
 # -------------------------------------
 $(FIGURE_DIR)figure%.png:
 	Rscript --vanilla $(SCRIPT_DIR)/figures/generate-figures.R --figure 
+
+$(FIGURE_DIR)figure_2.pdf:
+	Rscript --vanilla $(SCRIPT_DIR)/figures/generate-figures.R --figure 2 
+
+$(FIGURE_DIR)figure_3.pdf:
+	Rscript --vanilla $(SCRIPT_DIR)/figures/generate-figures.R --figure 3 
+
+
 
 $(TABLE_DIR)table%.png: 
 	Rscript --vanilla $(SCRIPT_DIR)/tables/generate-tables.R --table

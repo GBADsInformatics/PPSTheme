@@ -46,10 +46,6 @@ default:
                     dir: data/source/world_bank/income_classification_history
                     file_name: OGHIST.xlsx
                     type: 'xlsx'
-
-
- 
-
         processed:
             # Processed data directory locations
             faostat: !expr here::here('data', 'processed', 'faostat')
@@ -61,7 +57,7 @@ default:
                 ppp_conversion: !expr here::here('data', 'processed', 'world_bank', 'ppp_conversion.parquet')
                 population: !expr here::here('data', 'processed', 'world_bank', 'population.parquet')
                 gdp_per_capita_ppp: !expr here::here('data', 'processed', 'world_bank', 'gdp_per_capita_ppp.parquet')
-
+                technical_conversion_factors: data/processed/faostat/faostat_conversions.csv
         codes:
             faostat:
                 dir: !expr here::here('data', 'codes', 'FAOSTAT')
@@ -80,3 +76,20 @@ default:
         functions: !expr here::here('R')
         scripts: !expr here::here('inst')
         documentation: !expr here::here('vignettes')
+
+
+    figure_specification:
+        #  https://www.nature.com/natfood/submission-guidelines/aip-and-formatting
+        #  https://www.nature.com/documents/NRJs-guide-to-preparing-final-artwork.pdf
+        nature_food:
+            one_column_width: 88
+            two_column_width: 180  
+            typeface: "Helvetica"
+            family: "sans"
+            dpi: 400
+            units: mm
+            font_size: 7
+            format: pdf
+
+            
+            

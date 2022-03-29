@@ -49,7 +49,7 @@ $(PROCESSED_DATA_DIR)world_bank/gdp_per_capita_ppp.parquet:
 
 
 FAOSTATConversionFactorData:
-	# Fao Conversion factors
+	# TODO
 
 #----------------------------------------
 # Codes
@@ -68,7 +68,7 @@ data/codes/FAOSTAT/FAOSTAT-CPC_cropItemCodes.rds:
 #
 # Reproduces the livestock value table
 $(OUTPUT_DATA_DIR)faostat/faostat_livestock_values.parquet:
-	Rscript --vanilla $(SCRIPT_DIR)/values/getFAOLivestockValues.R
+	Rscript --vanilla $(SCRIPT_DIR)/values/get-fao-livestock-values.R
 		
 
 # Reproduces the aquaculture value table 
@@ -82,20 +82,25 @@ $(OUTPUT_DATA_DIR)faostat/faostat_crop_values.parquet:
 
 #--------------------------------------
 # Figures and tables 
+#
+# TODO: add more command line arguments
+# depending on which journal the 
+# submission is being made to 
 # -------------------------------------
-$(FIGURE_DIR)figure%.png:
-	Rscript --vanilla $(SCRIPT_DIR)/figures/generate-figures.R --figure 
-
 $(FIGURE_DIR)figure_2.pdf:
 	Rscript --vanilla $(SCRIPT_DIR)/figures/generate-figures.R --figure 2 
 
 $(FIGURE_DIR)figure_3.pdf:
 	Rscript --vanilla $(SCRIPT_DIR)/figures/generate-figures.R --figure 3 
 
+$(FIGURE_DIR)figure_4.pdf:
+	Rscript --vanilla $(SCRIPT_DIR)/figures/generate-figures.R --figure 4 
 
+$(FIGURE_DIR)figure_5.pdf:
+	Rscript --vanilla $(SCRIPT_DIR)/figures/generate-figures.R --figure 5 
 
-$(TABLE_DIR)table%.png: 
-	Rscript --vanilla $(SCRIPT_DIR)/tables/generate-tables.R --table
+$(FIGURE_DIR)figure_6.pdf:
+	Rscript --vanilla $(SCRIPT_DIR)/figures/generate-figures.R --figure 6 
 
 #------------------------------------
 # Tests

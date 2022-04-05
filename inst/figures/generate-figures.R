@@ -46,6 +46,15 @@
 renv::activate(project = '.')
 
 
+
+# Libraries ---------------------------------------------------------------
+require(dplyr)
+require(magrittr)
+require(ggplot2)
+require(ggthemes)
+require(hrbrthemes)
+require(logging)
+
 # Command Line Arguments --------------------------------------------------
 parser <-
     argparse::ArgumentParser(
@@ -64,6 +73,8 @@ parser$add_argument(
 args <- parser$parse_args()
 
 
+loginfo(args$figure)
+
 # Import output files -----------------------------------------------------
 config <- config::get()
 
@@ -75,7 +86,7 @@ figure_spec <- config$figure_specification$nature_food
 # Plotting Helper Functions -----------------------------------------------
 scale_trill <- function(x) {
     scales::dollar(x,
-                   accuracy = 0.5,
+                   accuracy = 1,
                    scale = 1e-12,
                    suffix = " T")
 }
@@ -107,7 +118,8 @@ write_data <- function(df, df_name, data_path) {
 zip_figure_data <- function(data_path) {
     zip(
         here::here(data_path,
-                   paste0(format(Sys.time(), format = "%Y%m%d_%H%M%S"),
+                   paste0(format(Sys.time(),
+                                 format = "%Y%m%d_%H%M%S"),
                           ".zip")),
         files =  list.files(data_path,
                             full.names = TRUE,
@@ -117,9 +129,7 @@ zip_figure_data <- function(data_path) {
 }
 
 compute_spearman_rank <- function(data, colx, coly, R=1e3, extra_str="") {
-
     set.seed(0)
-
     spearman_boot <- sapply(1:R,
                             function(i) {
                                 data <- dplyr::slice_sample(
@@ -157,53 +167,38 @@ compute_spearman_rank <- function(data, colx, coly, R=1e3, extra_str="") {
 #' @param years years to subset the data
 #'
 figure_2 <- function(df_list,
-                     years = 1996:2018) {
+                     population_file,
+                     years = seq(1996, 2018, by = 5)) {
 
-    # Libraries
-    require(dplyr)
-    require(ggplot2)
-    require(ggthemes)
-    require(hrbrthemes)
+    set.seed(0)
 
     # Global Themes
-        th <- theme(
+    th <- theme(
         legend.position = "bottom",
-         legend.title = element_text(family = figure_spec$typeface,
+        legend.title = element_text(family = figure_spec$typeface,
                                     size = figure_spec$font_size),
         legend.text = element_text(family = figure_spec$typeface,
-                                    size = figure_spec$font_size),
-        plot.title = element_text(family = figure_spec$typeface,
-                                    size = figure_spec$font_size),
-        plot.subtitle = element_text(family = figure_spec$typeface,
-                                    size = figure_spec$font_size),
-        axis.text.y = element_text(family = figure_spec$typeface,
-                                    size = figure_spec$font_size),
-        axis.title = element_text(family = figure_spec$typeface,
-                                    size = figure_spec$font_size),
-        axis.text.x = element_text(family = figure_spec$typeface,
-                                    size = figure_spec$font_size),
-        axis.title.x = element_text(family = figure_spec$typeface,
                                    size = figure_spec$font_size),
-        panel.border = element_blank()
+        plot.title = element_text(family = figure_spec$typeface,
+                                  size = figure_spec$font_size),
+        plot.subtitle = element_text(family = figure_spec$typeface,
+                                     size = figure_spec$font_size),
+        axis.text.y = element_text(family = figure_spec$typeface,
+                                   size = figure_spec$font_size),
+        axis.title = element_text(family = figure_spec$typeface,
+                                  size = figure_spec$font_size),
+        axis.text.x = element_text(family = figure_spec$typeface,
+                                   size = figure_spec$font_size),
+        axis.title.x = element_text(family = figure_spec$typeface,
+                                    size = figure_spec$font_size),
+        panel.border = element_blank(),
+        legend.background = element_blank(),
+        plot.background = element_blank(),
+        axis.line.y = element_blank(),
+        axis.line.x = element_blank(),
+        axis.ticks = element_blank(),
+        axis.title.x.bottom = element_blank(),
     )
-
-    # Global Color Scheme
-    # Obtained from ggsci::pal_npg()(7)
-    #> [1] "#E64B35FF" "#4DBBD5FF" "#00A087FF" "#3C5488FF" "#F39B7FFF" "#8491B4FF" "#91D1C2FF"
-    # Visualis through scales::show_col(ggsci::pal_npg()(7))
-    # Here npg are nature inspired themes
-
-    nature_color_scheme <- c(
-        "Crops" = "#91D1C2FF",
-        "Cattle" = "#E64B35FF",
-        "Chicken" = "#F39B7FFF",
-        "Pig" = "#4DBBD5FF",
-        "Aquaculture" = "#3C5488FF",
-        "Sheep" =  "#00A087FF",
-        "Other Livestock" = "#8491B4FF"
-    )
-
-
 
     data <- purrr::map(
         df_list,
@@ -235,6 +230,41 @@ figure_2 <- function(df_list,
         mutate(
             category = forcats::fct_reorder(category, value, mean, .desc = FALSE)
         )
+
+    # Population data
+    # TODO: move this into a helper function
+    population <- arrow::read_parquet(population_file) |>
+        dplyr::select(country_code, contains('x')) |>
+        tidyr::gather(key = "year", value = "population", -country_code) |>
+        dplyr::mutate(
+            year = as.numeric(substr(year, 2, length(year)))
+        ) |>
+        dplyr::filter(year %in% years,
+                      country_code %in%
+                          toupper(unique(data$livestock_values$iso3_code))) |>
+        dplyr::group_by(year) |>
+        summarise(
+            population = sum(population, na.rm = TRUE)
+        )
+
+    # Global Color Scheme
+    # Obtained from ggsci::pal_npg()(7)
+    #> [1] "#E64B35FF" "#4DBBD5FF" "#00A087FF" "#3C5488FF"
+    #>  "#F39B7FFF" "#8491B4FF" "#91D1C2FF"
+    # Visualis through scales::show_col(ggsci::pal_npg()(7))
+    # Here npg are nature inspired themes
+
+    nature_color_scheme <- c(
+        "Crops" = "#91D1C2FF",
+        "Cattle" = "#E64B35FF",
+        "Chicken" = "#F39B7FFF",
+        "Pig" = "#4DBBD5FF",
+        "Aquaculture" = "#3C5488FF",
+        "Sheep" =  "#00A087FF",
+        "Other Livestock" = "#8491B4FF"
+    )
+
+
 
     # Livestock Outputs
     data$livestock_output <- data$livestock_values |>
@@ -288,45 +318,45 @@ figure_2 <- function(df_list,
         mutate(
             percentage = value/sum(value, na.rm = TRUE)
         ) |>
-        ungroup() |>
+        ungroup()  |>
         mutate(
             category = forcats::fct_reorder(category,
                                             value, mean, .desc = FALSE)
         )
 
     # Map the Livestock Outputs to categories
+    loginfo("Plotting Output Value")
     output <- outputs |>
         ggplot(aes(x = year, y = value, fill = category))  +
         geom_bar(position = "fill", stat = "identity", color = "white") +
         scale_y_continuous(labels = scales::percent_format()) +
-        # geom_text(
-        #     aes(
-        #         label = ifelse(year %in% c(min(year),
-        #                                    max(year)),
-        #                        scales::percent(percentage, accuracy = 1),
-        #                        ""),
-        #         size = figure_spec$font_size,
-        #         color = "white"),
-        #     position = position_stack(vjust = 0.5)) +
+        scale_x_continuous(breaks = years) +
+        geom_text(
+            aes(
+                label = scales::percent(percentage, accuracy = 1)),
+            position = position_fill(vjust = 0.5),
+            size = 1.5,
+            check_overlap = TRUE) +
         labs(
             x = 'Year',
             y = '',
             fill = " "
         ) +
-        theme_bw() +
+        theme_clean() +
         scale_fill_manual(values = nature_color_scheme) +
         th
-
+    loginfo("Plotting Asset Value")
     asset <-  data$livestock_asset |>
         ggplot(aes(x = year, y = value, fill = category))  +
         geom_bar(position = "fill", stat = "identity",  color = "white" ) +
         scale_y_continuous(labels = scales::percent_format()) +
-        # geom_text(
-        #     aes(
-        #         label = ifelse(year %in% c(min(year), max(year)),
-        #                        scales::percent(percentage, accuracy = 1),
-        #                        "")),
-        #     position = position_stack(vjust = 0.5)) +
+        scale_x_continuous(breaks = years) +
+        geom_text(
+            aes(
+                label =   scales::percent(percentage, accuracy = 1)),
+            position = position_fill(vjust = 0.5),
+            check_overlap = TRUE,
+            size = 1.5) +
         labs(
             x = 'Year',
             y = '',
@@ -335,55 +365,95 @@ figure_2 <- function(df_list,
         theme(
             legend.position = NULL
         )  +
-        theme_bw() +
+        theme_clean() +
         scale_fill_manual(values = nature_color_scheme) +
         th
 
-    total_value <- bind_rows(outputs, data$livestock_asset ) |>
-        group_by(year, category) |>
-        summarise(
-            value = sum(value, na.rm = TRUE)
+    total_value <- dplyr::bind_rows(outputs, data$livestock_asset ) |>
+        dplyr::group_by(year, category) |>
+        dplyr::summarise(
+            value = sum(value, na.rm = TRUE),
+            .groups = 'drop'
         ) |>
-        group_by(year) |>
-        mutate(
-            percentage = value/sum(value),
-            category = forcats::fct_reorder(category, value, mean, na.rm = TRUE)
+        dplyr::group_by(year) |>
+        dplyr::mutate(
+            percentage = value/sum(value)
+        ) |>
+        dplyr::ungroup() |>
+        dplyr::mutate(
+            category = forcats::fct_reorder(category,
+                                            value, mean, .desc = FALSE)
         )
 
-    total <- total_value |>
-        ggplot(aes(x = year, y = value)) +
-        geom_bar(aes(fill = category),
-                 position = "fill", stat = "identity", color = "white") +
-        scale_y_continuous(labels = scales::percent_format()) +
-        # geom_text(
-        #     aes(
-        #         label = ifelse(year %in% c(min(year),
-        #                                    max(year)),
-        #                        scales::percent(percentage, accuracy = 1),
-        #                        "")),
-        #     position = position_stack(vjust = 0.5)) +
-         labs(
+    loginfo("Plotting total value")
+    coef <- 8e9/6e12
+    total_value <- dplyr::left_join(total_value, population, by = "year")
+    total_sum <- total_value |>
+        ggplot(aes(x = year, y = value, fill = category)) +
+        geom_bar(position = "stack", stat = "identity", color = "white") +
+        geom_text(
+            aes(
+                label = scales::dollar(value, scale = 1e-9,
+                                              accuracy = 1,
+                                              suffix = " B")),
+            position = position_stack(vjust = 0.5),
+            check_overlap = TRUE,
+            size = 1.5) +
+        geom_point(data = total_value, aes(x = year, y = population/coef),
+                   color = "black", size =0.5, show.legend = FALSE) +
+        scale_y_continuous(labels = scales::label_dollar(suffix = ' T', accuracy = 1, scale = 1e-12),
+                           n.breaks = 4,
+                           name = "Value",
+                           sec.axis = sec_axis(~.*coef, name = "Population",
+                         labels = scales::label_comma(scale=1e-9, suffix = ' B')) ) +
+        scale_x_continuous(breaks = years) +
+        labs(
             x = 'Year',
             y = '',
             fill = ""
         )  +
-       theme_bw() +
+        theme_clean() +
         scale_fill_manual(values = nature_color_scheme) +
         th
 
 
-    p <- ggpubr::ggarrange(total,
+    total <- total_value |>
+        ggplot(aes(x = year, y = value, fill = category)) +
+        geom_bar(position = "fill", stat = "identity", color = "white") +
+        scale_y_continuous(labels = scales::percent_format()) +
+        scale_x_continuous(breaks = years) +
+        geom_text(
+            aes(
+                label =  scales::percent(percentage, accuracy = 1)),
+            position = position_fill(vjust = 0.5),
+            family = figure_spec$family,
+            check_overlap = TRUE,
+            size = 1.5) +
+        labs(
+            x = 'Year',
+            y = '',
+            fill = ""
+        )  +
+        theme_clean() +
+        scale_fill_manual(values = nature_color_scheme) +
+        th
+
+
+    p <- ggpubr::ggarrange(total_sum,
+                           total,
                            asset,
                            output,
-                           ncol = 1,
+                           ncol = 2,
+                           nrow = 2,
                            common.legend = TRUE,
                            legend = 'bottom',
-                           labels = c("A - Total Global Farmed Animal and Crop Production.",
-                                      "B - Global Livestock Asset Values.",
-                                      "C - Global Livestock, Crop and Aquaculture Output Values."),
-                           vjust = 1.4,
-                           widths = rep(1, 3),
-                           heights = rep(1, 3),
+                           labels = c("A - Total global farmed animal and crop production.",
+                                      "B - Contribution to the total global farmed production.",
+                                      "C - Contribution to the global asset values.",
+                                      "D - Contribution to the global output values."),
+                           hjust = -0.2,
+                           widths = rep(1, 4),
+                           heights = rep(1, 4),
                            font.label = list(size = figure_spec$font_size,
                                              family = figure_spec$typeface,
                                              face = "italic")
@@ -391,7 +461,7 @@ figure_2 <- function(df_list,
     ggsave(plot = p,
            filename = here::here('output', 'figures', "figure_2.pdf"),
            width = figure_spec$two_column_width,
-           height = figure_spec$one_column_width * 3,
+           height = figure_spec$one_column_width * 2,
            units = figure_spec$units,
            dpi = figure_spec$dpi,
            device = figure_spec$format)
@@ -409,7 +479,7 @@ figure_2 <- function(df_list,
         write_data("figure_2_outputs", data_path)
 
     total_value |>
-       write_data("figure_2_total", data_path)
+        write_data("figure_2_total", data_path)
 
 
     zip_figure_data(data_path)
@@ -418,9 +488,19 @@ figure_2 <- function(df_list,
 
 }
 
-if (args$figure == 2) {
-    figure_2(config$data$output)
-}
+
+
+# Match the Command Line Args ---------------------------------------------
+switch(
+    as.character(args$figure),
+    "2" = figure_2(df_list = config$data$output,
+                   population_file = config$data$processed$tables$population)
+)
+
+
+
+stop()
+
 
 # -------------------------------------------------------------------------
 
@@ -1041,9 +1121,10 @@ if (args$figure  == 5) {
 
 ## Figure 6 - Asset value change per annum (2005-2018)
 figure_6 <- function(df_file,
+                     population_file,
                      year_range = c(2005, 2018),
-                     fig_title = "Average Livestock Asset Value Change (%) per year between 2005 and 2018",
-                     fig_subtitle =  "All values in constant 2014-2016 USD.") {
+                     fig_title = "Average Livestock Asset Value Change per capita (%) per year between 2005 and 2018",
+                     fig_subtitle =  "") {
     require(dplyr)
     require(tidyr)
     require(ggplot2)
@@ -1059,6 +1140,15 @@ figure_6 <- function(df_file,
             dplyr::mutate(iso3_code = toupper(iso3_code))
 
 
+    population <- arrow::read_parquet(population_file) |>
+        dplyr::select(country_code, contains('x')) |>
+        tidyr::gather(key = "year", value = "population", -country_code) |>
+        dplyr::mutate(
+            year = as.numeric(substr(year, 2, length(year)))
+        ) |>
+        dplyr::filter(year %in% year_range[1]:year_range[2]) |>
+        dplyr::rename(iso3_code = country_code)
+
 
 
 
@@ -1069,10 +1159,15 @@ figure_6 <- function(df_file,
         dplyr::mutate(value = stock_value_constant_2014_2016_usd) |>
         dplyr::group_by(iso3_code, year) |>
         dplyr::summarise(
-            value = sum(value, na.rm = TRUE), .groups = 'drop'
+            value = sum(value, na.rm = TRUE),
+            .groups = 'drop'
         ) |>
+        dplyr::left_join(population, by = c("iso3_code", "year")) |>
         dplyr::group_by(iso3_code) |>
         dplyr::arrange(year) %>%
+        dplyr::mutate(
+            value = value/population
+        ) |>
         dplyr::mutate(value = 100 * (value - lag(value)) / (lag(value)) / (year - lag(year))) %>%
         dplyr::summarise(
             avg_change = mean(value, na.rm = TRUE), .groups = "drop"
@@ -1081,7 +1176,7 @@ figure_6 <- function(df_file,
             change_vals = as.factor(
                 cut(avg_change,
                 breaks = c(-Inf, -2.5, 0, 1, 2.5, 5, 10, Inf),
-                labels = c("&lt;-2.5", "-2.5 to 0", "0 to 1", "1 to 2.5", "2.5 to 5", "5 to 10", "&gt;10")
+                labels = c("&lt; -2.5", "-2.5 to 0", "0 to 1", "1 to 2.5", "2.5 to 5", "5 to 10", "&gt;10")
             ))
         )
 
@@ -1102,8 +1197,8 @@ figure_6 <- function(df_file,
         theme_economist() +
         scale_fill_manual(
             values = setNames(
-                c(rev(RColorBrewer::brewer.pal(3, "Reds")),
-                  RColorBrewer::brewer.pal(4, "Greens"), "#808080"),
+                c("#E64B35FF", "#F39B7FFF", "#F7FCF5" ,
+                  "#74C476" ,"#41AB5D" ,"#238B45", "#005A32", "#808080"),
                 c("&lt;-2.5", "-2.5 to 0", "0 to 1", "1 to 2.5", "2.5 to 5", "5 to 10", "&gt;10", "NA")
             )
         ) +
@@ -1118,25 +1213,37 @@ figure_6 <- function(df_file,
             axis.text.x = element_blank(),
             axis.ticks.x = element_blank(),
             panel.border = element_blank(),
-            legend.text = ggtext::element_markdown(size = 15, face = "italic"),
-            legend.title = ggtext::element_markdown(face = "italic", size = 18, vjust = 0.1),
+            legend.text = ggtext::element_markdown(size = figure_spec$font_size,
+                                                   family = figure_spec$family),
+            legend.title = ggtext::element_markdown(size = figure_spec$font_size,
+                                                    family = figure_spec$family),
             panel.grid.major = element_blank(),
             axis.line.x = element_blank(),
-            plot.subtitle = element_text(size = 15, hjust = 0, face = "italic"),
-            plot.title = element_text(size = 25, face = "italic"),
-            plot.caption = element_text(size = 13, face = "italic")
+            plot.subtitle = element_text(size = figure_spec$font_size,
+                                          family = figure_spec$family),
+            plot.title = element_text(size = figure_spec$font_size,
+                                       family = figure_spec$family, face = "plain"),
+            plot.caption = element_text(size = figure_spec$font_size,
+                                        family = figure_spec$family,
+                                        face = "plain")
         )
+    ggsave(plot = p,
+           filename = here::here('output', 'figures', "figure_6.pdf"),
+           width = figure_spec$two_column_width,
+           height = figure_spec$two_column_width * (1 / 1.6),
+           units = figure_spec$units,
+           dpi = figure_spec$dpi,
+           device = figure_spec$format)
 
-    ggsave(plot = p, filename = here::here('output', 'figures', "figure_6.pdf"),
-           width = 14, height = 18, units = "in", dpi = 400,
-           device = "pdf")
+
 }
 
 ## DEBUG
 args <- list()
 args$figure <- 6
 if (args$figure == 6) {
-    figure_6( config$data$output$livestock_values)
+    figure_6( config$data$output$livestock_values,
+              population_file = config$data$processed$tables$population)
 }
 
 
@@ -1144,8 +1251,9 @@ if (args$figure == 6) {
 ## Output Values (2005-2018)
 figure_7 <- function(df_list,
                     year_range = c(2005, 2018),
-                    fig_title = "Average Livestock and Aquaculture Value Change (%) per year between 2005 and 2018",
-                    fig_subtitle =  "All values in constant 2014-2016 USD.") {
+                    population_file,
+                    fig_title = "Average Livestock and Aquaculture Output Value Change per Capita (%) per year between 2005 and 2018",
+                    fig_subtitle =  "") {
     require(dplyr)
     require(tidyr)
     require(ggplot2)
@@ -1186,13 +1294,27 @@ figure_7 <- function(df_list,
                         na.rm = TRUE)
         )
 
+   population <- arrow::read_parquet(population_file) |>
+       dplyr::select(country_code, contains('x')) |>
+       tidyr::gather(key = "year", value = "population", -country_code) |>
+       dplyr::mutate(
+           year = as.numeric(substr(year, 2, length(year)))
+       ) |>
+       dplyr::filter(year %in% year_range[1]:year_range[2]) |>
+       dplyr::rename(iso3_code = country_code)
+
+
 
     outputs <- bind_rows(data$livestock_outputs, data$aquaculture_outputs) |>
         dplyr::group_by(iso3_code, year) |>
         dplyr::summarise(value = sum(value, na.rm = TRUE),
                          .groups = 'drop') |>
+        dplyr::left_join(population, by = c("iso3_code", "year")) |>
         dplyr::group_by(iso3_code) |>
         dplyr::arrange(year) %>%
+        dplyr::mutate(
+            value = value/population
+        ) |>
         dplyr::mutate(value = 100 * (value - lag(value)) / (lag(value)) / (year - lag(year))) %>%
         dplyr::summarise(
             avg_change = mean(value, na.rm = TRUE), .groups = "drop"
@@ -1204,6 +1326,8 @@ figure_7 <- function(df_list,
                     labels = c("&lt;-2.5", "-2.5 to 0", "0 to 1", "1 to 2.5", "2.5 to 5", "5 to 10", "&gt;10")
                 ))
         )
+
+
 
 
 
@@ -1222,8 +1346,8 @@ figure_7 <- function(df_list,
         theme_economist() +
         scale_fill_manual(
             values = setNames(
-                c(rev(RColorBrewer::brewer.pal(3, "Reds")),
-                  RColorBrewer::brewer.pal(4, "Greens"), "#808080"),
+                c("#E64B35FF", "#F39B7FFF", "#F7FCF5" ,
+                  "#74C476" ,"#41AB5D" ,"#238B45", "#005A32", "#808080"),
                 c("&lt;-2.5", "-2.5 to 0", "0 to 1", "1 to 2.5", "2.5 to 5", "5 to 10", "&gt;10", "NA")
             )
         ) +
@@ -1238,19 +1362,40 @@ figure_7 <- function(df_list,
             axis.text.x = element_blank(),
             axis.ticks.x = element_blank(),
             panel.border = element_blank(),
-            legend.text = ggtext::element_markdown(size = 15, face = "italic"),
-            legend.title = ggtext::element_markdown(face = "italic", size = 18, vjust = 0.1),
+            legend.text = ggtext::element_markdown(size = figure_spec$font_size,
+                                                   family = figure_spec$family),
+            legend.title = ggtext::element_markdown(size = figure_spec$font_size,
+                                                    family = figure_spec$family),
             panel.grid.major = element_blank(),
             axis.line.x = element_blank(),
-            plot.subtitle = element_text(size = 15, hjust = 0, face = "italic"),
-            plot.title = element_text(size = 25, face = "italic"),
-            plot.caption = element_text(size = 13, face = "italic")
+            plot.subtitle = element_text(size = figure_spec$font_size,
+                                         family = figure_spec$family),
+            plot.title = element_text(size = figure_spec$font_size,
+                                      family = figure_spec$family, face = "plain"),
+            plot.caption = element_text(size = figure_spec$font_size,
+                                        family = figure_spec$family,
+                                        face = "plain")
         )
 
-    ggsave(plot = p, filename = here::here('output', 'figures', "figure_7.pdf"),
-           width = 14, height = 18, units = "in", dpi = 400,
-           device = "pdf")
+    ggsave(plot = p,
+           filename = here::here('output', 'figures', "figure_7.pdf"),
+           width = figure_spec$two_column_width,
+           height = figure_spec$two_column_width * (1 / 1.6),
+           units = figure_spec$units,
+           dpi = figure_spec$dpi,
+           device = figure_spec$format)
 }
+
+## DEBUG
+args <- list()
+args$figure <- 7
+if (args$figure == 7) {
+    figure_7( df_list = config$data$output,
+              population_file = config$data$processed$tables$population
+              )
+}
+
+
 # Appendix:
 
 ## Figure A.1 Pie Chart of Asset + Output Values (2018)
@@ -1387,9 +1532,6 @@ figure_a1 <- function(df_list, date = 2018 ) {
            device = "pdf")
 }
 
-figure_a1(config$data$output)
-
-
 ## Figure A.2 World Maps of Asset Values per Livestock Type
 figure_a2 <- function(df) {
 
@@ -1399,14 +1541,6 @@ figure_a2 <- function(df) {
 figure_a4 <- function(df) {
 
 }
-
-
-
-
-
-
-
-
 
 
 

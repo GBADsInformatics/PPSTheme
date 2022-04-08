@@ -62,6 +62,11 @@ data/codes/FAOSTAT/CPCtoFCL_codes.xlsx:
 data/codes/FAOSTAT/FAOSTAT-CPC_cropItemCodes.rds:
 	Rscript --vanilla $(SCRIPT_DIR)/codes/get-faostat-crop-codes.R 
 
+
+# Subset Country Codes which are used throughout 
+data/output/codes/faostat_iso3_country_codes.parquet:
+	Rscript --vanilla $(SCRIPT_DIR)/codes/get-project-country-codes.R
+
 #-----------------------------------------
 # Analysis 
 # ---------------------------------------

@@ -1,0 +1,99 @@
+# Default project configuration
+# This config file stores the locations of
+# all relavent folders and urls
+default:
+    date: !expr  format(Sys.Date(), format = '%Y%m%d')
+    data:
+        # Location of data source directories
+        source:
+            faostat_dir: data/source/faostat
+            fao_dir: data/source/fao
+            world_bank_dir: data/source/world_bank
+            # URL location of source data
+            tables:
+                crops_and_livestock_products:
+                    url: 'https://fenixservices.fao.org/faostat/static/bulkdownloads/Production_Crops_Livestock_E_All_Data_(Normalized).zip'
+                    dir: data', 'source', 'faostat', 'crops_and_livestock_products')
+                    type: 'zip'
+                value_of_production:
+                    url: 'https://fenixservices.fao.org/faostat/static/bulkdownloads/Value_of_Production_E_All_Data_(Normalized).zip'
+                    dir: data', 'source', 'faostat', 'value_of_production')
+                    type: 'zip'
+                producer_prices:
+                    url: 'https://fenixservices.fao.org/faostat/static/bulkdownloads/Prices_E_All_Data_(Normalized).zip'
+                    dir: data', 'source', 'faostat', 'producer_prices')
+                    type: 'zip'
+                global_aquaculture_production:
+                    url: 'https://www.fao.org/fishery/static/Data/Aquaculture_2021.1.2.zip'
+                    dir: data/source/faostat/global_aquculture_production
+                    type: 'zip'
+                # Purchasing power parity to International (USD) $
+                ppp_conversion:
+                    url: 'https://api.worldbank.org/v2/country/all/indicator/PA.NUS.PPP?downloadformat=csv'
+                    dir: data/source/world_bank/ppp_conversion
+                    type: 'zip'
+                # Global population
+                population:
+                    url: 'https://api.worldbank.org/v2/country/all/indicator/SP.POP.TOTL?downloadformat=csv'
+                    dir: data/source/world_bank/population
+                    type: 'zip'
+                gdp_per_capita_ppp: 
+                    url:   'https://api.worldbank.org/v2/country/all/indicator/NY.GDP.PCAP.PP.CD?downloadformat=csv'
+                    dir: data/source/world_bank/gdp_per_capita_ppp
+                    type: 'zip'
+                income_classification_history:
+                    url: http://dataank.worldbank.org/data/download/site-content/OGHIST.xlsxb
+                    dir: data/source/world_bank/income_classification_history
+                    file_name: OGHIST.xlsx
+                    type: 'xlsx'
+        processed:
+            # Processed data directory locations
+            faostat: !expr here::here('data', 'processed', 'faostat')
+            fao: !expr here::here('data', 'processed', 'fao')
+            tables:
+                crops_and_livestock_products: !expr here::here('data', 'processed', 'faostat', 'crops_and_livestock_products.parquet')
+                value_of_production: !expr here::here('data', 'processed', 'faostat', 'value_of_production.parquet')
+                producer_prices: !expr here::here('data', 'processed', 'faostat', 'producer_prices.parquet')
+                ppp_conversion: !expr here::here('data', 'processed', 'world_bank', 'ppp_conversion.parquet')
+                population: !expr here::here('data', 'processed', 'world_bank', 'population.parquet')
+                gdp_per_capita_ppp: !expr here::here('data', 'processed', 'world_bank', 'gdp_per_capita_ppp.parquet')
+                technical_conversion_factors: data/processed/faostat/faostat_conversions.csv
+        codes:
+            faostat:
+                dir: !expr here::here('data', 'codes', 'FAOSTAT')
+                items:
+                    item_codes: !expr here::here('data', 'codes', 'FAOSTAT', 'FAOSTAT_Item_Codes.Rds')
+                country_codes: 
+                    raw_codes: !expr here::here('data', 'codes', 'FAOSTAT', 'FAOSTAT_Country_Codes.Rds')
+                    output_codes: data/output/codes/faostat_iso3_country_codes.parquet 
+                crops: data/codes/FAOSTAT/FAOSTAT-CPC_cropItemCodes.rds 
+            cpc:
+                url: 'https://www.fao.org/fileadmin/templates/ess/classifications/Correspondence_CPCtoFCL.xlsx'
+                
+        output:
+            crop_values: data/output/faostat/faostat_crop_values.parquet
+            aquaculture_values: data/output/fao/fao_aquaculture_values.parquet
+            livestock_values: data/output/FAOSTAT/FAOSTAT_Livestock_Values.parquet
+
+    code:
+        # Code and documentation locations
+        functions: !expr here::here('R')
+        scripts: !expr here::here('inst')
+        documentation: !expr here::here('vignettes')
+
+
+    figure_specification:
+        #  https://www.nature.com/natfood/submission-guidelines/aip-and-formatting
+        #  https://www.nature.com/documents/NRJs-guide-to-preparing-final-artwork.pdf
+        nature_food:
+            one_column_width: 88
+            two_column_width: 180  
+            typeface: "Helvetica"
+            family: "sans"
+            dpi: 400
+            units: mm
+            font_size: 7
+            format: pdf
+
+            
+            

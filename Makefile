@@ -34,8 +34,9 @@ global_aquaculture_production:
 	Rscript --vanilla $(SCRIPT_DIR)/data/data-download.R --data global_aquaculture_production
 
 # World bank LCU to PPP conversion 
-$(PROCESSED_DATA_DIR)world_bank/ppp_conversion.parquet:
+$(OUTPUT_DATA_DIR)world_bank/ppp_conversion.parquet:
 	Rscript --vanilla $(SCRIPT_DIR)/data/data-download.R --data ppp_conversion
+	Rscript --vanilla $(SCRIPT_DIR)/values/get-world-bank-ppp-conversion.R
 
 # World Bank Population Indicator
 $(PROCESSED_DATA_DIR)world_bank/population.parquet:
@@ -46,7 +47,10 @@ $(PROCESSED_DATA_DIR)world_bank/population.parquet:
 $(PROCESSED_DATA_DIR)world_bank/gdp_per_capita_ppp.parquet:
 	Rscript --vanilla $(SCRIPT_DIR)/data/data-download.R --data gdp_per_capita_ppp
 
-
+# IMF/IFS LCU to USD ($) Exchange Rates 
+$(OUTPUT_DATA_DIR)world_bank/lcu_conversion.parquet:
+	Rscript --vanilla $(SCRIPT_DIR)/data/data-download.R --data lcu_conversion
+	Rscript --vanilla $(SCRIPT_DIR)/values/get-world-bank-lcu-usd-conversion.R
 
 FAOSTATConversionFactorData:
 	# TODO

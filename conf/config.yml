@@ -32,6 +32,13 @@ default:
                     url: 'https://api.worldbank.org/v2/country/all/indicator/PA.NUS.PPP?downloadformat=csv'
                     dir: data/source/world_bank/ppp_conversion
                     type: 'zip'
+                # Annual USD Conversion to LCU
+                # Note: This is the weighted average conversion rate
+                # which will give a better idea about the current situation
+                lcu_conversion:
+                    url: 'https://api.worldbank.org/v2/country/all/indicator/PA.NUS.ATLS?downloadformat=csv'
+                    dir: data/source/world_bank/lcu_conversion
+                    type: 'zip'
                 # Global population
                 population:
                     url: 'https://api.worldbank.org/v2/country/all/indicator/SP.POP.TOTL?downloadformat=csv'
@@ -57,6 +64,7 @@ default:
                 ppp_conversion: !expr here::here('data', 'processed', 'world_bank', 'ppp_conversion.parquet')
                 population: !expr here::here('data', 'processed', 'world_bank', 'population.parquet')
                 gdp_per_capita_ppp: !expr here::here('data', 'processed', 'world_bank', 'gdp_per_capita_ppp.parquet')
+                lcu_conversion: data/processed/world_bank/lcu_conversion.parquet
                 technical_conversion_factors: data/processed/faostat/faostat_conversions.csv
         codes:
             faostat:
@@ -74,6 +82,8 @@ default:
             crop_values: data/output/faostat/faostat_crop_values.parquet
             aquaculture_values: data/output/fao/fao_aquaculture_values.parquet
             livestock_values: data/output/FAOSTAT/FAOSTAT_Livestock_Values.parquet
+            ppp_conversion: data/output/world_bank/ppp_conversion.parquet
+            lcu_conversion: data/output/world_bank/lcu_conversion.parquet
 
     code:
         # Code and documentation locations

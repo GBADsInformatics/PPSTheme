@@ -85,7 +85,7 @@
 # - $ make data/output/fao/fao_aquaculture_values.parquet
 #
 # Several auxilary files are also produced when this script is run.
-# These are:
+# These are stored in output/tables/*
 #
 #
 # Note: If we go back to using constant dollars,
@@ -196,12 +196,14 @@ aqua$fisheries_values <-
     period %in% params$use_years,
     value > 0 # Subsets out the negligible values (status = N)
   ) %>%
-  dplyr::group_by(country_un_code,
-                  species_alpha_3_code,
-                  area_code,
-                  environment_alpha_2_code,
-                  measure,
-                  period) %>%
+  dplyr::group_by(
+    country_un_code,
+    species_alpha_3_code,
+    area_code,
+    environment_alpha_2_code,
+    measure,
+    period
+  ) %>%
   dplyr::summarise(
     value_1000_usd = sum(value, na.rm = TRUE), .groups = "drop"
   ) |>
@@ -216,7 +218,7 @@ aqua$fisheries_values <-
 #
 
 
-loginfo(
+logging::loginfo(
   "Importing Aquaculture quantities from %s/%s",
   params$data_dir, params$quantity_file
 )
@@ -228,16 +230,17 @@ aqua$fisheries_quantity <- readr::read_csv(
   janitor::clean_names() %>%
   assertr::verify(value >= 0) |>
   dplyr::filter(
-      period %in% params$use_years,
-      value > 0  # Subset out negligable values (Status = N)
+    period %in% params$use_years,
+    value > 0 # Subset out negligable values (Status = N)
   ) %>%
   dplyr::group_by(
-      country_un_code,
-      area_code,
-      environment_alpha_2_code,
-      species_alpha_3_code,
-      measure,
-      period) %>%
+    country_un_code,
+    area_code,
+    environment_alpha_2_code,
+    species_alpha_3_code,
+    measure,
+    period
+  ) %>%
   dplyr::summarise(
     tonnes = sum(value, na.rm = TRUE), .groups = "drop"
   ) %>%
@@ -258,11 +261,13 @@ aqua$fisheries_quantity <- readr::read_csv(
 
 fao_fisheries <- dplyr::full_join(aqua$fisheries_quantity,
   aqua$fisheries_values,
-  by = c("country_un_code",
-         "area_code",
-         "environment_alpha_2_code",
-         "species_alpha_3_code",
-         "period")
+  by = c(
+    "country_un_code",
+    "area_code",
+    "environment_alpha_2_code",
+    "species_alpha_3_code",
+    "period"
+  )
 ) %>%
   dplyr::mutate(usd_price = if_else(tonnes > 0,
     (value_1000_usd / tonnes) * 1000, 0
@@ -283,7 +288,7 @@ fao_fisheries <- dplyr::full_join(aqua$fisheries_quantity,
     usd_price
   ) %>%
   dplyr::filter(iso3_code %in% project_iso3_codes$iso3_code) |>
-  dplyr::rename(country = name_en ) |>
+  dplyr::rename(country = name_en) |>
   tidyr::drop_na(country) |>
   dplyr::ungroup()
 
@@ -314,7 +319,8 @@ fao_fisheries <- dplyr::full_join(aqua$fisheries_quantity,
 loginfo("Importing CPC code groupings from %s", params$cpc_group_en_file)
 
 aqua_cpc_groups <-
-  readr::read_csv(file.path(params$data_dir, params$cpc_group_en_file)) |>
+  readr::read_csv(file.path(params$data_dir, params$cpc_group_en_file),
+                  show_col_types = FALSE) |>
   janitor::clean_names() |>
   dplyr::distinct() |>
   dplyr::rename(
@@ -347,13 +353,14 @@ aqua_cpc_groups <-
 # Aquaculture which are reported on a commercial level.
 ##
 fao_fisheries <- fao_fisheries |>
-    dplyr::left_join(aqua_cpc_groups,
-                     by = "species_code") |>
-    dplyr::filter(
-        # To make the groupings match with the FAO Yearbook groupings for
-        # Aquaculture Production
-        yearbook_group_en == "Fish, crustaceans and molluscs, etc."
-    )
+  dplyr::left_join(aqua_cpc_groups,
+    by = "species_code"
+  ) |>
+  dplyr::filter(
+    # To make the groupings match with the FAO Yearbook groupings for
+    # Aquaculture Production
+    yearbook_group_en == "Fish, crustaceans and molluscs, etc."
+  )
 
 ##
 # This produces 460 NA values for the cpc_group_en
@@ -365,10 +372,10 @@ fao_fisheries <- fao_fisheries |>
 #
 # Check for outliers
 #
-fao_fisheries |>
-    slice_max(usd_price, n = 200) |>
-    dplyr::arrange(desc(usd_price)) |>
-    View()
+# fao_fisheries |>
+#     slice_max(usd_price, n = 200) |>
+#     dplyr::arrange(desc(usd_price)) |>
+#     View()
 
 # No obvious outliers,
 # the highest values are mostly for red abalone
@@ -409,22 +416,24 @@ fao_fisheries |>
 logging::loginfo("Convert to International Dollars ($) (PPP)")
 
 
-logging::loginfo(paste0("Importing PA.NUS.ATLS Weighted exchange rates",
-                        "imputed with PA.NUS.FRCF"))
+logging::loginfo(paste0(
+  "Importing PA.NUS.ATLS Weighted exchange rates",
+  "imputed with PA.NUS.FRCF"
+))
 
 # Import PU.NUS.ATLS Exchange Rates
 # Missing values have been imputed using the PU.NUS.FCRF
 # exchange rates.
 lcu_conversion <-
-    config$data$output$lcu_conversion |>
-    arrow::read_parquet() |>
-    dplyr::filter(year %in% params$use_years)
+  config$data$output$lcu_conversion |>
+  arrow::read_parquet() |>
+  dplyr::filter(year %in% params$use_years)
 
 
 # PPP Exchange Rates
 ppp_conversion <-
-    config$data$output$ppp_conversion |>
-    arrow::read_parquet()
+  config$data$output$ppp_conversion |>
+  arrow::read_parquet()
 
 #
 # Check how many exchange rates are missing from the World Bank data
@@ -432,15 +441,17 @@ ppp_conversion <-
 #  - Check what value will be lost due the the loss of this data
 #
 #
-fao_fisheries |>
-    dplyr::group_by(iso3_code, year, country) |>
-    dplyr::summarise(value = 1e3 * sum(value_1000_usd, na.rm = TRUE),
-                     .groups = "drop") |>
-    dplyr::anti_join(lcu_conversion, by = c("year", "iso3_code")) |>
-    dplyr::group_by(iso3_code, country, year) |>
-    dplyr::summarise(value = scales::dollar(sum(value))) |>
-    count(country) |>
-    View()
+# fao_fisheries |>
+#   dplyr::group_by(iso3_code, year, country) |>
+#   dplyr::summarise(
+#     value = 1e3 * sum(value_1000_usd, na.rm = TRUE),
+#     .groups = "drop"
+#   ) |>
+#   dplyr::anti_join(lcu_conversion, by = c("year", "iso3_code")) |>
+#   dplyr::group_by(iso3_code, country, year) |>
+#   dplyr::summarise(value = scales::dollar(sum(value))) |>
+#   count(country) |>
+#   View()
 
 ##
 # The countries which are missing conversion rates are as follows
@@ -462,19 +473,21 @@ fao_fisheries |>
 
 # Convert to Current International ($) PPP Adjusted -----------------------
 fao_fisheries <- fao_fisheries |>
-    dplyr::left_join(lcu_conversion, by = c("year","iso3_code")) |>
-    dplyr::rename(lcu_conversion = value) |>
-    dplyr::relocate(lcu_conversion, .after = value_1000_usd) |>
-    dplyr::mutate(
-        lcu_value = value_1000_usd * lcu_conversion * 1e3 # LCU Conversion
-    ) |>
-    dplyr::left_join(ppp_conversion, by = c("year", "iso3_code"),
-                     suffix = c("_lcu", "_ppp")) |>
-    dplyr::rename(ppp_conversion = value) |>
-    dplyr::relocate(ppp_conversion, .after = lcu_conversion) |>
-    dplyr::mutate(
-        ppp_value = lcu_value/ppp_conversion # PPP Conversion
-    )
+  dplyr::left_join(lcu_conversion, by = c("year", "iso3_code")) |>
+  dplyr::rename(lcu_conversion = value) |>
+  dplyr::relocate(lcu_conversion, .after = value_1000_usd) |>
+  dplyr::mutate(
+    lcu_value = value_1000_usd * lcu_conversion * 1e3 # LCU Conversion
+  ) |>
+  dplyr::left_join(ppp_conversion,
+    by = c("year", "iso3_code"),
+    suffix = c("_lcu", "_ppp")
+  ) |>
+  dplyr::rename(ppp_conversion = value) |>
+  dplyr::relocate(ppp_conversion, .after = lcu_conversion) |>
+  dplyr::mutate(
+    ppp_value = lcu_value / ppp_conversion # PPP Conversion
+  )
 
 
 
@@ -494,36 +507,40 @@ constant_year_base_period <- 2014:2016
 
 # Constant USD price for the base period
 constant_period_values <- fao_fisheries |>
-    dplyr::filter(year %in% constant_year_base_period) |>
-    dplyr::group_by(
-        iso3_code,
-        country,
-        species_code,
-        environment_alpha_2_code,
-        area_code)  |>
-    dplyr::summarise(
-        constant_2014_2016_lcu_price = mean(lcu_value/tonnes, na.rm = TRUE),
-        constant_2014_2016_usd_exchange_rate = 1/mean(lcu_conversion, na.rm = TRUE),
-        .groups = 'drop'
-    ) |>
-    dplyr::mutate(
-        constant_2014_2016_usd_price = constant_2014_2016_lcu_price * constant_2014_2016_usd_exchange_rate
-    )
+  dplyr::filter(year %in% constant_year_base_period) |>
+  dplyr::group_by(
+    iso3_code,
+    country,
+    species_code,
+    environment_alpha_2_code,
+    area_code
+  ) |>
+  dplyr::summarise(
+    constant_2014_2016_lcu_price = mean(lcu_value / tonnes, na.rm = TRUE),
+    constant_2014_2016_usd_exchange_rate = 1 / mean(lcu_conversion, na.rm = TRUE),
+    .groups = "drop"
+  ) |>
+  dplyr::mutate(
+    constant_2014_2016_usd_price = constant_2014_2016_lcu_price * constant_2014_2016_usd_exchange_rate
+  )
 
 #
 fao_fisheries <- fao_fisheries |>
-    dplyr::left_join(
-        constant_period_values,
-                     by = c('iso3_code',
-        'country',
-        'species_code',
-        'environment_alpha_2_code',
-        'area_code')) |>
-    dplyr::mutate(
-        constant_2014_2016_lcu_value = tonnes*constant_2014_2016_lcu_price,
-        constant_2014_2016_usd_value = tonnes*constant_2014_2016_usd_price,
-        usd_value = 1e3 * value_1000_usd
+  dplyr::left_join(
+    constant_period_values,
+    by = c(
+      "iso3_code",
+      "country",
+      "species_code",
+      "environment_alpha_2_code",
+      "area_code"
     )
+  ) |>
+  dplyr::mutate(
+    constant_2014_2016_lcu_value = tonnes * constant_2014_2016_lcu_price,
+    constant_2014_2016_usd_value = tonnes * constant_2014_2016_usd_price,
+    usd_value = 1e3 * value_1000_usd
+  )
 
 
 #
@@ -532,31 +549,31 @@ fao_fisheries <- fao_fisheries |>
 # Includes all conversion factors and final values
 #
 fao_fisheries <- fao_fisheries |>
-    dplyr::select(
-        iso3_code,
-        country,
-        year,
-        species_code,
-        environment_alpha_2_code,
-        area_code,
-        name,
-        cpc_group_en,
-        tonnes,
-         usd_value,
-        usd_price,
-        lcu_conversion,
-        lcu_value,
-        ppp_conversion,
-        ppp_value,
-        indicator_code_lcu,
-        indicator_name_lcu,
-        indicator_code_ppp,
-        indicator_name_ppp,
-        constant_2014_2016_lcu_price,
-        constant_2014_2016_usd_price,
-        constant_2014_2016_lcu_value,
-        constant_2014_2016_usd_value
-    )
+  dplyr::select(
+    iso3_code,
+    country,
+    year,
+    species_code,
+    environment_alpha_2_code,
+    area_code,
+    name,
+    cpc_group_en,
+    tonnes,
+    usd_value,
+    usd_price,
+    lcu_conversion,
+    lcu_value,
+    ppp_conversion,
+    ppp_value,
+    indicator_code_lcu,
+    indicator_name_lcu,
+    indicator_code_ppp,
+    indicator_name_ppp,
+    constant_2014_2016_lcu_price,
+    constant_2014_2016_usd_price,
+    constant_2014_2016_lcu_value,
+    constant_2014_2016_usd_value
+  )
 
 
 
@@ -564,79 +581,101 @@ fao_fisheries <- fao_fisheries |>
 # Automatically generate summary files and tables
 # from this dataset
 # the raw outputs from these are zipped
-
-output_results_dir <- here::here('output', 'tables',
-                                 paste0('aquaculture_values_',
-                                        format(Sys.Date(), format = "%Y%m%d")))
+source(here::here('R', 'table-functions.R'))
+output_results_dir <- here::here(
+  "output", "tables",
+  paste0(
+    "aquaculture_values_",
+    format(Sys.Date(), format = "%Y%m%d")
+  )
+)
 
 dir.create(output_results_dir, recursive = TRUE)
 
 
 
-logging::loginfo(paste0("Generating summary files and tables",
-                        " - outputs will be zipped into %s"),
-                 output_results_dir)
+logging::loginfo(
+  paste0(
+    "Generating summary files and tables",
+    " - outputs will be zipped into %s"
+  ),
+  output_results_dir
+)
 
 
 # Generate a summary file by country and year
 summary_per_country <- aggregate(
-    cbind(tonnes,
-          usd_value,
-          lcu_value,
-          ppp_value,
-          constant_2014_2016_lcu_value,
-      constant_2014_2016_usd_value) ~ iso3_code + country + year,
-    data = fao_fisheries,
-    FUN = sum, na.rm = TRUE
+  cbind(
+    tonnes,
+    usd_value,
+    lcu_value,
+    ppp_value,
+    constant_2014_2016_lcu_value,
+    constant_2014_2016_usd_value
+  ) ~ iso3_code + country + year,
+  data = fao_fisheries,
+  FUN = sum, na.rm = TRUE
 )
 
 write.csv(summary_per_country,
-          file = file.path(output_results_dir, "summary_per_country.csv"),
-          row.names = FALSE)
+  file = file.path(output_results_dir, "summary_per_country.csv"),
+  row.names = FALSE
+)
 
 # Summary per year
 summary_per_year <- aggregate(
-    cbind(tonnes,
-          usd_value,
-          ppp_value,
-          constant_2014_2016_usd_value) ~ year,
-    data = summary_per_country,
-    FUN = sum, na.rm = TRUE
+  cbind(
+    tonnes,
+    usd_value,
+    ppp_value,
+    constant_2014_2016_usd_value
+  ) ~ year,
+  data = summary_per_country,
+  FUN = sum, na.rm = TRUE
 )
 
 write.csv(summary_per_year,
-          file = file.path(output_results_dir, "summary_per_year.csv"),
-          row.names = FALSE)
+  file = file.path(output_results_dir, "summary_per_year.csv"),
+  row.names = FALSE
+)
 
 
 # Format the summaries by year and country
 tbl_df <- summary_per_year |>
-    dplyr::group_by(year) |>
-    dplyr::summarise_at(vars(tonnes:constant_2014_2016_usd_value),
-                        ~scales::comma(.x, scale = 1e-6, accuracy = 1)) |>
-    dplyr::ungroup() |>
-    dplyr::arrange(year)
+  dplyr::group_by(year) |>
+  dplyr::summarise_at(
+    vars(tonnes:constant_2014_2016_usd_value),
+    ~ scales::comma(.x, scale = 1e-6, accuracy = 1)
+  ) |>
+  dplyr::ungroup() |>
+  dplyr::arrange(year)
 
-LivestockValueGBADS::generate_kbl(
-    df = tbl_df,
-    col_names = c("year", "Tonnes (m)", "Million USD ($)",
-                  "Million Int ($)",
-                  "Million 2014-2016 USD"),
-    caption = "Estimated Global Aquaculture Value and Tonnes",
-    header_spec_fun = function(x) x,
-    footnotes = c(
-        "Aquaculture values selected using the FAOSTAT Yearbook  grouping 'Fish, crustaceans and molluscs, etc.'",
-        paste0("Source:", "FAO.GLOBAL AQUACULTURE PRODUCTION. License: CC BY–NC–SA 3.0 IGO.",
-               "Extracted from:  https://www.fao.org/fishery/statistics-query/en/aquaculture.",
-               "Date of Access: 2022-02-01.")
-    ),
-    output_name = file.path(output_results_dir, "summary_table.pdf")
+generate_kbl(
+  df = tbl_df,
+  col_names = c(
+    "year", "Tonnes (m)", "Million USD ($)",
+    "Million Int ($)",
+    "Million 2014-2016 USD"
+  ),
+  caption = "Estimated Global Aquaculture Value and Tonnes",
+  header_spec_fun = function(x) x,
+  footnotes = c(
+    "Aquaculture values selected using the FAOSTAT Yearbook  grouping 'Fish, crustaceans and molluscs, etc.'",
+    paste0(
+      "Source:", "FAO.GLOBAL AQUACULTURE PRODUCTION. License: CC BY–NC–SA 3.0 IGO.",
+      "Extracted from:  https://www.fao.org/fishery/statistics-query/en/aquaculture.",
+      "Date of Access: 2022-02-01."
+    )
+  ),
+  output_name = file.path(output_results_dir, "summary_table.pdf")
 )
 
 logging::loginfo("Zipping results directory %s", output_results_dir)
-zip(zipfile = paste0(output_results_dir, ".zip"),
-    files = list.files(output_results_dir, full.names = TRUE),
-    flags = '-j')
+zip(
+  zipfile = paste0(output_results_dir, ".zip"),
+  files = list.files(output_results_dir, full.names = TRUE),
+  flags = "-j"
+)
 
 # Remove the temporary output directory
 unlink(output_results_dir, recursive = TRUE)
@@ -665,8 +704,8 @@ aqua_table$metadata <- list(
   ppp_value = "Int ($) in PPP converted from lcu_value using ppp_conversion",
   indicator_code_lcu = "Code of the World Bank indicator used to convert USD to LCU",
   indicator_name_lcu = "Name of the World Bank indicator used to convert USD to LCU",
-  indicator_code_ppp= "Code of the World Bank indicator used to convert LCU to PPP",,
-  indicator_name_ppp= "Name of the World Bank indicator used to convert USD to LCU",,
+  indicator_code_ppp = "Code of the World Bank indicator used to convert LCU to PPP",
+  indicator_name_ppp = "Name of the World Bank indicator used to convert USD to LCU",
   constant_2014_2016_lcu_price = "Items constant 2014-2016 LCU Price",
   constant_2014_2016_usd_price = "Items constant 2014-2016 USD Price",
   constant_2014_2016_lcu_value = "Items constant 2014-2016 LCU Value",
@@ -688,8 +727,10 @@ if (!dir.exists(dirname(config$data$output$crop_values))) {
   dir.create(dirname(config$data$output$crop_values))
 }
 
-loginfo("Writing to parquet file")
+logging::loginfo("Writing to parquet file: %", config$data$output$aquaculture_values)
 arrow::write_parquet(
   aqua_table,
   config$data$output$aquaculture_values
 )
+
+logging::loginfo("Exiting")

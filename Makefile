@@ -30,7 +30,7 @@ $(PROCESSED_DATA_DIR)faostat/crops_and_livestock_products.parquet:
 	Rscript --vanilla $(SCRIPT_DIR)/data/data-download.R --data crops_and_livestock_products 
 
 # Downloads the FAOSTAT GLobal Aquaculture production database
-global_aquaculture_production:
+$(SOURCE_DATA_DIR)/faostat/global_aquaculture_production:
 	Rscript --vanilla $(SCRIPT_DIR)/data/data-download.R --data global_aquaculture_production
 
 # World bank LCU to PPP conversion 
@@ -88,7 +88,12 @@ $(OUTPUT_DATA_DIR)faostat/faostat_livestock_values.parquet:
 		
 
 # Reproduces the aquaculture value table 
-$(OUTPUT_DATA_DIR)fao/fao_aquaculture_values.parquet:
+# Requires
+#  - Global Aquaculture Production database to be downloaded
+#  - LCU Conversion
+#  - PPP Conversion
+$(OUTPUT_DATA_DIR)fao/fao_aquaculture_values.parquet: $(SOURCE_DATA_DIR)/faostat/global_aquaculture_production \
+	$(OUTPUT_DATA_DIR)/world_bank/lcu_conversion.parquet 
 	Rscript --vanilla $(SCRIPT_DIR)/values/get-fao-aquaculture-values.R 
 
 # Reproduces the crop values tables

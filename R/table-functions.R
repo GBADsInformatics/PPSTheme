@@ -26,6 +26,18 @@ require(dplyr)
 
 
 # KableExtra Tables -------------------------------------------------------
+#' generate_kbl
+#'
+#' Generates a kable using the kable extra package and saves the output
+#' pdf
+#'
+#' @param df the tables data
+#' @param col_names  column names
+#' @param caption table header
+#' @param header_spec_fun a function which will be applied to the column header
+#' @param footnotes a character vector of footnotes to be added to the table
+#' @param output_name the output location to save the kable
+#'
 generate_kbl <- function(df, col_names, caption, header_spec_fun,
                          footnotes, output_name = NULL) {
     table <- df %>%

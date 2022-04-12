@@ -1,6 +1,7 @@
 # Default project configuration
 # This config file stores the locations of
 # all relavent folders and urls
+# Note: all paths are relative to the root directory
 default:
     date: !expr  format(Sys.Date(), format = '%Y%m%d')
     data:
@@ -13,15 +14,15 @@ default:
             tables:
                 crops_and_livestock_products:
                     url: 'https://fenixservices.fao.org/faostat/static/bulkdownloads/Production_Crops_Livestock_E_All_Data_(Normalized).zip'
-                    dir: data', 'source', 'faostat', 'crops_and_livestock_products')
+                    dir: data/source/faostat/crops_and_livestock_products
                     type: 'zip'
                 value_of_production:
                     url: 'https://fenixservices.fao.org/faostat/static/bulkdownloads/Value_of_Production_E_All_Data_(Normalized).zip'
-                    dir: data', 'source', 'faostat', 'value_of_production')
+                    dir: data/source/faostat/value_of_production
                     type: 'zip'
                 producer_prices:
                     url: 'https://fenixservices.fao.org/faostat/static/bulkdownloads/Prices_E_All_Data_(Normalized).zip'
-                    dir: data', 'source', 'faostat', 'producer_prices')
+                    dir: data/source/faostat/producer_prices
                     type: 'zip'
                 global_aquaculture_production:
                     url: 'https://www.fao.org/fishery/static/Data/Aquaculture_2021.1.2.zip'
@@ -39,6 +40,10 @@ default:
                     url: 'https://api.worldbank.org/v2/country/all/indicator/PA.NUS.ATLS?downloadformat=csv'
                     dir: data/source/world_bank/lcu_conversion
                     type: 'zip'
+                lcu_conversion_official:
+                    url: 'https://api.worldbank.org/v2/country/all/indicator/PA.NUS.FCRF?downloadformat=csv'
+                    dir: data/source/world_bank/lcu_conversion_official
+                    type: 'zip'
                 # Global population
                 population:
                     url: 'https://api.worldbank.org/v2/country/all/indicator/SP.POP.TOTL?downloadformat=csv'
@@ -53,26 +58,35 @@ default:
                     dir: data/source/world_bank/income_classification_history
                     file_name: OGHIST.xlsx
                     type: 'xlsx'
+                surface_area_sqkm:
+                    url: 'https://api.worldbank.org/v2/country/all/indicator/AG.SRF.TOTL.K2?downloadformat=csv'
+
+                    dir: data/source/world_bank/surface_area_sqkm/
+                    type: 'zip'
+
         processed:
             # Processed data directory locations
-            faostat: !expr here::here('data', 'processed', 'faostat')
-            fao: !expr here::here('data', 'processed', 'fao')
+            faostat: data/processedfaostat/
+            fao: data/processed/fao/
             tables:
-                crops_and_livestock_products: !expr here::here('data', 'processed', 'faostat', 'crops_and_livestock_products.parquet')
-                value_of_production: !expr here::here('data', 'processed', 'faostat', 'value_of_production.parquet')
-                producer_prices: !expr here::here('data', 'processed', 'faostat', 'producer_prices.parquet')
-                ppp_conversion: !expr here::here('data', 'processed', 'world_bank', 'ppp_conversion.parquet')
-                population: !expr here::here('data', 'processed', 'world_bank', 'population.parquet')
-                gdp_per_capita_ppp: !expr here::here('data', 'processed', 'world_bank', 'gdp_per_capita_ppp.parquet')
+                crops_and_livestock_products: data/processed/faostat/crops_and_livestock_products.parquet
+                value_of_production: data/processed/faostat/value_of_production.parquet
+                producer_prices: data/processed/faostat/producer_prices.parquet
+                ppp_conversion: data/processed/world_bank/ppp_conversion.parquet
+                population: data/processed/world_bank/population.parquet
+                gdp_per_capita_ppp: data/processed/world_bank/gdp_per_capita_ppp.parquet
                 lcu_conversion: data/processed/world_bank/lcu_conversion.parquet
+                lcu_conversion_official: data/processed/world_bank/lcu_conversion_official.parquet
+                surface_area_sqkm: data/processed/world_bank/surface_area_sqkm.parquet
                 technical_conversion_factors: data/processed/faostat/faostat_conversions.csv
         codes:
             faostat:
-                dir: !expr here::here('data', 'codes', 'FAOSTAT')
+                dir: data/codes/faostat/
                 items:
-                    item_codes: !expr here::here('data', 'codes', 'FAOSTAT', 'FAOSTAT_Item_Codes.Rds')
+                    item_codes: data/codes/faostat/FAOSTAT_Item_Codes.Rds
                 country_codes: 
-                    raw_codes: !expr here::here('data', 'codes', 'FAOSTAT', 'FAOSTAT_Country_Codes.Rds')
+                    url: 'https://www.fao.org/faostat/en/?msclkid=c4309ab1b93811ec8eec4cb1f7647c9d#definitions'
+                    raw_codes: data/codes/faostat/country_codes/faostat_country_codes_20220411.csv
                     output_codes: data/output/codes/faostat_iso3_country_codes.parquet 
                 crops: data/codes/FAOSTAT/FAOSTAT-CPC_cropItemCodes.rds 
             cpc:

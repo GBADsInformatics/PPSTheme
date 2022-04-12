@@ -58,7 +58,7 @@ source(here::here("R", "utils", "FAOSTAT_helper_functions.R"))
 
 # Config ------------------------------------------------------------------
 logging::loginfo("Loading configuration file")
-config <- config::get()
+config <- config::get(file = file.path('conf', 'config.yml'))
 
 
 

@@ -47,10 +47,17 @@ $(PROCESSED_DATA_DIR)world_bank/population.parquet:
 $(PROCESSED_DATA_DIR)world_bank/gdp_per_capita_ppp.parquet:
 	Rscript --vanilla $(SCRIPT_DIR)/data/data-download.R --data gdp_per_capita_ppp
 
-# IMF/IFS LCU to USD ($) Exchange Rates 
+# IMF/IFS LCU to USD ($) Exchange Rates (area-weighted)
+# Missing values inputted using the IMF/IFC LCU to USD ($)
+# official period average exchanged rate
 $(OUTPUT_DATA_DIR)world_bank/lcu_conversion.parquet:
+	# Area weighed 
 	Rscript --vanilla $(SCRIPT_DIR)/data/data-download.R --data lcu_conversion
+	# Average Official Exchange Rate
+	Rscript --vanilla $(SCRIPT_DIR)/data/data-download.R --data lcu_conversion_official
+	# Inpute missing values
 	Rscript --vanilla $(SCRIPT_DIR)/values/get-world-bank-lcu-usd-conversion.R
+
 
 FAOSTATConversionFactorData:
 	# TODO

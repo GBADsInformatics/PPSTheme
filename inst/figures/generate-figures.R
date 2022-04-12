@@ -76,7 +76,7 @@ args <- parser$parse_args()
 loginfo(args$figure)
 
 # Import output files -----------------------------------------------------
-config <- config::get()
+config <- config::get(path = here::here('conf', 'config.yml'))
 
 # Nature Food Figure Specification
 figure_spec <- config$figure_specification$nature_food

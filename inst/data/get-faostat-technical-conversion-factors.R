@@ -220,7 +220,6 @@ df$animal <- dplyr::recode(
 arrow::write_parquet(
     df,
     "data/output/faostat/faostat_technical_conversion_factors.parquet"
-
 )
 
 

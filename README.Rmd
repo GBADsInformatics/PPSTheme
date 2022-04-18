@@ -38,16 +38,12 @@ cat(
 
  # Description
  
- This repository contains all R code and data for the *GBADS* global livestock 
- value estimation manuscript. 
+ This repository contains all R code and data for the *GBADS* Global Livestock 
+ value estimation manuscript.  
 
-## Files
 
-```{bash, echo=FALSE}
-git ls-tree -r HEAD --name-only|grep  -v '^\.'
-```
  
- 
+ # Project Structure
  
  # Data 
  
@@ -57,6 +53,7 @@ git ls-tree -r HEAD --name-only|grep  -v '^\.'
  tool [dvc](https://dvc.org/). 
  
  ### Aquaculture (@FAO2021e)
+ https://www.fao.org/fishery/static/Yearbook/YB2018_USBcard/root/aquaculture/a3.pdf
  
  * Conversions to liveweights are done using country specific numbers. 
  
@@ -168,7 +165,7 @@ for (table in tables) {
 
 ```{r, echo=FALSE, results='asis'}
 
-figures <- Sys.glob(here::here('output', 'figures', '*.png'))
+figures <- Sys.glob(here::here('output', 'figures', 'figure_*.pdf'))
 
 for (figure in figures) {
   cat(

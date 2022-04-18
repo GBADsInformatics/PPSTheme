@@ -385,15 +385,13 @@ fao_fisheries <- fao_fisheries |>
 
 
 
-# Convert values to International PPP Dollars -----------------------------
+# Convert values Local Currency Units  -----------------------------
 
 #
-# To compare multiple countries, all comparisons will be done using
-# International dollars which have been adjusted for purchasing power parity.
 #
 # To do this, note that currently all values and usd_prices
 # are presented in current USD. Therefore to convert these values to
-# current PPP adjusted dollars the following process will be completed
+# current LCU the following process will be completed
 #
 #    1. Convert these values back into the standard local currently for the
 #              prevailing region that these figures are reported in.
@@ -403,17 +401,8 @@ fao_fisheries <- fao_fisheries |>
 #              is missing, the series (PA.NUS.FCRF) will be used which uses
 #              the monthly average official exchange rate.
 #
-#    2. Convert to international dollars using the world bank series
-#       PA.NUS.PPP. Note: this series is mainly to show price differs
-#       spatially, it is not meant  to give exact rankings of countries.
-#       Here also, the majority of values estimated before 2011 are done so
-#       using a model.
-#
 #
 ##
-
-
-logging::loginfo("Convert to International Dollars ($) (PPP)")
 
 
 logging::loginfo(paste0(
@@ -430,10 +419,6 @@ lcu_conversion <-
   dplyr::filter(year %in% params$use_years)
 
 
-# PPP Exchange Rates
-ppp_conversion <-
-  config$data$output$ppp_conversion |>
-  arrow::read_parquet()
 
 #
 # Check how many exchange rates are missing from the World Bank data
@@ -471,28 +456,21 @@ ppp_conversion <-
 
 
 
-# Convert to Current International ($) PPP Adjusted -----------------------
+# Convert to LCU ($) -----------------------
 fao_fisheries <- fao_fisheries |>
-  dplyr::left_join(lcu_conversion, by = c("year", "iso3_code")) |>
+  dplyr::left_join(lcu_conversion, by = c("year", "iso3_code"),
+                   suffix = c("", "_lcu")) |>
   dplyr::rename(lcu_conversion = value) |>
   dplyr::relocate(lcu_conversion, .after = value_1000_usd) |>
   dplyr::mutate(
     lcu_value = value_1000_usd * lcu_conversion * 1e3 # LCU Conversion
-  ) |>
-  dplyr::left_join(ppp_conversion,
-    by = c("year", "iso3_code"),
-    suffix = c("_lcu", "_ppp")
-  ) |>
-  dplyr::rename(ppp_conversion = value) |>
-  dplyr::relocate(ppp_conversion, .after = lcu_conversion) |>
-  dplyr::mutate(
-    ppp_value = lcu_value / ppp_conversion # PPP Conversion
   )
 
 
 
 # Convert to Constant 2014-2016 US Dollars --------------------------------
-#
+logging::loginfo("Converting prices to constant 2014-2016 values")
+
 # The process to convert to a constant time series is as follows
 #
 # Calculate the average lcu/tonne for each item in each region
@@ -500,6 +478,8 @@ fao_fisheries <- fao_fisheries |>
 # then simply multiply the average lcu/tonne by the reported output
 # tonne quantities, then convert back to USD using the average exchange rate
 #
+# In both cases, a weighted mean is used based on the total production
+# for each year
 
 # Base period that is used to perform the calculations
 constant_year_base_period <- 2014:2016
@@ -516,8 +496,8 @@ constant_period_values <- fao_fisheries |>
     area_code
   ) |>
   dplyr::summarise(
-    constant_2014_2016_lcu_price = mean(lcu_value / tonnes, na.rm = TRUE),
-    constant_2014_2016_usd_exchange_rate = 1 / mean(lcu_conversion, na.rm = TRUE),
+    constant_2014_2016_lcu_price = weighted.mean(lcu_value / tonnes, tonnes, na.rm = TRUE),
+    constant_2014_2016_usd_exchange_rate = 1 / weighted.mean(lcu_conversion, tonnes, na.rm = TRUE),
     .groups = "drop"
   ) |>
   dplyr::mutate(
@@ -563,12 +543,8 @@ fao_fisheries <- fao_fisheries |>
     usd_price,
     lcu_conversion,
     lcu_value,
-    ppp_conversion,
-    ppp_value,
-    indicator_code_lcu,
-    indicator_name_lcu,
-    indicator_code_ppp,
-    indicator_name_ppp,
+    indicator_code,
+    indicator_name,
     constant_2014_2016_lcu_price,
     constant_2014_2016_usd_price,
     constant_2014_2016_lcu_value,
@@ -609,7 +585,6 @@ summary_per_country <- aggregate(
     tonnes,
     usd_value,
     lcu_value,
-    ppp_value,
     constant_2014_2016_lcu_value,
     constant_2014_2016_usd_value
   ) ~ iso3_code + country + year,
@@ -627,7 +602,6 @@ summary_per_year <- aggregate(
   cbind(
     tonnes,
     usd_value,
-    ppp_value,
     constant_2014_2016_usd_value
   ) ~ year,
   data = summary_per_country,
@@ -654,7 +628,6 @@ generate_kbl(
   df = tbl_df,
   col_names = c(
     "year", "Tonnes (m)", "Million USD ($)",
-    "Million Int ($)",
     "Million 2014-2016 USD"
   ),
   caption = "Estimated Global Aquaculture Value and Tonnes",
@@ -700,12 +673,8 @@ aqua_table$metadata <- list(
   usd_price = "USD/tonne",
   lcu_conversion = "LCU per USD (PA.NUS.ATLS and PU.NUS.FCRF)",
   lcu_value = "Current value in LCU (Conerted from USD)",
-  ppp_conversion = "LCU per Int ($) in PPP terms. Source from PA.NUS.PPP ",
-  ppp_value = "Int ($) in PPP converted from lcu_value using ppp_conversion",
-  indicator_code_lcu = "Code of the World Bank indicator used to convert USD to LCU",
-  indicator_name_lcu = "Name of the World Bank indicator used to convert USD to LCU",
-  indicator_code_ppp = "Code of the World Bank indicator used to convert LCU to PPP",
-  indicator_name_ppp = "Name of the World Bank indicator used to convert USD to LCU",
+  indicator_code = "Code of the World Bank indicator used to convert USD to LCU",
+  indicator_name = "Name of the World Bank indicator used to convert USD to LCU",
   constant_2014_2016_lcu_price = "Items constant 2014-2016 LCU Price",
   constant_2014_2016_usd_price = "Items constant 2014-2016 USD Price",
   constant_2014_2016_lcu_value = "Items constant 2014-2016 LCU Value",
@@ -727,7 +696,7 @@ if (!dir.exists(dirname(config$data$output$crop_values))) {
   dir.create(dirname(config$data$output$crop_values))
 }
 
-logging::loginfo("Writing to parquet file: %", config$data$output$aquaculture_values)
+logging::loginfo("Writing to parquet file: %s", config$data$output$aquaculture_values)
 arrow::write_parquet(
   aqua_table,
   config$data$output$aquaculture_values

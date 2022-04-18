@@ -91,7 +91,7 @@ $(OUTPUT_DATA_DIR)faostat/faostat_livestock_values.parquet:
 # Requires
 #  - Global Aquaculture Production database to be downloaded
 #  - LCU Conversion
-#  - PPP Conversion
+#  - Conversion to 2014-2016 Dollars
 $(OUTPUT_DATA_DIR)fao/fao_aquaculture_values.parquet: $(SOURCE_DATA_DIR)/faostat/global_aquaculture_production \
 	$(OUTPUT_DATA_DIR)/world_bank/lcu_conversion.parquet 
 	Rscript --vanilla $(SCRIPT_DIR)/values/get-fao-aquaculture-values.R 

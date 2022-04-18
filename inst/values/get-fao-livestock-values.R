@@ -53,7 +53,7 @@ sapply(pks, library, character.only = TRUE, quietly = TRUE)
 basicConfig()
 
 # Source Files  -----------------------------------------------------------
-source(here::here("R", "utils", "FAOSTAT_helper_functions.R"))
+source(here::here("R", "FAOSTAT_helper_functions.R"))
 
 
 # Config ------------------------------------------------------------------
@@ -471,10 +471,13 @@ aggregate(livestock_df$gross_production_value_constant_2014_2016_thousand_us * 1
 
 
 # Live Weights ------------------------------------------------------------
+#
 # Impute Live Weights to get Values of Animal Stock
 #
 # If carcass % is outside the middle 80% set to the median
 # with that amount removed
+#
+#
 #################################################################
 livestock_df <- livestock_df %>%
   dplyr::group_by(animal) %>%
@@ -571,11 +574,6 @@ aggregate(livestock_df$gross_production_value_constant_2014_2016_thousand_us * 1
   FUN = sum, na.rm = TRUE
 )
 
-loginfo(aggregate(livestock_df$stock_value_constant_2014_2016_usd, livestock_df["year"], sum, na.rm = TRUE))
-loginfo(tapply(livestock_df$stock_value_constant_2014_2016_usd,
-  livestock_df["animal"],
-  FUN = summary
-))
 
 
 

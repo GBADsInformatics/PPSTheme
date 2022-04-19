@@ -55,9 +55,11 @@
 # Report bugs to:       https://github.com/soimort/translate-shell/issues
 ## --------------------------------------------
 
-reng::activate(project = '.')
+renv::activate(project = '.')
 
-
+library(dplyr)
+library(countrycode)
+library(glue)
 # Config ------------------------------------------------------------------
 
 # DELETE:
@@ -170,6 +172,7 @@ for (na_row in na_counts) {
 # Non poultry is between  1 and 1000
 # poultry is between 1000 and 10000
 # Guam at 115 for goats is not necassarily an error
+# But it will be removed
 aggregate(
     cbind(
         average_live_weight,
@@ -179,6 +182,8 @@ aggregate(
     data = df,
     FUN=summary
 )
+
+df <- dplyr::filter(df, carcass_pct <=  100)
 
 
 # Attach ISO3 codes -------------------------------------------------------
@@ -207,7 +212,7 @@ df$country <- dplyr::recode(df$country,
 df$iso3_code <- countrycode::countrycode(df$country, "country.name.en", "iso3c")
 
 # drop the rest
-df <- tidyr::drop_na(df, country)
+df <- tidyr::drop_na(df, iso3_code)
 
 # Convert incorrectly translated name "horsepower" to "horses"
 df$animal <- dplyr::recode(
@@ -216,10 +221,217 @@ df$animal <- dplyr::recode(
 )
 
 
+
+# Standardise animal names ------------------------------------------------
+df$animal <- dplyr::recode(df$animal,
+    "buffaloes" = "buffalo",
+    "camels" = "camel",
+    "hens" = "chicken",
+    "chickens" = "chicken",
+    "goats" = "goat",
+    "ducks" = "duck",
+    "horses" = "horse",
+    "pig" = "pigs",
+    "turkeys" = "turkey",
+    "rabbits" = "rabbit"
+)
+
+
+
+# Standardise the animal measurement units to KG --------------------------
+
+# Animals which have both their live weights and carcass weights in grams
+# These are mostly small animals/poultry where this difference in weight
+# can have a marginal difference
+gram_animals <- c("chicken", "duck", "geese", "rabbit", "turkey")
+
+
+# Divide the results by 1e3 = 1000 to convert to kg
+df <- df %>%
+    dplyr::mutate(
+        live_weight_kg = case_when(
+            animal %in% gram_animals ~ average_live_weight/1e3,
+            TRUE ~ average_live_weight
+        ),
+        carcass_weight_kg =  if_else(
+            animal %in% gram_animals,
+            carcass_weight_kg_gr/1e3,
+            carcass_weight_kg_gr
+        )
+    ) |>
+    dplyr::select(
+        iso3_code,
+        country,
+        animal,
+        live_weight_kg,
+        carcass_weight_kg,
+        carcass_pct
+    )
+
+
+
+
+# Impute regional medians for any missing values---------------------------
+
+# Add regions
+df <- df |>
+    dplyr::mutate(
+        region_23 = countrycode(iso3_code, "iso3c", "region23"),
+        continent = countrycode(iso3_code, "iso3c", "continent")
+    )
+
+# Get different dataframes for each column of interest
+live_weight <- df |>
+    dplyr::select(iso3_code, country,animal,  live_weight_kg, region_23, continent) |>
+    tidyr::spread(animal, live_weight_kg) |>
+    tidyr::gather(key = "animal", value = "live_weight_kg",
+                  -iso3_code, -country, -region_23, -continent)
+
+carcass_weight <-  df  |>
+    dplyr::select(iso3_code, country,animal,  carcass_weight_kg , region_23, continent) |>
+    tidyr::spread(animal, carcass_weight_kg) |>
+    tidyr::gather(key = "animal", value = "carcass_weight_kg",
+                  -iso3_code, -country, -region_23, -continent)
+
+carcass_pct <-  df |>
+    dplyr::select(iso3_code, country,animal,  carcass_pct, region_23, continent) |>
+    tidyr::spread(animal, carcass_pct) |>
+    tidyr::gather(key = "animal", value = "carcass_pct",
+                  -iso3_code, -country, -region_23, -continent)
+
+# Function to add the imputed median columns
+add_imputed_median <- function(df, agg_region, var_name, world=FALSE) {
+    if (!world) {
+    df %>%
+        dplyr::group_by(animal, {{ agg_region }}) %>%
+        dplyr::mutate(
+            "{{ var_name }}_{{ agg_region }}_median" := median({{ var_name }}, na.rm = TRUE)
+        ) |>
+        dplyr::ungroup()
+    } else  {
+     df %>%
+        dplyr::group_by(animal) %>%
+        dplyr::mutate(
+            "{{ var_name }}_global_median" := median({{ var_name }}, na.rm = TRUE)
+        ) |>
+        dplyr::ungroup()
+    }
+}
+
+
+carcass_pct_imp <- carcass_pct |>
+    add_imputed_median(region_23, carcass_pct) |>
+    add_imputed_median(continent, carcass_pct) |>
+    add_imputed_median(continent, carcass_pct, world = TRUE)  |>
+    dplyr::mutate(
+        carcass_pct_imp = case_when(
+            !is.na(carcass_pct) ~ carcass_pct,
+            !is.na(carcass_pct_region_23_median) ~
+                carcass_pct_region_23_median,
+            !is.na(carcass_pct_continent_median) ~
+                carcass_pct_continent_median,
+            TRUE ~ carcass_pct_global_median
+        ),
+        carcass_pct_notes = case_when(
+            !is.na(carcass_pct) ~ "",
+            !is.na(carcass_pct_region_23_median) ~
+                sprintf("Imputed region 23 median %.2f", carcass_pct_region_23_median),
+            !is.na(carcass_pct_continent_median) ~
+                sprintf("Imputed continental median %.2f", carcass_pct_continent_median),
+            TRUE ~ sprintf("Imputed global median %.2f", carcass_pct_global_median)
+        )
+    )
+
+
+live_weight_imp <- live_weight |>
+    add_imputed_median(region_23, live_weight_kg) |>
+    add_imputed_median(continent, live_weight_kg) |>
+    add_imputed_median(continent, live_weight_kg, world = TRUE)  |>
+    dplyr::mutate(
+        live_weight_kg_imp = case_when(
+            !is.na(live_weight_kg) ~ live_weight_kg,
+            !is.na(live_weight_kg_region_23_median) ~
+                live_weight_kg_region_23_median,
+            !is.na(live_weight_kg_continent_median) ~
+                live_weight_kg_continent_median,
+            TRUE ~ live_weight_kg_global_median
+        ),
+        live_weight_kg_notes = case_when(
+            !is.na(live_weight_kg) ~ "",
+            !is.na(live_weight_kg_region_23_median) ~
+                sprintf("Imputed region 23 median %.2f", live_weight_kg_region_23_median),
+            !is.na(live_weight_kg_continent_median) ~
+                sprintf("Imputed continental median %.2f", live_weight_kg_continent_median),
+            TRUE ~ sprintf("Imputed global median %.2f", live_weight_kg_global_median)
+        )
+    )
+
+
+
+carcass_weight_imp <- carcass_weight |>
+    add_imputed_median(region_23, carcass_weight_kg) |>
+    add_imputed_median(continent, carcass_weight_kg) |>
+    add_imputed_median(continent, carcass_weight_kg, world = TRUE)  |>
+    dplyr::mutate(
+        carcass_weight_kg_imp = case_when(
+            !is.na(carcass_weight_kg) ~ carcass_weight_kg,
+            !is.na(carcass_weight_kg_region_23_median) ~
+                carcass_weight_kg_region_23_median,
+            !is.na(carcass_weight_kg_continent_median) ~
+                carcass_weight_kg_continent_median,
+            TRUE ~ carcass_weight_kg_global_median
+        ),
+        carcass_weight_kg_notes = case_when(
+            !is.na(carcass_weight_kg) ~ "",
+            !is.na(carcass_weight_kg_region_23_median) ~
+                sprintf("Imputed region 23 median %.2f", carcass_weight_kg_region_23_median),
+            !is.na(carcass_weight_kg_continent_median) ~
+                sprintf("Imputed continental median %.2f", carcass_weight_kg_continent_median),
+            TRUE ~ sprintf("Imputed global median %.2f", carcass_weight_kg_global_median)
+        )
+    )
+
+
+# Bind together
+df_imp <- purrr::reduce(
+    list(live_weight_imp, carcass_weight_imp, carcass_pct_imp),
+    full_join
+)
+
+# Save example summary statistics -----------------------------------------
+library(ggplot2)
+# Carcass pct per animal per continent
+
+p <- ggplot2::ggplot(tidyr::drop_na(carcass_pct, carcass_pct),
+                aes(x = continent, y = carcass_pct)) +
+    ggplot2::geom_boxplot() +
+    facet_wrap(~animal) +
+    labs(
+        title = "FAOSTAT Carcass Percentage per Animal and continent"
+    )
+ggsave(p, file = "output/figures/tcf/tcf_carcass_pct_per_continent.png")
+
+p <- ggplot2::ggplot(tidyr::drop_na(live_weight, live_weight_kg),
+                     aes(x = continent, y = live_weight_kg)) +
+    ggplot2::geom_boxplot() +
+    facet_wrap(~animal) +
+    labs(
+        title = "FAOSTAT Carcass Live Weight per Animal and continent"
+    )
+ggsave(p, file = "output/figures/tcf/tcf_live_weight_per_continent.png")
+
 # Save the outputs --------------------------------------------------------
+
+# raw data
 arrow::write_parquet(
     df,
     "data/output/faostat/faostat_technical_conversion_factors.parquet"
+)
+
+# Imputed data
+arrow::write_parquet(
+    df_imp,
+    "data/output/FAOSTAT/faostat_technical_conversion_factors_imputed.parquet"
 )
 
 

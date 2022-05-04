@@ -8,5 +8,4 @@
 
 # Temporary data in zip files 
 *.zip
-
-*.png
+*.html

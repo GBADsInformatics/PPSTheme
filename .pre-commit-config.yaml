@@ -15,6 +15,7 @@ repos:
           (?x)^(
           DESCRIPTION|
           .*\.[rR]|
+          .*\.xlsx|
           .*\.feather|
           .*\.jpeg|
           .*\.pdf|

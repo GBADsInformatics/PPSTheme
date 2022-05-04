@@ -1,10 +1,14 @@
 ---
 title: GBADS - Livestock Value 
-output: github_document
+output: 
+        github_document:
+            toc: true 
 bibliography: references.bib
+nocite: '@*'
 csl: https://raw.githubusercontent.com/citation-style-language/styles/master/chicago-fullnote-bibliography.csl
 link-citations: yes
-suppress-bibliography: yes
+suppress-bibliography: false
+html_preview: false
 ---
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
@@ -16,173 +20,97 @@ knitr::opts_chunk$set(
   fig.path = "man/figures/README-",
   out.width = "100%"
 )
-
-source(here::here('R', 'utils', 'FAOSTAT_helper_functions.R'))
 ```
 
 ```{r echo=FALSE, results="hide", message=FALSE}
 library("badger")
 library(here)
-library(report)
 library(knitr)
 ``` 
 
 ```{r, echo = FALSE, results='asis'}
 cat(
-    badge_license('CC BY-SA 4.0'), 
-	badge_lifecycle('experimental')
+  badge_license("CC BY-SA 4.0"),
+  badge_lifecycle("experimental")
 )
 ```
 
 
 
- # Description
+# Description
  
- This repository contains all R code and data for the *GBADS* Global Livestock 
- value estimation manuscript.  
-
-
- 
- # Project Structure
- 
- # Data 
- 
- ## Version Control 
- 
- Currently the data contained in this repository is tracked using the 
- tool [dvc](https://dvc.org/). 
- 
- ### Aquaculture (@FAO2021e)
- https://www.fao.org/fishery/static/Yearbook/YB2018_USBcard/root/aquaculture/a3.pdf
- 
- * Conversions to liveweights are done using country specific numbers. 
+This repository contains all `R` code and output data for the [*GBADS*](https://animalhealthmetrics.org/) Global Livestock 
+value estimation manuscript.  
+This manuscript attempts to produce an estimate of the total economic value 
+of farmed livestock and aquaculture based on [*FAOSTAT*](https://www.fao.org/faostat/en/) production data. 
  
  
-```{r, echo=FALSE}
-aqua_values  <- arrow::read_parquet(
-  get_gbads_file('FAO_Global_Aquaculture_Production', dir = here::here('data', 'output', 'FAO')), 
-  as_data_frame = FALSE
-)
+# Repository Structure 
 
-kable(as.data.frame(aqua_values$metadata), caption = 'Table: Metadata')
-```
+This repository is structured similar to an R package, however, there are 
+minimal differences which make this package non-conforming to certain standards. 
 
-```{r, echo=FALSE}
-aqua_report <- report(aqua_values %>% dplyr::collect(), digits = 2)
-aqua_report
-```
+## Make
 
-```{r, echo=FALSE}
-kable(as.data.frame(aqua_report))
-```
- 
-
- 
- 
- ### FAOSTAT 
- 
- 
- #### Crop Production and Values @FAO2021d
- 
-```{r, echo=FALSE}
-crop_values  <- arrow::read_parquet(
-  get_gbads_file('FAOSTAT_Crop_Values', dir = here::here('data', 'output', 'FAOSTAT')), 
-  as_data_frame = FALSE
-)
-
-
-kable(as.data.frame(crop_values$metadata))
-```
-
-```{r, echo=FALSE}
-crop_report <- report(crop_values %>% dplyr::collect(), digits = 2)
-crop_report
-```
-
-```{r, echo=FALSE}
-kable(as.data.frame(crop_report))
-```
-
-#### Livestock Production and Values  (@FAO2021d)
-
-```{r, echo=FALSE}
-livestock_values  <- arrow::read_parquet(
-  get_gbads_file('FAOSTAT_Livestock_Values', dir = here::here('data', 'output', 'FAOSTAT')), 
-  as_data_frame = FALSE
-)
-
-
-kable(as.data.frame(livestock_values$metadata))
-```
-
-```{r, echo=FALSE}
-livestock_report <- report(livestock_values %>% dplyr::collect(), digits = 2)
-livestock_report
-```
-
-```{r, echo=FALSE}
-kable(as.data.frame(livestock_report))
-```
-
- 
-# Methods
-
-<!--- Add diagrams of the workflow ---> 
- 
-## Aquaculture
-
-
-
-
- 
-## Crops 
-
-
- 
-## Livestock 
- 
- 
-# Results
- 
- <!--- Add automated results to this section --->
- 
-## Tables  
-
-```{r, echo=FALSE, results='asis'}
-tables <- Sys.glob(here::here('output', 'tables', 'tab_*.png'))
-
-for (table in tables) {
-  cat(
-    '![](', trimws(table), ')\n\n\n\n', sep = ''
-  )
-}
+The `R` directory contains any common functions which are used across the entire
+project. The `inst` directory contains `R` scripts which are intended to be 
+run via the GNU `Makefile` which specifies the required processes to build 
+each target. 
+Targets are run using the syntax 
 
 ```
-
-
-
-## Figures  
-
-```{r, echo=FALSE, results='asis'}
-
-figures <- Sys.glob(here::here('output', 'figures', 'figure_*.pdf'))
-
-for (figure in figures) {
-  cat(
-    '![](', trimws(figure), ')\n\n\n\n', sep = ''
-  )
-}
-
+$ make name-of-file-to-make
 ```
 
+Project locations and directory structure are outlined in the project 
+configuration file `conf/config.yml`, in accessing these parameters in code 
+ is managed by the `R` package `config`.
+ 
+Environment and package management is done using `renv`, `renv.lock` specifies the 
+hashes for each package used.  Package imports are also listed in the 
+package `DESCRIPTION` file. 
+
+## Data 
+
+Currently the processed and output data is located in `data/processed/` and 
+`data/output`. Source data is located in `data/source` and is not 
+included in this repository due to its size. Data was originally 
+tracked using [***DVC***](https://dvc.org/) but has been removed due to 
+issues with the cloud storage configuration. 
+Output data is primarily stored in `parquet` files. 
+
+## Figures and Tables 
+
+Output figures and tables are located in `output/figures/`, `output/tables/`. 
+
+*(Note: This is specified in the project configuration yaml file)*
+
+## Codes 
+
+FAOSTAT item codes and country codes are located in `data/codes`. 
+
+*(Note: This is specified in the project configuration yaml file)*
+
+## Methods Documentation
+
+Supplementary methods documentation is located in the 
+package `vignettes` directory. 
+
+ 
+ 
+# Licence 
+ 
+ This project is under a creative commons licence. 
 
 
 # R Package References
 
 ```{r, echo=FALSE, include=FALSE, message=FALSE, error=FALSE, warning=FALSE}
 # Attach all packages in lockfile
-sapply(unique(renv::dependencies()$Package), 
-       require, character.only = TRUE)
+sapply(unique(renv::dependencies()$Package),
+  require,
+  character.only = TRUE
+)
 ```
 
 
@@ -190,8 +118,4 @@ sapply(unique(renv::dependencies()$Package),
 report::cite_packages(sessionInfo())
 ```
 
-
- 
 # References
-
-<div id="refs"></div>

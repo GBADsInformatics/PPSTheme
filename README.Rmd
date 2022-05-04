@@ -93,8 +93,9 @@ FAOSTAT item codes and country codes are located in `data/codes`.
 
 ## Methods Documentation
 
-Supplementary methods documentation is located in the 
-package `vignettes` directory. 
+Draft supplementary methods documentation is located in the 
+package `vignettes` directory. It can be viewed once the 
+package has been installed. 
 
  
  

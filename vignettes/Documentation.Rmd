@@ -17,10 +17,64 @@ knitr::opts_chunk$set(
   echo = FALSE, 
   comment = "#>"
 )
+
+library(DiagrammeR)
 ```
 
 
+```{r}
+config <- config::get(file = here::here('conf', 'config.yml'))
 
+print_table <- function(data, caption) {
+    data |> 
+    knitr::kable(caption = caption) |> 
+    kableExtra::kable_styling(font_size = 8)
+}
+```
+
+\newpage
+
+# Calculations 
+
+The following section details the process of obtaining both asset value and 
+output value estimates for terrestrial livestock and aquaculture. 
+
+
+
+### Livestock 
+
+
+
+\newpage
+
+## Asset Value Calculation
+
+
+The following set of equations outlines the terms and calculations used to obtain 
+the livestock asset value for a single livestock animal type in a single country for one year 
+during the observational period.
+
+
+$$
+\begin{aligned}
+    \text{Carcass Yield} &= \text{No. Slaughtered (Head)} \times \text{No. Slaughtered (Tonnes)} \\
+    \text{Average Live Body Weight}&= \text{Carcass Yield} \times \text{Carcass Percent}^{-1} \\
+    \text{Asset Value} &= \text{Price per Tonne} \times \text{Average Live Bodyweight (tonnes)} \times \text{Livestock Population}
+\end{aligned}
+$$
+
+The following flow chart describes the process of calculating the asset value 
+for a single livestock animal type in a single country for one year 
+during the observational period. 
+
+
+
+```{r, fig.cap="Livestock Asset Value Calculation Flow Diagram"}
+mermaid("graph TB;A[Number Livestock Slaughtered]-->C;B[Quanitity Livestock Slaughtered]-->C;C[Tonnes/Head = Carcass Yield] -->E;D[Carcass Percentage]-->E;E[Yield/Carcass Percentage = Average Live Body Weight]-->G;F[Liveweight Price Per Tonne]-->G;G[Liveweight Price Per Tonne/Average Live Body Weight = Price Per Live Animal]-->I;H[Livestock Population]-->I;I[Asset Value];"
+)
+```
+
+\newpage
 
 # Codes 
 
@@ -35,38 +89,71 @@ This subsetting and grouping  is outlined in the Global Aquaculture Production d
 metadata at `Aqua_E.html`, other notes on the data are also given in
  `NOTES_AQUACULTURE_COUNTRY_EN.html`.
  
+ \newpage
+ 
  
 ## Crops 
 
-The following table shows the FAOSTAT items, item codes, along 
-with the CPC codes and item groups of all crops which where included in the 
-comparison. 
-These groupings where chosen to just subset for primary unprocessed crops. 
 
 
 ```{r}
-readRDS(here::here('data', 'codes', 'faostat', 'FAOSTAT_CPC_cropItemCodes.Rds')) 
+readRDS(here::here('data', 'codes', 'faostat', 'FAOSTAT_CPC_cropItemCodes.Rds'))  |> 
+    print_table(caption = "FAOSTAT to CPC Crop Codes and Groupings") 
+```
+
+\newpage
+
+
+
+
+
+
+
+```{r}
+readRDS(here::here(config$data$codes$faostat$dir, "FAOSTAT_VOP_Items_NonIndigenous_Codes.rds"))  |> 
+    print_table(caption = "FAOSTAT Value of Production Livestock Output Item Codes Used")
 ```
 
 
+\newpage
+
+
+
+
+```{r}
+readRDS(here::here(config$data$codes$faostat$dir, "FAOSTAT_Meat_Live_Weight_Codes.rds"))  |> 
+    dplyr::distinct(`Item Code`, .keep_all = TRUE) |> 
+    print_table(caption = "FAOSTAT Producer Prices Live Weight Item Codes used")
+```
+
+\newpage
+
+
+```{r}
+readRDS(here::here(config$data$codes$faostat$dir, "FAOSTAT_Livestock_Codes.rds")) |> 
+    dplyr::filter(`Domain Code` == "QCL") |> 
+    dplyr::distinct(Item, .keep_all = TRUE) |> 
+    print_table(caption = "FAOSTAT Production and Livestock Products Livestock (Stock) Item Codes Used")
+    
+```
 
 
 
 
 ## Countries 
 
-The following table contains a list of ISO3 country codes and countries which are
-included in this 
-analysis, along with the relevant years of their inclusion. 
+
 
 ```{r}
 config <- config::get(file = here::here('conf', 'config.yml'))
 
 arrow::read_parquet(here::here(config$data$codes$faostat$country_codes$output_codes)) |> 
-    dplyr::select(country, m49_code, iso3_code, start_year, end_year)
+    dplyr::select(country, m49_code, iso3_code, start_year, end_year) |> 
+    print_table(caption = "ISO3 Country Codes Included in this Analysis")
+
 ```
 
-
+\newpage
 
 ## Technical Conversion Factors 
 
@@ -89,9 +176,6 @@ arrow::read_parquet(here::here(config$data$output$technical_conversion_factors_i
     dplyr::glimpse()
 ```
 
-# Calculation of Constant Dollars 
 
-Values where converted to constant dollars using a production weighted average 
-exchange rate over the base period specified. 
 
 

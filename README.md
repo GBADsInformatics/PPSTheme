@@ -74,8 +74,9 @@ FAOSTAT item codes and country codes are located in `data/codes`.
 
 ## Methods Documentation
 
-Supplementary methods documentation is located in the package
-`vignettes` directory.
+Draft supplementary methods documentation is located in the package
+`vignettes` directory. It can be viewed once the package has been
+installed.
 
 # Licence
 
@@ -195,6 +196,9 @@ This project is under a creative commons licence.
 -   R Core Team (2022). R: A language and environment for statistical
     computing. R Foundation for Statistical Computing, Vienna, Austria.
     URL <https://www.R-project.org/>.
+-   Richard Iannone (2022). DiagrammeR: Graph/Network Visualization. R
+    package version 1.0.9.
+    <https://CRAN.R-project.org/package=DiagrammeR>
 -   Sam Firke (2021). janitor: Simple Tools for Examining and Cleaning
     Dirty Data. R package version 2.1.0.
     <https://CRAN.R-project.org/package=janitor>

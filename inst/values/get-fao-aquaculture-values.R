@@ -320,7 +320,8 @@ loginfo("Importing CPC code groupings from %s", params$cpc_group_en_file)
 
 aqua_cpc_groups <-
   readr::read_csv(file.path(params$data_dir, params$cpc_group_en_file),
-                  show_col_types = FALSE) |>
+    show_col_types = FALSE
+  ) |>
   janitor::clean_names() |>
   dplyr::distinct() |>
   dplyr::rename(
@@ -458,8 +459,10 @@ lcu_conversion <-
 
 # Convert to LCU ($) -----------------------
 fao_fisheries <- fao_fisheries |>
-  dplyr::left_join(lcu_conversion, by = c("year", "iso3_code"),
-                   suffix = c("", "_lcu")) |>
+  dplyr::left_join(lcu_conversion,
+    by = c("year", "iso3_code"),
+    suffix = c("", "_lcu")
+  ) |>
   dplyr::rename(lcu_conversion = value) |>
   dplyr::relocate(lcu_conversion, .after = value_1000_usd) |>
   dplyr::mutate(
@@ -557,7 +560,7 @@ fao_fisheries <- fao_fisheries |>
 # Automatically generate summary files and tables
 # from this dataset
 # the raw outputs from these are zipped
-source(here::here('R', 'table-functions.R'))
+source(here::here("R", "table-functions.R"))
 output_results_dir <- here::here(
   "output", "tables",
   paste0(
@@ -624,6 +627,7 @@ tbl_df <- summary_per_year |>
   dplyr::ungroup() |>
   dplyr::arrange(year)
 
+# Summary table
 generate_kbl(
   df = tbl_df,
   col_names = c(
@@ -642,6 +646,27 @@ generate_kbl(
   ),
   output_name = file.path(output_results_dir, "summary_table.pdf")
 )
+
+# Create a summary csv file containing all the species contained
+species_groups <- file.path(params$data_dir, params$cpc_group_en_file) |>
+  readr::read_csv() |>
+  janitor::clean_names() |>
+  dplyr::filter(x3a_code %in% unique(fao_fisheries$species_code)) |>
+  dplyr::rename(
+    species_code = x3a_code
+  )
+
+generate_kbl(species_groups |>
+  count(isscaap_group_en),
+col_names = c("ISSCAAP Group", "Number"),
+caption = "Aquatic Species By ISSCAAP Groupings",
+header_spec_fun = function(x) x,
+footnotes = "Grouping names obtained from: aquatic_fao_species_subset_used.csv",
+output_name = here::here(output_results_dir, "aquatic_isscaap_groupings.pdf")
+)
+
+species_groups |>
+  readr::write_csv(here::here(output_results_dir, "aquatic_fao_species_subset_used.csv"))
 
 logging::loginfo("Zipping results directory %s", output_results_dir)
 zip(

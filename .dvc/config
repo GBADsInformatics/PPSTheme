@@ -1,4 +1,0 @@
-[core]
-    autostage = true
-['remote "storage"']
-    url = /mnt/z/work/work/Gabriel/storage/PPSTheme/data

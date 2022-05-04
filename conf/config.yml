@@ -78,7 +78,6 @@ default:
                 lcu_conversion: data/processed/world_bank/lcu_conversion.parquet
                 lcu_conversion_official: data/processed/world_bank/lcu_conversion_official.parquet
                 surface_area_sqkm: data/processed/world_bank/surface_area_sqkm.parquet
-                technical_conversion_factors: data/processed/faostat/faostat_conversions.csv
         codes:
             faostat:
                 dir: data/codes/faostat/
@@ -98,6 +97,8 @@ default:
             livestock_values: data/output/FAOSTAT/FAOSTAT_Livestock_Values.parquet
             ppp_conversion: data/output/world_bank/ppp_conversion.parquet
             lcu_conversion: data/output/world_bank/lcu_conversion.parquet
+            technical_conversion_factors: data/output/FAOSTAT/faostat_technical_conversion_factors.parquet
+            technical_conversion_factors_imputed: data/output/FAOSTAT/faostat_technical_conversion_factors_imputed.parquet
 
     code:
         # Code and documentation locations

@@ -1,7 +1,10 @@
 ---
-title: "Documentation"
-author: Gabriel Denis (CSIRO)
-output: rmarkdown::html_vignette
+title: "GBADS Livestock Value Estimation Supplementary Notes"
+author: PPSTheme
+output: 
+    pdf_document:
+        toc: true
+        df_print: kable
 vignette: >
   %\VignetteIndexEntry{Documentation}
   %\VignetteEngine{knitr::rmarkdown}
@@ -11,13 +14,84 @@ vignette: >
 ```{r, include = FALSE}
 knitr::opts_chunk$set(
   collapse = TRUE,
+  echo = FALSE, 
   comment = "#>"
 )
 ```
 
-```{r setup}
-library(LivestockValueGBADS)
+
+
+
+# Codes 
+
+## Aquaculture
+
+The main unit that is used to subset the data is the custom grouping
+  - "Fish, crustaceans and molluscs, etc."
+which is what is used in the FAOSTAT yearbook.
+This subsets the species used to the main commercial products and excluded production figures for
+aquatic plants, pearls and mother-of-pearl.
+This subsetting and grouping  is outlined in the Global Aquaculture Production database
+metadata at `Aqua_E.html`, other notes on the data are also given in
+ `NOTES_AQUACULTURE_COUNTRY_EN.html`.
+ 
+ 
+## Crops 
+
+The following table shows the FAOSTAT items, item codes, along 
+with the CPC codes and item groups of all crops which where included in the 
+comparison. 
+These groupings where chosen to just subset for primary unprocessed crops. 
+
+
+```{r}
+readRDS(here::here('data', 'codes', 'faostat', 'FAOSTAT_CPC_cropItemCodes.Rds')) 
 ```
 
+
+
+
+
+
+## Countries 
+
+The following table contains a list of ISO3 country codes and countries which are
+included in this 
+analysis, along with the relevant years of their inclusion. 
+
+```{r}
+config <- config::get(file = here::here('conf', 'config.yml'))
+
+arrow::read_parquet(here::here(config$data$codes$faostat$country_codes$output_codes)) |> 
+    dplyr::select(country, m49_code, iso3_code, start_year, end_year)
+```
+
+
+
+## Technical Conversion Factors 
+
+Technical conversion factors for animal body weights are derived directly 
+from FAOSTAT production data, or using the values given in the in their 
+technical conversion factors documentation. 
+*(Note: There are inconsistencies in how different countries report body weights, 
+with some reporting only sold animals, and others the average 
+live body weight of their entire stock)*. 
+
+In the cases where countries have missing values for different livestock types 
+these values have been imputed using the regional median value for each of the 
+live body weight, carcass weight and carcass percentage. 
+
+The following table shows these a glimpse at these values once they are 
+
+
+```{r}
+arrow::read_parquet(here::here(config$data$output$technical_conversion_factors_imputed)) |> 
+    dplyr::glimpse()
+```
+
+# Calculation of Constant Dollars 
+
+Values where converted to constant dollars using a production weighted average 
+exchange rate over the base period specified. 
 
 

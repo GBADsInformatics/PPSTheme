@@ -217,65 +217,42 @@ This project is under a creative commons licence.
 
 <div id="refs" class="references csl-bib-body hanging-indent">
 
-<div id="ref-FAO2021d" class="csl-entry">
+<div id="ref-FAO2021c" class="csl-entry">
 
-FAO. “<span class="nocase">Crops and livestock products</span>.”
-FAOSTAT, 2021.
-<https://fenixservices.fao.org/faostat/static/bulkdownloads/Production_Crops_Livestock_E_All_Data_(Normalized).zip>.
+FAO. “Crops and Livestock Products.” FAOSTAT, 2021.
 
 </div>
 
 <div id="ref-FAO2021b" class="csl-entry">
 
-———. “<span class="nocase">FAO yearbook of fishery and aquaculture
-statistics</span>.” Rome: FAO Fisheries Division; FishstatJ, 2017.
-<ftp://ftp.fao.org/FI/STAT/summary/a-0a.pdf>.
-
-</div>
-
-<div id="ref-FAO2021e" class="csl-entry">
-
-———. “<span class="nocase">Global aquaculture production 1950-2019
-(FishstatJ)</span>.” Rome: FAO; FAO Fisheries Division, 2021.
-[www.fao.org/fishery/statistics/software/fishstatj/en](https://www.fao.org/fishery/statistics/software/fishstatj/en).
-
-</div>
-
-<div id="ref-FAO2022a" class="csl-entry">
-
-———. “Prices: Producer Prices.” Rome: FAOSTAT, 2022.
-<http://fenixservices.fao.org/faostat/static/bulkdownloads/Prices_E_All_Data_(Normalized).zip>.
-
-</div>
-
-<div id="ref-FAO2012" class="csl-entry">
-
-———. “<span class="nocase">Technical Conversion Factors for Agricultural
-Commodities</span>,” 2012.
-<https://www.fao.org/fileadmin/templates/ess/documents/methodology/tcf.pdf>.
-
-</div>
-
-<div id="ref-FAO2022" class="csl-entry">
-
-———. “<span class="nocase">Value of Agricultural Production</span>.”
-Rome: FAOSTAT, 2021.
-<https://fenixservices.fao.org/faostat/static/bulkdownloads/Value_of_Production_E_All_Data_(Normalized).zip>.
+———. “Fishery and Aquaculture Statistics. Global Aquaculture Production
+1950-2019.” Rome: FAO Fisheries Division, 2021.
 
 </div>
 
 <div id="ref-FAO2021a" class="csl-entry">
 
-FAOSTAT. “Tomatoes, Producer Prices.” Rome: FAOSTAT, 2015.
-[http://faostat3.fao.org/search/Tomato Producing
-Countries/E](http://faostat3.fao.org/search/Tomato Producing Countries/E).
+———. “Producer Prices.” Rome: FAOSTAT, 2021.
 
 </div>
 
-<div id="ref-Lesnoff2021" class="csl-entry">
+<div id="ref-faoTechnicalConversionFactors2012" class="csl-entry">
 
-Lesnoff, Matthieu. *<span class="nocase">mmage: A R package for
-sex-and-age population matrix models</span>*, 2021.
+———. “Technical Conversion Factors for Agricultural Commodities.”
+*Statistics Division of FAO*, 2012, 1–782.
+
+</div>
+
+<div id="ref-FAO2021" class="csl-entry">
+
+———. “Value of Agricultural Production.” Rome: FAOSTAT, 2021.
+
+</div>
+
+<div id="ref-PPPConversionFactor" class="csl-entry">
+
+“PPP Conversion Factor, GDP (LCU Per International $) \| Data.”
+https://data.worldbank.org/indicator/PA.NUS.PPP, n.d.
 
 </div>
 

@@ -157,7 +157,8 @@ clean_countries <- function(df,
 #' sanitize_columns(data.frame(a = "a"))
 sanitize_columns <- function(df, exclude = NULL) {
   character_cols <- sapply(df, class)
-  character_cols <- names(character_cols)[character_cols == "character"]
+  character_cols <- names(character_cols)[character_cols == "character" &
+    !grepl(character_cols, "iso3")]
   df |>
     mutate_at(
       setdiff(character_cols, exclude),

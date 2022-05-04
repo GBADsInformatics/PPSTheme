@@ -20,3 +20,27 @@ Encoding: UTF-8
 Language: en-US
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.1.2
+Imports: 
+    argparse,
+    arrow,
+    assertr,
+    config,
+    countrycode,
+    dplyr,
+    forcats,
+    ggpubr,
+    ggrepel,
+    ggtext,
+    glue,
+    here,
+    janitor,
+    kableExtra,
+    latex2exp,
+    logging,
+    purrr,
+    readr,
+    readxl,
+    renv,
+    scales,
+    stringr,
+    tidyr

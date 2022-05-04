@@ -1,12 +1,12 @@
+# R and RStudio files 
+*.Rproj
 .Rproj.user
 .Rhistory
 .RData
 .Ruserdata
-*.zip
-docs/dashboard/  # Leave it untracked for now
-_targets/
 .Rprofile
+
+# Temporary data in zip files 
+*.zip
+
 *.png
-^_* # Directories which start wiht underscore 
-docs/*
-inst/doc

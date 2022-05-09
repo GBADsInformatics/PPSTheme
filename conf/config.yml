@@ -54,7 +54,7 @@ default:
                     dir: data/source/world_bank/gdp_per_capita_ppp
                     type: 'zip'
                 income_classification_history:
-                    url: http://dataank.worldbank.org/data/download/site-content/OGHIST.xlsxb
+                    url: https://databank.worldbank.org/data/download/site-content/OGHIST.xls
                     dir: data/source/world_bank/income_classification_history
                     file_name: OGHIST.xlsx
                     type: 'xlsx'

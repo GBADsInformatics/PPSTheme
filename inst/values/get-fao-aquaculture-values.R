@@ -1,3 +1,5 @@
+#!/usr/bin/env Rscript --vanilla
+
 ################################################################
 #
 # Project: GBADS: Global Burden of Animal Disease

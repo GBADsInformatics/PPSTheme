@@ -152,12 +152,13 @@ clean_countries <- function(df,
 #' @param exclude character vector containing which column names will be excluded
 #'
 #' @return a dataframe which only has ASCII characters in its character columns
+#' @export
 #'
 #' @examples
 #' sanitize_columns(data.frame(a = "a"))
 sanitize_columns <- function(df, exclude = NULL) {
   character_cols <- sapply(df, class)
-  character_cols <- names(character_cols)[character_cols == "character" &
+  character_cols <- names(character_cols)[character_cols == "character" &&
     !grepl(character_cols, "iso3")]
   df |>
     mutate_at(

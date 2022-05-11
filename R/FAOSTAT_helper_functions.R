@@ -36,6 +36,8 @@ library(tidyr)
 #'
 #' @return returns data in YYYYMMDD format
 #' @example iso_date()
+#` @export
+#`
 iso_date <- function() {
   format(Sys.Date(), format = "%Y%m%d")
 }
@@ -122,7 +124,7 @@ clean_countries <- function(df,
   names(df)[names(df) == code_col] <- "FAOST_CODE"
 
   countries <- FAOSTAT::FAOcountryProfile %>%
-    select(FAOST_CODE, ISO3_CODE)
+    dplyr::select(FAOST_CODE, ISO3_CODE)
 
   df %>%
     FAOSTAT::FAOcheck(
@@ -131,13 +133,14 @@ clean_countries <- function(df,
       data = .,
       type = "multiChina"
     ) %>% # Check for multiple China entries
-    drop_na(value) %>% # Remove missing values
-    left_join(countries, by = "FAOST_CODE") %>%
-    drop_na(ISO3_CODE) %>% # Remove countries without valid ISO3_CODES according to FAO
-    mutate(
-      area = plyr::mapvalues(area, c("China, mainland"), c("China"))
+    tidyr::drop_na(value) %>% # Remove missing values
+    dplyr::left_join(countries, by = "FAOST_CODE") %>%
+    tidyr::drop_na(ISO3_CODE) %>% # Remove countries without valid ISO3_CODES according to FAO
+    dplyr::mutate(
+      area = plyr::mapvalues(area, c("China, mainland"),
+                             c("China"))
     ) %>%
-    relocate(ISO3_CODE, .before = everything()) %>%
+    dplyr::relocate(ISO3_CODE, .before = everything()) %>%
     janitor::clean_names()
 }
 
@@ -156,13 +159,13 @@ clean_countries <- function(df,
 #'
 #' @examples
 #' sanitize_columns(data.frame(a = "a"))
-sanitize_columns <- function(df, exclude = NULL) {
+sanitize_columns <- function(df, exclude = c("iso3_code")) {
   character_cols <- sapply(df, class)
-  character_cols <- names(character_cols)[character_cols == "character" &&
-    !grepl(character_cols, "iso3")]
+  character_cols <- names(character_cols)[character_cols == 'character']
   df |>
-    mutate_at(
+    dplyr::mutate_at(
       setdiff(character_cols, exclude),
-      ~ snakecase::to_any_case(.x)
+      ~ snakecase::to_any_case(stringi::stri_enc_toascii(.x))
     )
 }
+

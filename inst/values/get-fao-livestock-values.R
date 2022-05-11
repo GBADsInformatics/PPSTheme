@@ -40,6 +40,15 @@
 # Locations of these tables can be found in the project configuration file
 ## -conf/config.yml
 #
+# Outputs:
+#      The output table from this file is located in
+#      -data/output/ with the exact location specified via conf/config.yml
+#      The output file is a parquet file which has attached metadata describing
+#      the table schema. The point of placing the data into such a wide table
+#      was to allow for minimal changes to be made to the source data initially,
+#      with the final estimations mostly coming in any postprocessing tables
+#      or figures
+#
 # Conversions to constant 2014-2016 USD is done using the World Bank
 # Exchange rate Conversion series PU.NUS.ATLS (Weighted) and PU.NUS.FCRF
 # (Official)
@@ -62,7 +71,7 @@
 
 # Activate Project --------------------------------------------------------
 renv::activate(project = ".")
-
+devtools::load_all()
 
 
 # Libraries ---------------------------------------------------------------
@@ -114,14 +123,14 @@ get_livestock_codes <- function(code_dir = config$data$codes$faostat$dir) {
   )
 
   # Name files
-  names(code_rds_files) <- basename(code_rds_files) %>%
-    stringr::str_remove_all(".rds") %>%
+  names(code_rds_files) <- basename(code_rds_files) |>
+    stringr::str_remove_all(".rds") |>
     stringr::str_remove_all("FAOSTAT_")
 
   # Read in the item code data
   faostat_item_codes <- purrr::map(
     code_rds_files,
-    ~ readRDS(.x) %>%
+    ~ readRDS(.x) |>
       janitor::clean_names()
   )
 
@@ -185,10 +194,7 @@ get_data <- function(files, codes, use_years = 1994:2018) {
         item_code %in% codes
       ) |>
       clean_countries() |>
-      sanitize_columns() |>
-      dplyr::mutate(
-        iso3_code = toupper(iso3_code) # temporary fix
-      )
+      sanitize_columns()
   )
 }
 
@@ -208,25 +214,70 @@ livestock <- get_data(
   livestock_codes$codes
 )
 
+
+
+# Sanitize item strings into animal types ---------------------------------
+
 #
 # Remove unwanted characters from the
-# from the beginning of the item columnes
+# from the beginning of the item column's
 #
-livestock$value_of_production$item <- stringr::str_remove_all(
-  livestock$value_of_production$item,
-  "whole_fresh_"
+#  In this case, the value of production items that
+#  can be removed are
+#  "whole_fresh" - which are milk items
+#
+#   In the production (QCL) table these values
+#   can also be sanitized, along with "edible"
+#   which is used to describe fats and offals
+#
+# This is done so that each item string will now be of the form
+# {output_type}_animal_name
+#
+
+# Regex to match these patterns
+str_regex <- c(
+  "[_]{0,1}whole_fresh[_]{0,1}",
+  "[_]{0,1}edible[_]{0,1}"
 )
 
-livestock$production$item <- stringr::str_remove_all(
-  livestock$production$item,
-  "whole_fresh_|edible_|_edible"
+# Regex to remove any underscores which remain at the start
+# and end of any item string
+line_regex <- "^[_]{0,}|[_]{0,}$"
+
+str_regex <- paste0(str_regex, collapse = "|")
+
+# Remove these patterns from each item string
+livestock$value_of_production$item <- gsub(str_regex, "_",
+  livestock$value_of_production$item,
+  perl = TRUE
 )
+# Remove start and ends
+livestock$value_of_production$item <- gsub(line_regex, "",
+  livestock$value_of_production$item,
+  perl = TRUE
+)
+
+livestock$production$item <- gsub(str_regex, "_",
+  livestock$production$item,
+  perl = TRUE
+)
+# Remove start and ends
+livestock$production$item <- gsub(line_regex, "",
+  livestock$production$item,
+  perl = TRUE
+)
+
+
+# Price Series Intervals --------------------------------------------------
 
 #
 # Select Annual Values: FAOSTAT Months Code = 7021
 # to retrieve the annual price series
 # Monthly series are only available for a selection of
 # commodities since 2010
+#
+# Note: About half of these annual series are imputed
+# values
 #
 livestock$prices <- dplyr::filter(
   livestock$producer_prices,
@@ -236,6 +287,10 @@ livestock$prices <- dplyr::filter(
 
 
 # Livestock Yield ---------------------------------------------------------
+#
+#
+# Calculate the yearly livestock carcass weight/yield
+# for each country for each animal type
 #
 # This is in dressing percentage and will need to be converted to
 # Live Weight Equivalent
@@ -252,11 +307,12 @@ livestock$prices <- dplyr::filter(
 
 loginfo("Computing Livestock Yield")
 
-livestock$yield <- livestock$production %>%
+livestock$yield <- livestock$production |>
   dplyr::filter(
     element %in% c("producing_animals_slaughtered", "production"),
-    item_code %in% unique(livestock_codes$code_list$livestock_meat_item_codes$item_code)
-  ) %>%
+    item_code %in%
+      unique(livestock_codes$code_list$livestock_meat_item_codes$item_code)
+  ) |>
   dplyr::mutate(
     value = dplyr::case_when(
       stringr::str_detect(unit, "1000") ~ value * 1000,
@@ -267,18 +323,20 @@ livestock$yield <- livestock$production %>%
       TRUE ~ unit,
     ),
     iso3_code = toupper(iso3_code)
-  ) %>%
-  dplyr::select(-element, -element_code, -flag, -year_code) %>%
-  tidyr::spread(unit, value) %>%
-  dplyr::filter(head > 0) %>% # Only get entries in which some values were recorded
+  ) |>
+  dplyr::select(-element, -element_code, -flag, -year_code) |>
+  tidyr::spread(unit, value) |>
+  dplyr::filter(head > 0) |> # Only get entries in which some values were recorded
   dplyr::mutate(
     yield_kg = round(tonnes * 1000 / head, 1)
-  ) %>%
-  tidyr::drop_na(yield_kg) %>%
+  ) |>
+  tidyr::drop_na(yield_kg) |>
   dplyr::filter(yield_kg > 0) |>
   assertr::verify((yield_kg > 0) & (yield_kg < 1000))
 
-tapply(livestock$yield$yield_kg, livestock$yield$item, FUN = summary)
+
+# Summary of Yields per animal
+# tapply(livestock$yield$yield_kg, livestock$yield$item, FUN = summary)
 
 
 
@@ -292,7 +350,7 @@ tapply(livestock$yield$yield_kg, livestock$yield$item, FUN = summary)
 #
 
 
-carcass_pct <- config$data$output$technical_conversion_factors_imputed %>%
+carcass_pct <- config$data$output$technical_conversion_factors_imputed |>
   arrow::read_parquet() |>
   dplyr::select(iso3_code, animal, carcass_pct_imp, live_weight_kg_imp) |>
   dplyr::rename(carcass_pct = carcass_pct_imp) |>
@@ -320,23 +378,23 @@ loginfo(paste(
 # from the FAOSTAT data, use the imputed live weights derived from the
 # FAOSTAT Technical conversion factors
 #
-livestock$yield <- livestock$yield %>%
+livestock$yield <- livestock$yield |>
   dplyr::mutate(
     animal = trimws(stringr::str_remove(item, "meat_"))
-  ) %>%
+  ) |>
   dplyr::mutate(
     animal = case_when(
       animal == "goose_and_guinea_fowl" ~ "goose",
       TRUE ~ animal
     )
   ) |>
-  dplyr::left_join(carcass_pct, by = c("iso3_code", "animal")) %>%
+  dplyr::left_join(carcass_pct, by = c("iso3_code", "animal")) |>
   dplyr::mutate(
     lbw_kg = ifelse(!is.na(yield_kg), yield_kg / carcass_pct, live_weight_kg_imp)
   ) |>
   dplyr::mutate(
     item = "stock"
-  ) %>%
+  ) |>
   dplyr::select(-head, -tonnes)
 
 
@@ -369,37 +427,38 @@ livestock$yield[(livestock$yield$iso3_code %in% c("MYS", "NER")) &
 #  - Use nested tibble data frames
 
 livestock$value_of_production <-
-  livestock$value_of_production %>%
+  livestock$value_of_production |>
   dplyr::select(
     -element_code,
     -year_code,
     -unit,
     -flag
-  ) %>%
+  ) |>
   tidyr::spread(
     element,
     value
-  ) %>%
+  ) |>
   tidyr::separate(item, c("item", "animal"),
     sep = "_", extra = "merge", fill = "left"
-  ) %>%
+  ) |>
   dplyr::mutate(
     animal = trimws(animal),
     item = tolower(item)
   )
-# aggregate(livestock$value_of_production$gross_production_value_constant_2014_2016_thousand_us*1000,
-# by = livestock$value_of_production['year'], FUN=sum, na.rm = TRUE)
+
+# aggregate(gross_production_value_constant_2014_2016_thousand_us*1000 ~ year,
+# data = livestock$value_of_production, FUN=sum, na.rm = TRUE)
 
 
 #
 # Extract livestock production and reshape
 #
-livestock$production <- livestock$production %>%
+livestock$production <- livestock$production |>
   dplyr::filter(element %in% c(
     "stocks",
     "producing_animals_slaughtered",
     "production"
-  )) %>%
+  )) |>
   dplyr::mutate(
     value = case_when(
       stringr::str_detect(unit, "1000") ~ value * 1000,
@@ -409,18 +468,18 @@ livestock$production <- livestock$production %>%
       stringr::str_detect(unit, "1000") ~ "head",
       TRUE ~ unit
     )
-  ) %>%
+  ) |>
   tidyr::separate(item, c("item", "animal"),
     sep = "_",
     extra = "merge", fill = "right"
-  ) %>%
+  ) |>
   dplyr::mutate(
     item = ifelse(element == "stocks", "stock", item)
-  ) %>%
-  dplyr::select(-element, -element_code, -year_code, -flag) %>%
+  ) |>
+  dplyr::select(-element, -element_code, -year_code, -flag) |>
   dplyr::mutate(
     animal = trimws(animal)
-  ) %>%
+  ) |>
   tidyr::spread(unit, value)
 
 
@@ -428,29 +487,29 @@ livestock$production <- livestock$production %>%
 # Extract out the livestock live weight prices and assign them to match
 # the stock items
 #
-livestock$prices <- livestock$prices %>%
+livestock$prices <- livestock$prices |>
   dplyr::select(
     -element_code, -year_code, -unit,
     -flag, -months, -months_code, -unit
-  ) %>%
+  ) |>
   tidyr::separate(
     item,
     c("item", "animal"),
     sep = "_",
     extra = "merge",
     fill = "right"
-  ) %>%
+  ) |>
   dplyr::mutate(
     animal = trimws(animal)
-  ) %>%
-  tidyr::spread(element, value) %>%
+  ) |>
+  tidyr::spread(element, value) |>
   dplyr::mutate(
     item = case_when(
       stringr::str_detect(animal, "live_weight") ~ "stock",
       TRUE ~ item
     ),
     item = tolower(item)
-  ) %>%
+  ) |>
   dplyr::filter(animal != "meat_nes")
 
 
@@ -560,27 +619,26 @@ stopifnot(
 
 # Value of Production -----------------------------------------------------
 table(livestock$value_of_production$item, livestock$value_of_production$animal)
-stopifnot(
-  length(setdiff(names(match_live_weight_items), unique(livestock$value_of_production$animal))) == 0
-)
 
 livestock$value_of_production$animal <- recode_lvs(livestock$value_of_production$animal)
-
-
 stopifnot(
   length(setdiff(names(match_live_weight_items), unique(livestock$value_of_production$animal))) == 0
 )
+
 
 
 # Yield (Should all be stock)
 table(livestock$yield$item, livestock$yield$animal)
 
-setdiff(names(match_live_weight_items), unique(livestock$yield$animal))
+stopifnot(
+  length(setdiff(names(match_live_weight_items), unique(livestock$yield$animal))) == 0
+)
+
 livestock$yield$animal <- recode_lvs(livestock$yield$animal)
-table(livestock$yield$item, livestock$yield$animal)
-setdiff(names(match_live_weight_items), unique(livestock$yield$animal))
+
 
 # Create Livestock DF -----------------------------------------------------
+
 # Match the Live Weight Price Item Codes to the stock items
 livestock <- livestock[c("production", "yield", "value_of_production", "prices")]
 
@@ -598,14 +656,14 @@ aggregate(livestock_df$gross_production_value_constant_2014_2016_thousand_us * 1
 
 
 # Asset Values ------------------------------------------------------------
-livestock_df <- livestock_df %>%
-  mutate(
-    tonnes = case_when(
+livestock_df <- livestock_df |>
+  dplyr::mutate(
+    tonnes = dplyr::case_when(
       is.na(tonnes) ~ lbw_kg * head / 1000,
       TRUE ~ tonnes
     )
-  ) %>%
-  mutate(
+  ) |>
+  dplyr::mutate(
     stock_value_lcu = ifelse(item == "stock",
       producer_price_lcu_tonne * tonnes, 0
     ),
@@ -651,12 +709,15 @@ lcu_conversion <-
 # type and product using a weighted
 # average exchange rate
 #
+# The mean exchange rate is weighted by the stock held by that country
+# in the given year, and the price is similarly weighted
+#
 mean_usd_prices_2014_2016 <- livestock_df |>
   dplyr::filter(year %in% 2014:2016, head > 0) |>
-  dplyr::ungroup() %>%
-  dplyr::select(iso3_code, item, animal, head, year, producer_price_slc_tonne) %>%
-  dplyr::left_join(lcu_conversion, by = c("iso3_code", "year")) %>%
-  dplyr::group_by(iso3_code, animal, item) %>%
+  dplyr::ungroup() |>
+  dplyr::select(iso3_code, item, animal, head, year, producer_price_slc_tonne) |>
+  dplyr::left_join(lcu_conversion, by = c("iso3_code", "year")) |>
+  dplyr::group_by(iso3_code, animal, item) |>
   dplyr::summarise(
     mean_slc_price_per_tonne_2014_2016 = weighted.mean(producer_price_slc_tonne,
       head,
@@ -664,7 +725,7 @@ mean_usd_prices_2014_2016 <- livestock_df |>
     ),
     mean_usd_conversion_2014_2016 = 1 / weighted.mean(value, head, na.rm = TRUE),
     .groups = "drop"
-  ) %>%
+  ) |>
   dplyr::mutate(
     producer_price_usd_per_tonne_2014_2016 = mean_slc_price_per_tonne_2014_2016 *
       mean_usd_conversion_2014_2016
@@ -681,39 +742,40 @@ aggregate(producer_price_usd_per_tonne_2014_2016 ~ animal + item,
 # To determine the outliers we can get the min and max
 # of each group
 #
-mean_usd_prices_2014_2016 |>
-  group_by(animal) |>
-  slice_max(producer_price_usd_per_tonne_2014_2016, n = 5) |>
-  View()
+# mean_usd_prices_2014_2016 |>
+#      group_by(animal) |>
+#      slice_max(producer_price_usd_per_tonne_2014_2016, n = 5) |>
+#      View()
 
 
 
 # Append the average prices to the existing dataframe
-livestock_df <- livestock_df %>%
+livestock_df <- livestock_df |>
   dplyr::left_join(mean_usd_prices_2014_2016,
     by = c(
       "iso3_code",
       "animal",
       "item"
     )
-  ) %>%
+  ) |>
   dplyr::mutate(
     stock_value_constant_2014_2016_usd = ifelse(item == "stock",
       producer_price_usd_per_tonne_2014_2016 * tonnes, 0
     )
   )
 
-
-aggregate(livestock_df$gross_production_value_constant_2014_2016_thousand_us * 1000,
-  by = livestock_df["year"],
+# Get the gross production value for each year
+aggregate(gross_production_value_constant_2014_2016_thousand_us * 1000 ~ year,
+  data = livestock_df,
   FUN = sum, na.rm = TRUE
 )
 
-tapply(livestock_df$stock_value_constant_2014_2016_usd,
-  livestock_df["animal"],
+tapply(stock_value_constant_2014_2016_usd ~ year,
+  data = livestock_df,
   FUN = summary
 )
 
+# Get the stock value per year
 aggregate(stock_value_constant_2014_2016_usd ~ year,
   data = livestock_df,
   sum, na.rm = TRUE
@@ -722,7 +784,6 @@ aggregate(stock_value_constant_2014_2016_usd ~ year,
 #  - Attach metadata  ------------------------------
 
 # Turn into arrow table so schema and metadata can be attached
-
 metadata_list <- list(
   iso3_code = "ISO 3166-1 alpha-3",
   faost_code = "FAOSTAT Area Code",
@@ -748,8 +809,8 @@ metadata_list <- list(
   stock_value_lcu = "Value of animal stock in local currency units, calculated via producer_price_lcu_tonne * tonnes",
   stock_value_slc = "Value of animal stock in standard currency units, calculated via producer_price_slc_tonne * tonnes",
   stock_value_usd = "Value of animal stock in US dollars, calculated via producer_price_usd_tonne * tonnes",
-  mean_slc_price_per_tonne_2014_2016 = "mean slc price per tonne averaged over 2014 to 2016",
-  mean_usd_conversion_2014_2016 = "Mean conversion of slc to US dollars from  2014 to 2016 using the annual exchange rantes",
+  mean_slc_price_per_tonne_2014_2016 = "mean slc price per tonne averaged over 2014 to 2016 using a head weigted mean",
+  mean_usd_conversion_2014_2016 = "Mean conversion of slc to US dollars from  2014 to 2016 using the annual exchange rates weighted by the number of head of stock",
   producer_price_usd_per_tonne_2014_2016 = "Producer price per tonne in USD, calculated via mean_slc_price_per_tonne_2014_2016 / mean_usd_conversion_2014_2016",
   stock_value_constant_2014_2016_usd = "Value of animal stock in constant 2014 2016 US dollars, calculated via producer_price_usd_per_tonne_2014_2016 * tonnes",
   date = iso_date(),
@@ -764,10 +825,12 @@ metadata_list <- list(
   frequency = "Yearly"
 )
 
+# Subset for the names specified in the table
+# metadata schema above
 livestock_df <- livestock_df[, names(livestock_df) %in% names(metadata_list)]
 
 
-
+# Convert to an arrow table for storage as a parquet file
 livestock_table <- arrow::Table$create(livestock_df)
 
 

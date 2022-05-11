@@ -222,3 +222,159 @@ writeData(wb,
 saveWorkbook(wb, here::here("output", "tables", "table_appendix_bra_chn_ind_usa_2006-2018.xlsx"),
   overwrite = TRUE
 )
+
+
+
+# Value Proportion in LMICs -----------------------------------------------
+
+# Table showing the value proportion in LMIC countries as a
+# proportion of the total value
+
+#
+# Read in IMF Country designations
+income_config <-
+    config$data$source$tables$income_classification_history
+income_classifications <-
+    file.path(income_config$dir, income_config$file_name) |>
+    readxl::read_xlsx(
+        sheet = 3,
+        skip = 11,
+        col_names = c("iso3_code",
+                      "country",
+                      as.character(1987:2020))
+    ) |>
+    tidyr::gather(key = "year", value = "gini_income_cl", -iso3_code, -country) |>
+    dplyr::mutate(
+        year = as.numeric(year),
+        gini_income_cl = factor(
+            gini_income_cl,
+            levels = c("L", "LM", "UM", "H"),
+            labels = c(
+                "Low Income",
+                "Low Middle Income",
+                "Upper Middle Income",
+                "High Income"
+            )
+        )
+    )
+
+livestock_total <- livestock |>
+    dplyr::group_by(year) |>
+    dplyr::summarise(
+        total_asset = sum(stock_value_constant_2014_2016_usd, na.rm = TRUE),
+        total_output = sum(gross_production_value_constant_2014_2016_thousand_us, na.rm = TRUE) * 1e3
+    ) |>
+    dplyr::mutate(
+        total = total_asset + total_output
+    ) |>
+    dplyr::ungroup()
+
+# Livestock
+livestock_lmics <- livestock |>
+    dplyr::group_by(year, iso3_code) |>
+    dplyr::summarise(
+        total_asset = sum(stock_value_constant_2014_2016_usd, na.rm = TRUE),
+        total_output = sum(
+            gross_production_value_constant_2014_2016_thousand_us,
+            na.rm = TRUE
+        )
+    ) |>
+    dplyr::left_join(income_classifications,
+                     by = c("iso3_code", "year")) |>
+    dplyr::filter(gini_income_cl == "Low Middle Income") |>
+    dplyr::group_by(year) |>
+    dplyr::summarise(
+        total_asset = sum(total_asset, na.rm = TRUE),
+        total_output = sum(total_output, na.rm = TRUE),
+        .groups = 'drop'
+    )   |>
+    dplyr::mutate(
+        total_lmics = total_asset + total_output
+    ) |>
+    dplyr::select(year, total_lmics)
+
+# Form table
+table_df <- dplyr::left_join(livestock_total, livestock_lmics) |>
+    dplyr::select(year, total, total_lmics) |>
+    dplyr::mutate(
+        `Total Value ($)` = scales::dollar(total,
+                                                         scale = 1e-12,
+                                                         accuracy = 0.05,
+                                                         suffix = 'T'),
+        `Lower Middle Income Value ($)` = scales::dollar(total_lmics,
+                                                         scale = 1e-9,
+                                                         accuracy = 5,
+                                                         suffix = 'B'),
+         `Lower Middle Income Value (%)` = scales::percent(total_lmics/total,
+                                                         accuracy = 1) ) |>
+    dplyr::arrange(desc(year)) |>
+    dplyr::select(-total, -total_lmics)
+
+wb <- createWorkbook(creator = "Gabriel Dennis")
+addWorksheet(wb, sheetName = "LivestockLMICValue")
+writeData(wb,
+          "LivestockLMICValue",
+          "Note: All values are in constant 2014-2016 US Dollars",
+          startCol = 1, startRow = 1
+)
+
+writeData(wb,
+          "LivestockLMICValue",
+          "Note: China moves from Lower Middle Income to Upper Middle Income starting in 2010",
+          startCol = 1, startRow = 2
+)
+
+writeData(wb,
+          "LivestockLMICValue",
+          table_df,
+          startCol = 1, startRow = 5
+)
+
+writeData(wb,
+          "LivestockLMICValue",
+          sprintf("Source: Income Classifications sourced from %s", config$data$source$tables$income_classification_history$url),
+          startCol = 1, startRow = 25
+)
+
+
+saveWorkbook(wb, here::here("output", "tables", "table_lmic_proportion_2006-2018.xlsx"),
+             overwrite = TRUE
+)
+
+
+# Generate Value tables by Country ----------------------------------------
+
+
+# Livestock Asset + output values Globally
+
+lvst_df <- livestock |>
+    dplyr::select(
+        iso3_code, area, year, item ,animal, gross_production_value_constant_2014_2016_thousand_us,
+        stock_value_constant_2014_2016_usd
+    ) |>
+    dplyr::group_by(iso3_code, area, year, animal) |>
+    dplyr::summarise(
+        asset_value = sum(ifelse(item == "stock", stock_value_constant_2014_2016_usd, 0), na.rm = TRUE),
+        output_value = sum(ifelse(item != "stock", gross_production_value_constant_2014_2016_thousand_us*1e3,
+                                  0), na.rm = TRUE), .groups = 'drop'
+
+    )
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

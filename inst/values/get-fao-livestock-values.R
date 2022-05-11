@@ -781,6 +781,22 @@ aggregate(stock_value_constant_2014_2016_usd ~ year,
   sum, na.rm = TRUE
 )
 
+#
+# Venezuela shows higher than expected values for its asset prices
+# however, non of the conversions are too outlandish since they
+# do have approximately 15 million head of cattle in stock
+# therefore, they have been left in the estimation at this current
+# time.
+# The conversions that are done to convert from lcu to USD in a constant
+# manner are do not produce radically different prices compared to the
+# current set of FAO conversions
+
+# livestock_df |>
+#    dplyr::filter(iso3_code == "VEN", item == "stock", year %in% 2014:2016) |>
+#    dplyr::select(year, item, animal, producer_price_usd_tonne,
+#                  producer_price_usd_per_tonne_2014_2016) |>
+#    View()
+
 #  - Attach metadata  ------------------------------
 
 # Turn into arrow table so schema and metadata can be attached

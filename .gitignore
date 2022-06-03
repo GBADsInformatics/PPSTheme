@@ -6,6 +6,16 @@
 .Ruserdata
 .Rprofile
 
-# Temporary data in zip files 
+
+# Temporary data 
 *.zip
 *.html
+*.xlsx
+
+
+# renv project library
+# only commit the renv.lock and renv/activate.R files
+renv/**/*
+
+# Directories that can be ignored
+docs/reports/*

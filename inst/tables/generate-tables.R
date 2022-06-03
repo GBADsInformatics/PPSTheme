@@ -598,6 +598,7 @@ addDataFrame(
   rownamesStyle = TABLE_ROWNAMES_STYLE,
   row.names = FALSE
 )
+
 # Change column width
 setColumnWidth(livestock_value,
   colIndex = c(1:ncol(per_country_livestock_values)),

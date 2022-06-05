@@ -339,7 +339,8 @@ writeData(wb,
 
 writeData(wb,
   "LivestockLMICValue",
-  sprintf("Source: Income Classifications sourced from %s", config$data$source$tables$income_classification_history$url),
+  sprintf("Source: Income Classifications sourced from %s",
+          config$data$source$tables$income_classification_history$url),
   startCol = 1, startRow = 25
 )
 

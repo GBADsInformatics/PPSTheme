@@ -23,17 +23,17 @@ $(PROCESSED_DATA_DIR)faostat/value_of_production.parquet:
 
 # Downloads the FAOSTAT Producer Prices table
 $(PROCESSED_DATA_DIR)faostat/producer_prices.parquet:
-	Rscript --vanilla $(SCRIPT_DIR)/data/data-download.R --data producer_prices 
+	Rscript --vanilla $(SCRIPT_DIR)/data/data-download.R --data producer_prices
 
 # Downloads the FAOSTAT Crops and Livestock Products Table
 $(PROCESSED_DATA_DIR)faostat/crops_and_livestock_products.parquet:
-	Rscript --vanilla $(SCRIPT_DIR)/data/data-download.R --data crops_and_livestock_products 
+	Rscript --vanilla $(SCRIPT_DIR)/data/data-download.R --data crops_and_livestock_products
 
 # Downloads the FAOSTAT GLobal Aquaculture production database
 $(SOURCE_DATA_DIR)/faostat/global_aquaculture_production:
 	Rscript --vanilla $(SCRIPT_DIR)/data/data-download.R --data global_aquaculture_production
 
-# World bank LCU to PPP conversion 
+# World bank LCU to PPP conversion
 $(OUTPUT_DATA_DIR)world_bank/ppp_conversion.parquet:
 	Rscript --vanilla $(SCRIPT_DIR)/data/data-download.R --data ppp_conversion
 	Rscript --vanilla $(SCRIPT_DIR)/values/get-world-bank-ppp-conversion.R
@@ -51,7 +51,7 @@ $(PROCESSED_DATA_DIR)world_bank/gdp_per_capita_ppp.parquet:
 # Missing values inputted using the IMF/IFC LCU to USD ($)
 # official period average exchanged rate
 $(OUTPUT_DATA_DIR)world_bank/lcu_conversion.parquet:
-	# Area weighed 
+	# Area weighed
 	Rscript --vanilla $(SCRIPT_DIR)/data/data-download.R --data lcu_conversion
 	# Average Official Exchange Rate
 	Rscript --vanilla $(SCRIPT_DIR)/data/data-download.R --data lcu_conversion_official
@@ -66,62 +66,66 @@ FAOSTATConversionFactorData:
 # Codes
 #----------------------------------------
 
-# Downloads the correspondence file between FAO and CPC codes 
+# Downloads the correspondence file between FAO and CPC codes
 data/codes/FAOSTAT/CPCtoFCL_codes.xlsx:
 	wget -O data/codes/FAOSTAT/CPCtoFCL_codes.xlsx 'https://www.fao.org/fileadmin/templates/ess/classifications/Correspondence_CPCtoFCL.xlsx'
 
 data/codes/FAOSTAT/FAOSTAT-CPC_cropItemCodes.rds:
-	Rscript --vanilla $(SCRIPT_DIR)/codes/get-faostat-crop-codes.R 
+	Rscript --vanilla $(SCRIPT_DIR)/codes/get-faostat-crop-codes.R
 
 
-# Subset Country Codes which are used throughout 
+# Subset Country Codes which are used throughout
 data/output/codes/faostat_iso3_country_codes.parquet:
 	Rscript --vanilla $(SCRIPT_DIR)/codes/get-project-country-codes.R
 
 #-----------------------------------------
-# Analysis 
+# Analysis
 # ---------------------------------------
 #
 # Reproduces the livestock value table
 $(OUTPUT_DATA_DIR)faostat/faostat_livestock_values.parquet:
 	Rscript --vanilla $(SCRIPT_DIR)/values/get-fao-livestock-values.R
-		
 
-# Reproduces the aquaculture value table 
+
+# Reproduces the aquaculture value table
 # Requires
 #  - Global Aquaculture Production database to be downloaded
 #  - LCU Conversion
 #  - Conversion to 2014-2016 Dollars
 $(OUTPUT_DATA_DIR)fao/fao_aquaculture_values.parquet: $(SOURCE_DATA_DIR)/faostat/global_aquaculture_production \
-	$(OUTPUT_DATA_DIR)/world_bank/lcu_conversion.parquet 
-	Rscript --vanilla $(SCRIPT_DIR)/values/get-fao-aquaculture-values.R 
+	$(OUTPUT_DATA_DIR)/world_bank/lcu_conversion.parquet
+	Rscript --vanilla $(SCRIPT_DIR)/values/get-fao-aquaculture-values.R
 
 # Reproduces the crop values tables
 $(OUTPUT_DATA_DIR)faostat/faostat_crop_values.parquet:
 	Rscript --vanilla $(SCRIPT_DIR)/values/get-fao-crop-values.R
 
+# Initial Data for the Informatics Dashboard
+$(OUTPUT_DATA_DIR)informatics/20220603_informatics_tev_data.parquet:
+	Rscript --vanilla $(SCRIPT_DIR)/values/get-info-data.R
+
 
 #--------------------------------------
-# Figures and tables 
+# Figures and tables
 #
 # TODO: add more command line arguments
-# depending on which journal the 
-# submission is being made to 
+# depending on which journal the
+# submission is being made to
 # -------------------------------------
 $(FIGURE_DIR)figure_2.pdf:
-	Rscript --vanilla $(SCRIPT_DIR)/figures/generate-figures.R --figure 2 
+	Rscript --vanilla $(SCRIPT_DIR)/figures/generate-figures.R --figure 2
 
 $(FIGURE_DIR)figure_3.pdf:
-	Rscript --vanilla $(SCRIPT_DIR)/figures/generate-figures.R --figure 3 
+	Rscript --vanilla $(SCRIPT_DIR)/figures/generate-figures.R --figure 3
 
 $(FIGURE_DIR)figure_4.pdf:
-	Rscript --vanilla $(SCRIPT_DIR)/figures/generate-figures.R --figure 4 
+	Rscript --vanilla $(SCRIPT_DIR)/figures/generate-figures.R --figure 4
 
 $(FIGURE_DIR)figure_5.pdf:
-	Rscript --vanilla $(SCRIPT_DIR)/figures/generate-figures.R --figure 5 
+	Rscript --vanilla $(SCRIPT_DIR)/figures/generate-figures.R --figure 5
 
 $(FIGURE_DIR)figure_6.pdf:
-	Rscript --vanilla $(SCRIPT_DIR)/figures/generate-figures.R --figure 6 
+	Rscript --vanilla $(SCRIPT_DIR)/figures/generate-figures.R --figure 6
 
 #------------------------------------
 # Tests

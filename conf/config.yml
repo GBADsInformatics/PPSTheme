@@ -49,7 +49,7 @@ default:
                     url: 'https://api.worldbank.org/v2/country/all/indicator/SP.POP.TOTL?downloadformat=csv'
                     dir: data/source/world_bank/population
                     type: 'zip'
-                gdp_per_capita_ppp: 
+                gdp_per_capita_ppp:
                     url:   'https://api.worldbank.org/v2/country/all/indicator/NY.GDP.PCAP.PP.CD?downloadformat=csv'
                     dir: data/source/world_bank/gdp_per_capita_ppp
                     type: 'zip'
@@ -83,15 +83,17 @@ default:
                 dir: data/codes/faostat/
                 items:
                     item_codes: data/codes/faostat/FAOSTAT_Item_Codes.Rds
-                country_codes: 
+                country_codes:
                     url: 'https://www.fao.org/faostat/en/?msclkid=c4309ab1b93811ec8eec4cb1f7647c9d#definitions'
                     raw_codes: data/codes/faostat/country_codes/faostat_country_codes_20220411.csv
-                    output_codes: data/output/codes/faostat_iso3_country_codes.parquet 
-                crops: data/codes/FAOSTAT/FAOSTAT-CPC_cropItemCodes.rds 
+                    output_codes: data/output/codes/faostat_iso3_country_codes.parquet
+                crops: data/codes/FAOSTAT/FAOSTAT-CPC_cropItemCodes.rds
             cpc:
                 url: 'https://www.fao.org/fileadmin/templates/ess/classifications/Correspondence_CPCtoFCL.xlsx'
-                
+
+
         output:
+            informatics: "data/output/informatics/20220603_informatics_tev_data.parquet"
             crop_values: data/output/faostat/faostat_crop_values.parquet
             aquaculture_values: data/output/fao/fao_aquaculture_values.parquet
             livestock_values: data/output/FAOSTAT/FAOSTAT_Livestock_Values.parquet
@@ -102,9 +104,9 @@ default:
 
     code:
         # Code and documentation locations
-        functions: !expr here::here('R')
-        scripts: !expr here::here('inst')
-        documentation: !expr here::here('vignettes')
+        functions: R/
+        scripts: inst/
+        documentation: vignettes/
 
 
     figure_specification:
@@ -112,7 +114,7 @@ default:
         #  https://www.nature.com/documents/NRJs-guide-to-preparing-final-artwork.pdf
         nature_food:
             one_column_width: 88
-            two_column_width: 180  
+            two_column_width: 180
             typeface: "Helvetica"
             family: "sans"
             dpi: 400
@@ -120,5 +122,5 @@ default:
             font_size: 7
             format: pdf
 
-            
-            
+
+

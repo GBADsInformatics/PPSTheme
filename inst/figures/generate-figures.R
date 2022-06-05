@@ -48,6 +48,7 @@ renv::activate(project = ".")
 
 
 # Libraries ---------------------------------------------------------------
+
 require(dplyr)
 require(magrittr)
 require(ggplot2)
@@ -55,7 +56,10 @@ require(ggthemes)
 require(hrbrthemes)
 require(logging)
 
+
+
 # Command Line Arguments --------------------------------------------------
+
 parser <-
   argparse::ArgumentParser(
     description = paste0(
@@ -175,13 +179,6 @@ compute_spearman_rank <- function(data, colx, coly, R = 1e3, extra_str = "") {
 }
 
 
-# https://stackoverflow.com/questions/33346823/global-legend-using-grid-arrange-gridextra-and-lattice-based-plots
-g_legend <- function(a.gplot) {
-  tmp <- ggplot_gtable(ggplot_build(a.gplot))
-  leg <- which(sapply(tmp$grobs, function(x) x$name) == "guide-box")
-  legend <- tmp$grobs[[leg]]
-  return(legend)
-}
 
 
 
@@ -570,8 +567,6 @@ figure_2 <- function(df_list,
       face = "italic"
     )
   )
-  # p <- ggpubr::annotate_figure(p,
-  #                             fig.lab = "Figure 2", fig.lab.face = "bold")
   device <- ifelse(use_pdf, "pdf", "png")
   output_file_name <- here::here(
     "output", "figures",
@@ -912,18 +907,19 @@ figure_2a <- function(df_list,
   outputs |>
     write_data("figure_2a_outputs", data_path)
 
-
-
   zip_figure_data(data_path)
 }
 
-df_list <- purrr::keep(config$data$output, ~ grepl("values", .x, ignore.case = TRUE))
+df_list <- purrr::keep(config$data$output,
+                       ~ grepl("values", .x, ignore.case = TRUE))
 
 # Match the Command Line Args ---------------------------------------------
+
 figure_2a(
   df_list = df_list,
   population_file = config$data$processed$tables$population
 )
+
 
 figure_2a(
   df_list = df_list,
@@ -933,9 +929,9 @@ figure_2a(
 
 
 
-# -------------------------------------------------------------------------
 
 
+# Figure 3 ----------------------------------------------------------------
 
 #' Figure 3 - World Maps of Asset + Output Values
 #'
@@ -976,6 +972,8 @@ figure_3 <- function(df_list,
     "output", "figures",
     glue('figure_3_{date}_{format(Sys.time(),format="%Y%m%d_%H%M%S")}')
   )
+
+
   dir.create(output_results_dir, recursive = TRUE)
 
   # Load in the data
@@ -984,6 +982,7 @@ figure_3 <- function(df_list,
     ~ arrow::read_parquet(.x, as_data_frame = TRUE) |>
       dplyr::filter(year == date)
   )
+
 
   # Summarise by Country and produce a total value
   data$livestock_outputs <- data$livestock_values |>
@@ -1090,11 +1089,11 @@ figure_3 <- function(df_list,
       )
     )
 
-  p <- ggplot(data = world) +
-    geom_sf(fill = "#808080", color = "#D5E4EB") +
-    geom_sf(data = world_value, aes(fill = value_bins), color = "#D5E4EB") +
-    coord_sf(ylim = c(-55, 78)) +
-    scale_fill_manual(
+  p <- ggplot2::ggplot(data = world) +
+    ggplot2::geom_sf(fill = "#808080", color = "#D5E4EB") +
+    ggplot2::geom_sf(data = world_value, aes(fill = value_bins), color = "#D5E4EB") +
+    ggplot2::coord_sf(ylim = c(-55, 78)) +
+    ggplot2::scale_fill_manual(
       values = rev(list(
         "NA" = "#808080",
         "&gt; 100B" = "#225EA8",
@@ -1103,14 +1102,14 @@ figure_3 <- function(df_list,
         "&lt;10B" = "#FFFFCC"
       ))
     ) +
-    labs(
+    ggplot2::labs(
       title = "",
       fill = "Int ($)",
       subtitle = "",
       caption = ""
     ) +
-    guides(fill = guide_legend(nrow = 1)) +
-    theme(
+    ggplot2::guides(fill = guide_legend(nrow = 1)) +
+    ggplot2::theme(
       legend.position = "bottom",
       axis.text.x = element_blank(),
       axis.ticks.x = element_blank(),
@@ -1158,7 +1157,8 @@ figure_3 <- function(df_list,
   # Send data to results
   data |>
     readr::write_csv(
-      file = file.path(output_results_dir, "tev_data_ppp_per_capita.csv")
+      file = file.path(output_results_dir,
+                       "tev_data_ppp_per_capita.csv")
     )
 
 
@@ -1186,7 +1186,9 @@ figure_3 <- function(df_list,
 
   p1 <- ggplot(data = world) +
     geom_sf(fill = "#808080", color = "#D5E4EB") +
-    geom_sf(data = world_value, aes(fill = value_bins), color = "#D5E4EB") +
+    geom_sf(data = world_value,
+            aes(fill = value_bins),
+            color = "#D5E4EB") +
     coord_sf(ylim = c(-55, 78)) +
     scale_fill_manual(
       values = rev(list(
@@ -1278,7 +1280,8 @@ figure_3 <- function(df_list,
   # Remove the temporary output directory
   unlink(output_results_dir, recursive = TRUE)
 }
-df_list <- config$data$output[c("crop_values", "aquaculture_values", "livestock_values", "ppp_conversion")]
+df_list <- config$data$output[c("crop_values", "aquaculture_values",
+                                "livestock_values", "ppp_conversion")]
 figure_3(df_list,
   population_file = config$data$processed$tables$population,
   use_pdf = FALSE
@@ -1289,7 +1292,7 @@ figure_3(df_list,
   use_pdf = TRUE
 )
 
-# -------------------------------------------------------------------------
+# Figure 4 ----------------------------------------------------------------
 
 
 #' Figure 4 - Livestock Productivity vs GDP per capita
@@ -1593,6 +1596,12 @@ if (args$figure == 4) {
 }
 
 
+
+
+# Figure 5 ----------------------------------------------------------------
+
+
+
 #' Figure 5
 #' Livestock Productivity vs GDP Per Capita split by animal types
 #'
@@ -1859,6 +1868,9 @@ if (args$figure == 5) {
 }
 
 
+# Figure 6 ----------------------------------------------------------------
+
+
 
 ## Figure 6 - Asset value change per annum (2005-2018)
 figure_6 <- function(df_file,
@@ -2090,6 +2102,11 @@ if (args$figure == 6) {
     use_pdf = FALSE
   )
 }
+
+
+# Figure 7 ----------------------------------------------------------------
+
+
 
 
 ## Figure 7 - Average annual change in livestock and Aquaculture
@@ -2351,7 +2368,9 @@ if (args$figure == 7) {
 }
 
 
-# Appendix:
+
+# Appendix A1 -------------------------------------------------------------
+
 
 ## Figure A.1 Pie Chart of Asset + Output Values (2018)
 figure_a1 <- function(df_list, date = 2018, use_pdf = TRUE) {
@@ -2538,6 +2557,11 @@ if (args$figure == "a1") {
   figure_a1(df_list = df_list)
   figure_a1(df_list = df_list, use_pdf = FALSE)
 }
+
+
+
+
+# Appendix A2 -------------------------------------------------------------
 
 
 
@@ -2833,7 +2857,6 @@ figure_a4 <- function(df_file,
 
 
 
-# ---------------------------------------------------------------------------------------------
 
 
 figure_a4(

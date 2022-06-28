@@ -58,6 +58,8 @@ if __name__ == '__main__':
 
 	df_full = pd.concat(dfs)
 
+	df_full['biomass'] = df_full['biomass'].astype(int)
+
 	# Create outfile name 
 	now = datetime.datetime.now()
 	outfile = "%s/%s_biomass_liveWeight_%s.csv" % (outpath, now.strftime("%Y%m%d"), data_source)

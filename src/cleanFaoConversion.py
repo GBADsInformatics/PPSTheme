@@ -128,8 +128,8 @@ if __name__ == '__main__':
 	# Make df species title case
 	con_table["species"] = con_table["species"].str.title()
 
-	# Convert grams to kg for chickens, rabbits, and turkeys (divide by 1000)
-	for i in ['Chickens', 'Rabbits', 'Turkeys']:
+	# Convert grams to kg for chickens, rabbits, ducks, geese, and turkeys (divide by 1000)
+	for i in ['Chickens', 'Rabbits', 'Turkeys', 'Ducks', 'Geese']:
 		con_table.loc[con_table["species"] == i, "live_weight"] = con_table.loc[con_table["species"] == i, "live_weight"].divide(1000)
 
 	# Save to outfile

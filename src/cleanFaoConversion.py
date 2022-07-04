@@ -145,6 +145,9 @@ if __name__ == '__main__':
 	# Remove China, Hong Kong SAR to avoid double counting
 	con_table = con_table[con_table["country"].str.contains("China, Hong Kong SAR")==False]
 
+	# Drop remaining unneeded columns
+	con_table = con_table.drop(columns=['animal'])
+
 	# Save to outfile
 	con_table.to_csv(outfile, index = False)
 	 

@@ -51,7 +51,7 @@ if __name__ == '__main__':
 
 	# Create name for output file
 	now = datetime.datetime.now()
-	outfile = "%s_liveWeightFAO_cleaned.csv" % (now.strftime("%Y%m%d"))
+	outfile = "%s_weightsFAO_cleaned.csv" % (now.strftime("%Y%m%d"))
 
 	all_countries = GBADsAPI.make_call('http://gbadske.org:9000/GBADsLivestockPopulation/faostat?year=1996&country=*&species=*&format=file')
 	df = pd.DataFrame(all_countries) 
@@ -66,7 +66,7 @@ if __name__ == '__main__':
 
 	# First wrangle conversion table: 
 	con_table.rename(columns={'country_name': 'country', 'animal_en': 'species'}, inplace = True)
-	con_table = con_table.drop(columns=['animal', 'carcass_weight', 'carcass_pct', 'iso3'])
+	con_table = con_table.drop(columns=['animal', 'carcass_pct', 'iso3'])
 
 	# Dictionary of mappings
 	country_mappings = {
@@ -75,6 +75,7 @@ if __name__ == '__main__':
 		"Tanzania": "United Republic of Tanzania",
 		"Congo - Kinshasa": "Democratic Republic of the Congo",
 		"Antigua & Barbuda": "Antigua and Barbuda",
+		"China": "China, mainland",
 		"St. Kitts & Nevis": "Saint Kitts and Nevis",
 		"St. Vincent & Grenadines": "Saint Vincent and the Grenadines",
 		"Bosnia & Herzegovina": "Bosnia and Herzegovina",
@@ -96,7 +97,6 @@ if __name__ == '__main__':
 		"Myanmar (Burma)": "Myanmar",
 		"United Kingdom": "United Kingdom of Great Britain and Northern Ireland",
 		"Belgium": "Belgium-Luxembourg",
-		"American Samoa": "Samoa",	
 		"Boliva": "Bolivia (Plurinational State of)",
 		"North Korea": "Democratic People's Republic of Korea"
 	}
@@ -131,8 +131,14 @@ if __name__ == '__main__':
 	# Convert grams to kg for chickens, rabbits, ducks, geese, and turkeys (divide by 1000)
 	for i in ['Chickens', 'Rabbits', 'Turkeys', 'Ducks', 'Geese']:
 		con_table.loc[con_table["species"] == i, "live_weight"] = con_table.loc[con_table["species"] == i, "live_weight"].divide(1000)
+		con_table.loc[con_table["species"] == i, "carcass_weight"] = con_table.loc[con_table["species"] == i, "carcass_weight"].divide(1000)
+
+	
+	# Remove China, Hong Kong SAR to avoid double counting
+	con_table.reset_index(level=0, inplace=True)
+
+	con_table = con_table[con_table["country"].str.contains("China, Hong Kong SAR")==False]
 
 	# Save to outfile
-	con_table.reset_index(level=0, inplace=True)
 	con_table.to_csv(outfile, index = False)
 	 

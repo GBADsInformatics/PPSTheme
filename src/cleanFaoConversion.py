@@ -66,7 +66,7 @@ if __name__ == '__main__':
 
 	# First wrangle conversion table: 
 	con_table.rename(columns={'country_name': 'country', 'animal_en': 'species'}, inplace = True)
-	con_table = con_table.drop(columns=['animal', 'carcass_pct', 'iso3'])
+	con_table = con_table.drop(columns=['carcass_pct', 'iso3'])
 
 	# Dictionary of mappings
 	country_mappings = {
@@ -132,11 +132,17 @@ if __name__ == '__main__':
 	for i in ['Chickens', 'Rabbits', 'Turkeys', 'Ducks', 'Geese']:
 		con_table.loc[con_table["species"] == i, "live_weight"] = con_table.loc[con_table["species"] == i, "live_weight"].divide(1000)
 		con_table.loc[con_table["species"] == i, "carcass_weight"] = con_table.loc[con_table["species"] == i, "carcass_weight"].divide(1000)
-
 	
-	# Remove China, Hong Kong SAR to avoid double counting
 	con_table.reset_index(level=0, inplace=True)
 
+	# Remove double-counting of Guinea 
+	rm_animal_guinea = ["ganado vacuno", "ovinos", "caprinos", "cerdos", "gallinas"]  
+
+	for i in rm_animal_guinea: 
+		index = con_table.index[ (con_table['country'] == 'Guinea') & (con_table['animal'] == i)].tolist()
+		con_table = con_table.drop(index)
+
+	# Remove China, Hong Kong SAR to avoid double counting
 	con_table = con_table[con_table["country"].str.contains("China, Hong Kong SAR")==False]
 
 	# Save to outfile

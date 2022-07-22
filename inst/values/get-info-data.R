@@ -38,7 +38,7 @@ renv::activate(".")
 
 # Config ------------------------------------------------------------------
 
-config <- config::get(file = Sys.getenv("CONFIG"))
+config <- config::get()
 
 
 
@@ -167,11 +167,9 @@ output_df <- dplyr::bind_rows(
 )
 
 # Quick check:
-aggregate(value ~ year + type, data = output_df, FUN=summary)
+aggregate(value ~ year + type, data = output_df, FUN = summary)
 
 # Write to file
 
 output_df |>
   arrow::write_parquet(config$data$output$informatics)
-
-

@@ -41,7 +41,7 @@ renv::activate(project = ".")
 
 # Import Configuration Files ----------------------------------------------
 
-config <- config::get(file = file.path("conf", "config.yml"))
+config <- config::get( )
 
 
 # Import PPP Conversion Data ----------------------------------------------

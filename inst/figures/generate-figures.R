@@ -80,14 +80,17 @@ args <- parser$parse_args()
 loginfo(args$figure)
 
 # Import output files -----------------------------------------------------
-config <- config::get(file = here::here("conf", "config.yml"))
+
+config <- config::get(  )
 
 # Nature Food Figure Specification
+
 figure_spec <- config$figure_specification$nature_food
 
 
 
 # Plotting Helper Functions -----------------------------------------------
+
 scale_trill <- function(x) {
   scales::dollar(x,
     accuracy = 1,

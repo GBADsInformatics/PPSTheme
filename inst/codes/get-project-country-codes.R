@@ -48,7 +48,7 @@ logging::basicConfig()
 
 # Load Configuration ------------------------------------------------------
 
-config <- config::get(file = file.path("conf", "config.yml"))
+config <- config::get()
 
 
 

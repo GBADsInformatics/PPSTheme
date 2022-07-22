@@ -33,7 +33,7 @@ logging::basicConfig()
 
 
 # Project Configurations --------------------------------------------------
-config <- config::get(file = here::here('conf', 'config.yml'))
+config <- config::get()
 
 
 # Parse Command Line Arguments for different data sources -----------------

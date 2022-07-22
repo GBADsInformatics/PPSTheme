@@ -1,2 +1,2 @@
 # Set the config location
-CONFIG=conf/config.yml
+R_CONFIG_FILE=conf/config.yml

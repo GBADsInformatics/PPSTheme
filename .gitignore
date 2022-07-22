@@ -19,3 +19,6 @@ renv/**/*
 
 # Directories that can be ignored
 docs/reports/*
+
+# Any binary word doc files
+*.docx

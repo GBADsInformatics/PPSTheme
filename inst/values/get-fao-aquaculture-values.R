@@ -113,7 +113,7 @@ source(here::here("R", "FAOSTAT_helper_functions.R"))
 
 # Config ------------------------------------------------------------------
 loginfo("Parsing configurations")
-config <- config::get(file = file.path("conf", "config.yml"))
+config <- config::get( )
 
 
 ## 1 - Parameters ------------------------------#

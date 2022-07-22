@@ -10,7 +10,7 @@
 
 # Configuration -----------------------------------------------------------
 
-config <- config::get(file = here::here("conf", "config.yml"))
+config <- config::get(  )
 
 library(dplyr)
 

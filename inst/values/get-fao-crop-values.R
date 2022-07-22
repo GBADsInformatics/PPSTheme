@@ -32,7 +32,7 @@ sapply(pks, require, character.only = TRUE, quietly = TRUE)
 basicConfig()
 
 # Config ------------------------------------------------------------------
-config <- config::get(file = file.path("conf", "config.yml"))
+config <- config::get( )
 
 
 # Source Helper Functions -------------------------------------------------

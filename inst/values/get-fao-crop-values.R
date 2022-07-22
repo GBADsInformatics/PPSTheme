@@ -22,21 +22,25 @@
 renv::activate(project = ".")
 
 ## 0 - Libraries  ------------------------------#
-pks <- c(
-  "here", "purrr", "dplyr", "tidyr",
-  "arrow", "janitor", "stringr",
-  "logging"
-)
-sapply(pks, require, character.only = TRUE, quietly = TRUE)
+suppressPackageStartupMessages({
+  library(here)
+  library(purrr)
+  library(dplyr)
+  library(tidyr)
+  library(arrow)
+  library(janitor)
+  library(stringr)
+  library(logging)
+  library(LivestockValueGBADS)
+})
+
 
 basicConfig()
 
 # Config ------------------------------------------------------------------
-config <- config::get( )
+config <- config::get()
 
 
-# Source Helper Functions -------------------------------------------------
-source(here("R", "FAOSTAT_helper_functions.R"))
 
 
 

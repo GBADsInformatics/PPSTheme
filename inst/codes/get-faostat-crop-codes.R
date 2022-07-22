@@ -21,19 +21,19 @@
 
 
 ## 0 - Libraries  ------------------------------#
-pks <- c(
-  "here", "dplyr", "tidyr", "janitor"
-)
-sapply(pks, require, character.only = TRUE)
+suppressPackageStartupMessages({
+  library(here)
+  library(dplyr)
+  library(tidyr)
+  library(janitor)
+  library(LivestockValueGBADS)
+})
 
 
 
 # Config ------------------------------------------------------------------
 config <- config::get()
 
-
-# Source Helper Functions -------------------------------------------------
-source(here("R", "utils", "FAOSTAT_helper_functions.R"))
 
 
 

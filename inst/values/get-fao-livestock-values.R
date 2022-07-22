@@ -1,6 +1,7 @@
 #!/usr/bin/env Rscript  --vanilla
 
-# -------------------------------------------------------------------
+
+# Details -----------------------------------------------------------------
 #
 # Project: GBADS: Global Burden of Animal Disease
 #
@@ -65,41 +66,32 @@
 # first at a local regional level (region23) then
 # at a continent wide level, and finally at a global level.
 #
-# -------------------------------------------------------------------
-
-
-
 # Activate Project --------------------------------------------------------
+
 renv::activate(project = ".")
-devtools::load_all()
 
 
 # Libraries ---------------------------------------------------------------
-pks <- c(
-  "dplyr",
-  "tidyr",
-  "stringr",
-  "janitor",
-  "logging"
-)
 
+suppressPackageStartupMessages({
+  library(dplyr)
+  library(tidyr)
+  library(stringr)
+  library(janitor)
+  library(logging)
+  library(LivestockValueGBADS)
+})
 
-# Load libraries
-sapply(pks, library, character.only = TRUE, quietly = TRUE)
 
 
 # Logging -----------------------------------------------------------------
 basicConfig()
 
-# Source Files  -----------------------------------------------------------
-
-library(LivestockValueGBADS)
-
 
 # Config ------------------------------------------------------------------
 
 logging::loginfo("Loading configuration file")
-config <- config::get(file = file.path("conf", "config.yml"))
+config <- config::get()
 
 
 
@@ -524,7 +516,7 @@ tapply(livestock$prices$producer_price_usd_tonne,
 # Create a list to match the items by FAOSTAT code for each table
 #
 # Stock Item Code is first  -> From QVL
-# Price Items second, - > From PP
+# Price Items second, - > From PP (Live Weights)
 # Yield Items third -> From QVL (Slaughtered)
 #
 #

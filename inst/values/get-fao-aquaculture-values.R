@@ -97,23 +97,27 @@
 renv::activate(project = ".")
 
 ## 0 - Libraries  ------------------------------#
-pkgs <- c(
-  "here", "tidyr", "readr",
-  "dplyr", "magrittr", "janitor", "logging",
-  "assertr"
-)
-sapply(pkgs, require, character.only = TRUE)
+suppressPackageStartupMessages({
+  library(here)
+  library(tidyr)
+  library(readr)
+  library(dplyr)
+  library(magrittr)
+  library(janitor)
+  library(logging)
+  library(assertr)
+  library(LivestockValueGBADS)
+})
+
 
 # Setup logging
 basicConfig()
 
-# Helper Functions --------------------------------------------------------
-source(here::here("R", "FAOSTAT_helper_functions.R"))
 
 
 # Config ------------------------------------------------------------------
 loginfo("Parsing configurations")
-config <- config::get( )
+config <- config::get()
 
 
 ## 1 - Parameters ------------------------------#

@@ -84,7 +84,7 @@ default:
                 items:
                     item_codes: data/codes/faostat/FAOSTAT_Item_Codes.Rds
                 country_codes:
-                    url: 'https://www.fao.org/faostat/en/?msclkid=c4309ab1b93811ec8eec4cb1f7647c9d#definitions'
+                    url: https://www.fao.org/faostat/en/?#definitions
                     raw_codes: data/codes/faostat/country_codes/faostat_country_codes_20220411.csv
                     output_codes: data/output/codes/faostat_iso3_country_codes.parquet
                 crops: data/codes/FAOSTAT/FAOSTAT-CPC_cropItemCodes.rds

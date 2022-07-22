@@ -4,9 +4,9 @@ output:
         github_document:
             toc: true 
 bibliography: references.bib
+csl: cambridge-university-press-numeric.csl
+link-citations: true
 nocite: '@*'
-csl: https://raw.githubusercontent.com/citation-style-language/styles/master/chicago-fullnote-bibliography.csl
-link-citations: yes
 suppress-bibliography: false
 html_preview: false
 ---
@@ -23,9 +23,12 @@ knitr::opts_chunk$set(
 ```
 
 ```{r echo=FALSE, results="hide", message=FALSE}
-library("badger")
-library(here)
-library(knitr)
+suppressPackageStartupMessages({
+  library(badger)
+  library(here)
+  library(knitr)
+  library(report)
+})
 ``` 
 
 ```{r, echo = FALSE, results='asis'}
@@ -39,45 +42,65 @@ cat(
 
 # Description
  
-This repository contains all `R` code and output data for the [*GBADS*](https://animalhealthmetrics.org/) Global Livestock 
-value estimation manuscript.  
-This manuscript attempts to produce an estimate of the total economic value 
-of farmed livestock and aquaculture based on [*FAOSTAT*](https://www.fao.org/faostat/en/) production data. 
+This repository contains all `R` code and output data for the
+[*GBADS*](https://animalhealthmetrics.org/) Global Livestock value estimation
+manuscript. This manuscript attempts to produce an estimate of the total
+economic value of farmed livestock and aquaculture based on
+[*FAOSTAT*](https://www.fao.org/faostat/en/) production data.
  
+
+# Installation 
+
+To install this package run the following code 
+
+```{r eval=FALSE}
+if (!require(remotes)) {
+  install.packages("remotes")
+}
+
+remotes::install_github(
+  repo = "GBADsInformatics/PPSTheme",
+  ref = "livestock-value"
+)
+```
+
+***Note:*** In the future the location of where this code is stored will no 
+doubt change. 
+
  
 # Repository Structure 
 
-This repository is structured similar to an R package, however, there are 
-minimal differences which make this package non-conforming to certain standards. 
+This repository is structured similar to an R package, however, there are
+minimal differences which make this package non-conforming to certain standards.
 
 ## Make
 
 The `R` directory contains any common functions which are used across the entire
-project. The `inst` directory contains `R` scripts which are intended to be 
-run via the GNU `Makefile` which specifies the required processes to build 
-each target. 
-Targets are run using the syntax 
+project. The `inst` directory contains `R` scripts which are intended to be run
+via the GNU `Makefile` which specifies the required processes to build each
+target. Targets are run using the syntax
 
-```
-$ make name-of-file-to-make
+```{bash, eval = FALSE}
+make name-of-file-to-make
 ```
 
-Project locations and directory structure are outlined in the project 
-configuration file `conf/config.yml`, in accessing these parameters in code 
- is managed by the `R` package `config`.
+Project locations and directory structure are outlined in the project
+configuration file `conf/config.yml`, in accessing these parameters in code is
+managed by the `R` package `config`. The location of the configuration file can
+be modified, however, if this is done, then one must also modify the environment
+variable `R_CONFIG_FILE` to match this new location.
  
-Environment and package management is done using `renv`, `renv.lock` specifies the 
-hashes for each package used.  Package imports are also listed in the 
-package `DESCRIPTION` file. 
+Environment and package management is done using `renv`, `renv.lock` specifies
+the hashes for each package used.  Package imports are also listed in the
+package `DESCRIPTION` file.
 
 ## Data 
 
-Currently the processed and output data is located in `data/processed/` and 
-`data/output`. Source data is located in `data/source` and is not 
-included in this repository due to its size. Data was originally 
-tracked using [***DVC***](https://dvc.org/) but has been removed due to 
-issues with the cloud storage configuration. 
-Output data is primarily stored in `parquet` files. 
+Currently the processed and output data is located in `data/processed/` and
+`data/output`. Source data is located in `data/source` and is not included in
+this repository due to its size. Data was originally tracked using
+[***DVC***](https://dvc.org/) but has been removed due to issues with the cloud
+storage configuration. Output data is primarily stored in `parquet` files.
 
 ## Figures and Tables 
 
@@ -91,17 +114,15 @@ FAOSTAT item codes and country codes are located in `data/codes`.
 
 *(Note: This is specified in the project configuration yaml file)*
 
-## Methods Documentation
+##  Documentation
 
-Draft supplementary methods documentation is located in the 
-package `vignettes` directory. It can be viewed once the 
-package has been installed. 
-
+[pkgdown](https://pkgdown.r-lib.org/) Documentation is available in the in the
+`docs/` directory and can be accessed locally.
  
  
 # Licence 
  
- This project is under a creative commons licence. 
+This project is under a creative commons licence.
 
 
 # R Package References

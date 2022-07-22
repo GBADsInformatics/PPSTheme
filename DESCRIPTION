@@ -2,10 +2,10 @@ Package: LivestockValueGBADS
 Title: Calculating the Total Economic Value of Livestock
 Version: 0.0.0.9000
 Authors@R: 
-    person("Gabriel", "Dennis", , "gabriel.dennis@csiro.au", role = c("aut", "cre"),
-           comment = c(ORCID = "YOUR-ORCID-ID"))
-    person("Peggy", "Schrobback", , "peggy.schroback@csiro.au", role = c("aut", "cre"),
-           comment = c(ORCID = "YOUR-ORCID-ID"))
+    c(person("Gabriel", "Dennis", , "gabriel.dennis@csiro.au", role = c("aut", "cre"),
+           comment = c(ORCID = "YOUR-ORCID-ID")), 
+    person("Peggy", "Schrobback", , "peggy.schroback@csiro.au", role = c("aut"),
+           comment = c(ORCID = "YOUR-ORCID-ID")))
 Description: The code in this packge attempts to calculate the total
     economic value of livestock for the GBADS (Global Burden of Animal
     Disease) program.

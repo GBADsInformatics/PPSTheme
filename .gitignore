@@ -9,7 +9,6 @@
 
 # Temporary data 
 *.zip
-*.html
 *.xlsx
 
 
@@ -18,7 +17,9 @@
 renv/**/*
 
 # Directories that can be ignored
-docs/reports/*
+report/*
+
+
 
 # Any binary word doc files
 *.docx

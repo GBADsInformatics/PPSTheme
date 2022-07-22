@@ -9,25 +9,35 @@ vignette: >
   %\VignetteIndexEntry{Documentation}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
+  
+bibliography: ../references.bib
+csl: "../cambridge-university-press-numeric.csl"
+link-citations: true
 ---
 
 ```{r, include = FALSE}
 knitr::opts_chunk$set(
   collapse = TRUE,
-  echo = FALSE, 
+  echo = FALSE,
   comment = "#>"
 )
 
-library(DiagrammeR)
+knitr::opts_knit$set(
+  root.dir = here::here(".")
+)
+
+suppressPackageStartupMessages({
+  library(DiagrammeR) # For the flow diagrams
+})
 ```
 
 
 ```{r}
-config <- config::get(file = here::here('conf', 'config.yml'))
+config <- config::get()
 
 print_table <- function(data, caption) {
-    data |> 
-    knitr::kable(caption = caption) |> 
+  data |>
+    knitr::kable(caption = caption) |>
     kableExtra::kable_styling(font_size = 8)
 }
 ```
@@ -35,6 +45,7 @@ print_table <- function(data, caption) {
 \newpage
 
 # Calculations 
+
 
 The following section details the process of obtaining both asset value and 
 output value estimates for terrestrial livestock and aquaculture. 
@@ -50,9 +61,9 @@ output value estimates for terrestrial livestock and aquaculture.
 ## Asset Value Calculation
 
 
-The following set of equations outlines the terms and calculations used to obtain 
-the livestock asset value for a single livestock animal type in a single country for one year 
-during the observational period.
+The following set of equations outlines the terms and calculations used to
+obtain the livestock asset value for a single livestock animal type in a single
+country for one year during the observational period.
 
 
 $$
@@ -70,8 +81,7 @@ during the observational period.
 
 
 ```{r, fig.cap="Livestock Asset Value Calculation Flow Diagram"}
-mermaid("graph TB;A[Number Livestock Slaughtered]-->C;B[Quanitity Livestock Slaughtered]-->C;C[Tonnes/Head = Carcass Yield] -->E;D[Carcass Percentage]-->E;E[Yield/Carcass Percentage = Average Live Body Weight]-->G;F[Liveweight Price Per Tonne]-->G;G[Liveweight Price Per Tonne/Average Live Body Weight = Price Per Live Animal]-->I;H[Livestock Population]-->I;I[Asset Value];"
-)
+mermaid("graph TB;A[Number Livestock Slaughtered]-->C;B[Quanitity Livestock Slaughtered]-->C;C[Tonnes/Head = Carcass Yield] -->E;D[Carcass Percentage]-->E;E[Yield/Carcass Percentage = Average Live Body Weight]-->G;F[Liveweight Price Per Tonne]-->G;G[Liveweight Price Per Tonne/Average Live Body Weight = Price Per Live Animal]-->I;H[Livestock Population]-->I;I[Asset Value];")
 ```
 
 \newpage
@@ -80,25 +90,26 @@ mermaid("graph TB;A[Number Livestock Slaughtered]-->C;B[Quanitity Livestock Slau
 
 ## Aquaculture
 
-The main unit that is used to subset the data is the custom grouping
-  - "Fish, crustaceans and molluscs, etc."
-which is what is used in the FAOSTAT yearbook.
-This subsets the species used to the main commercial products and excluded production figures for
-aquatic plants, pearls and mother-of-pearl.
-This subsetting and grouping  is outlined in the Global Aquaculture Production database
-metadata at `Aqua_E.html`, other notes on the data are also given in
- `NOTES_AQUACULTURE_COUNTRY_EN.html`.
+The main unit that is used to subset the data is the custom grouping 
+
+> "Fish, crustaceans and molluscs, etc.."
+
+which is what is used in the FAOSTAT yearbook. This subsets the species used to
+the main commercial products and excluded production figures for aquatic plants,
+pearls and mother-of-pearl. This subsetting and grouping  is outlined in the
+Global Aquaculture Production database metadata at `Aqua_E.html`, other notes on
+the data are also given in `NOTES_AQUACULTURE_COUNTRY_EN.html`[@FAO2021b].
  
- \newpage
+\newpage
  
  
 ## Crops 
 
-
+The following table shows the crop codes used [@FAO2021c]. 
 
 ```{r}
-readRDS(here::here('data', 'codes', 'faostat', 'FAOSTAT_CPC_cropItemCodes.Rds'))  |> 
-    print_table(caption = "FAOSTAT to CPC Crop Codes and Groupings") 
+readRDS(here::here("data", "codes", "faostat", "FAOSTAT_CPC_cropItemCodes.Rds")) |>
+  print_table(caption = "FAOSTAT to CPC Crop Codes and Groupings")
 ```
 
 \newpage
@@ -107,75 +118,101 @@ readRDS(here::here('data', 'codes', 'faostat', 'FAOSTAT_CPC_cropItemCodes.Rds'))
 
 
 
+## Value of Production
+
+The following table shows the FAOSTAT Value of Agricultural Production [@FAO2021] 
+item codes used. 
+
+- For this paper project only the `Non-Indigenous` value of production items 
+were used. 
 
 
 ```{r}
-readRDS(here::here(config$data$codes$faostat$dir, "FAOSTAT_VOP_Items_NonIndigenous_Codes.rds"))  |> 
-    print_table(caption = "FAOSTAT Value of Production Livestock Output Item Codes Used")
+readRDS(
+  here::here(config$data$codes$faostat$dir, "FAOSTAT_VOP_Items_NonIndigenous_Codes.rds")
+) |>
+  print_table(caption = "FAOSTAT Value of Production Livestock Output Item Codes Used")
 ```
 
 
 \newpage
 
+## Producer Prices Meat Live Weight
 
+The following table shows the "Meat, live weight <animal>" producer price 
+codes used in the FAOSTAT database. 
 
 
 ```{r}
-readRDS(here::here(config$data$codes$faostat$dir, "FAOSTAT_Meat_Live_Weight_Codes.rds"))  |> 
-    dplyr::distinct(`Item Code`, .keep_all = TRUE) |> 
-    print_table(caption = "FAOSTAT Producer Prices Live Weight Item Codes used")
+readRDS(here::here(config$data$codes$faostat$dir, "FAOSTAT_Meat_Live_Weight_Codes.rds")) |>
+  dplyr::distinct(`Item Code`, .keep_all = TRUE) |>
+  print_table(caption = "FAOSTAT Producer Prices Live Weight Item Codes used")
 ```
 
 \newpage
 
 
+## FAOSTAT Livestock Items 
+
+The following table displays the Livestock Species item codes which are 
+used in this analysis. These codes are used to produce the asset value for each 
+species. The number of species may of course differ for each country. 
+
 ```{r}
-readRDS(here::here(config$data$codes$faostat$dir, "FAOSTAT_Livestock_Codes.rds")) |> 
-    dplyr::filter(`Domain Code` == "QCL") |> 
-    dplyr::distinct(Item, .keep_all = TRUE) |> 
-    print_table(caption = "FAOSTAT Production and Livestock Products Livestock (Stock) Item Codes Used")
-    
+readRDS(
+  here::here(config$data$codes$faostat$dir, "FAOSTAT_Livestock_Codes.rds")
+) |>
+  dplyr::filter(`Domain Code` == "QCL") |>
+  dplyr::distinct(Item, .keep_all = TRUE) |>
+  print_table(
+    caption = "FAOSTAT Production and Livestock Products Livestock (Stock) Item Codes Used"
+  )
 ```
 
 
 
 
-## Countries 
+## Country ISO3 Codes 
 
-
+The following table shows the ISO3 codes for regions which are included in this
+analysis, including the years in which the code designation applies.
 
 ```{r}
-config <- config::get(file = here::here('conf', 'config.yml'))
 
-arrow::read_parquet(here::here(config$data$codes$faostat$country_codes$output_codes)) |> 
-    dplyr::select(country, m49_code, iso3_code, start_year, end_year) |> 
-    print_table(caption = "ISO3 Country Codes Included in this Analysis")
-
+arrow::read_parquet(here::here(config$data$codes$faostat$country_codes$output_codes)) |>
+  dplyr::select(country, m49_code, iso3_code, start_year, end_year) |>
+  print_table(caption = "ISO3 Country Codes Included in this Analysis")
 ```
 
 \newpage
 
 ## Technical Conversion Factors 
 
-Technical conversion factors for animal body weights are derived directly 
-from FAOSTAT production data, or using the values given in the in their 
-technical conversion factors documentation. 
-*(Note: There are inconsistencies in how different countries report body weights, 
-with some reporting only sold animals, and others the average 
-live body weight of their entire stock)*. 
+Technical conversion factors for animal body weights are derived directly from
+FAOSTAT production data, or using the values given in the in their technical
+conversion factors documentation [@faoTechnicalConversionFactors2012].
 
-In the cases where countries have missing values for different livestock types 
-these values have been imputed using the regional median value for each of the 
-live body weight, carcass weight and carcass percentage. 
+
+*Note: There are inconsistencies in how different countries report body weights,
+with some reporting only sold animals, and others the average live body weight
+of their entire stock. The carcass percentage also varies per animal depending
+on what value is included in the output FAOSTAT Commodity tree.*
+
+In the cases where countries have missing values for different livestock types
+these values have been imputed using the regional median value for each of the
+live body weight, carcass weight and carcass percentage.
 
 The following table shows these a glimpse at these values once they are 
 
 
 ```{r}
-arrow::read_parquet(here::here(config$data$output$technical_conversion_factors_imputed)) |> 
-    dplyr::glimpse()
+arrow::read_parquet(
+  here::here(config$data$output$technical_conversion_factors_imputed)
+) |>
+  dplyr::glimpse()
 ```
 
 
 
 
+# References

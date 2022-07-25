@@ -1,43 +1,10 @@
-################################################################
-#
-# Project: GBADS: Global Burden of Animal Disease
-#
-# Author: Gabriel Dennis
-#
-# Position: Research Technician, CSIRO
-#
-# Email: gabriel.dennis@csiro.au
-#
-# CSIRO ID: den173
-#
-# GitHub ID: denn173
-#
-# Date Last Edited:  20220131
-#
-# Description:  Contains a series of helper functions
-# to work with data downloaded from the FAOSTAT
-# API
-####################################
-
-
-## 0 - Libraries  ------------------------------#
-library(readr)
-library(arrow)
-library(rjson)
-library(janitor)
-library(FAOSTAT)
-library(dplyr)
-library(tidyr)
-
-
-
-##  - Function to print date string  ------------------------------#
 #' iso_date
 #'
 #' @return returns data in YYYYMMDD format
-#' @example iso_date()
-#` @export
-#`
+#' @export
+#'
+#' @examples
+#' iso_date()
 iso_date <- function() {
   format(Sys.Date(), format = "%Y%m%d")
 }
@@ -58,7 +25,6 @@ file_name <- function(source, tags,
 
 
 
-##  - Function to find latest GBADS file  ------------------------------#
 
 #' get_gbads_file
 #'
@@ -83,8 +49,13 @@ get_gbads_file <- function(str, dir) {
 #'
 #' @param dataset_codes character vector of dataset codes
 #' @param metadata_json location of the metadata json
-#'
 #' @return list of dataset metadata
+#' @export
+#'
+#' @examples
+#'
+#' get_fao_metadata("QCL")
+#'
 get_fao_metadata <- function(dataset_codes,
                              metadata_json = Sys.glob(
                                here::here(
@@ -96,16 +67,17 @@ get_fao_metadata <- function(dataset_codes,
   metadata <- rjson::fromJSON(file = metadata_json)
 
   # Filter through and extract dataset codes
-  metadata <- metadata$Datasets$Dataset %>% purrr::discard(~ !(.x$DatasetCode %in% dataset_codes))
+  metadata <- metadata$Datasets$Dataset %>%
+    purrr::discard(~ !(.x$DatasetCode %in% dataset_codes))
+
   names(metadata) <- purrr::map(metadata, ~ .x$DatasetCode)
   return(metadata)
 }
 
 
-# - Cleans FAOSTAT countries -------------------------------------------------------------------
 #' clean_countries
 #'
-#' Cleans the countries imported from faostat by removing multiple versions
+#' Cleans the countries imported from FAOSTAT by removing multiple versions
 #' of China for any one year and removing countries which invalid ISO3 codes
 #'
 #' @param df a dataframe containing the correct columns
@@ -116,7 +88,6 @@ get_fao_metadata <- function(dataset_codes,
 #' @return dataframe with double counted and missing values removed
 #' @export
 #'
-#' @examples
 clean_countries <- function(df,
                             code_col = "area_code",
                             year_col = "year",
@@ -137,15 +108,16 @@ clean_countries <- function(df,
     dplyr::left_join(countries, by = "FAOST_CODE") %>%
     tidyr::drop_na(ISO3_CODE) %>% # Remove countries without valid ISO3_CODES according to FAO
     dplyr::mutate(
-      area = plyr::mapvalues(area, c("China, mainland"),
-                             c("China"))
+      area = plyr::mapvalues(
+        area, c("China, mainland"),
+        c("China")
+      )
     ) %>%
     dplyr::relocate(ISO3_CODE, .before = everything()) %>%
     janitor::clean_names()
 }
 
 
-##  - Sanitize character columns if necessary ------------------------------#
 #' sanitize_columns
 #'
 #' this function sanitizes character columns by removing unusual characters
@@ -161,11 +133,10 @@ clean_countries <- function(df,
 #' sanitize_columns(data.frame(a = "a"))
 sanitize_columns <- function(df, exclude = c("iso3_code")) {
   character_cols <- sapply(df, class)
-  character_cols <- names(character_cols)[character_cols == 'character']
+  character_cols <- names(character_cols)[character_cols == "character"]
   df |>
     dplyr::mutate_at(
       setdiff(character_cols, exclude),
       ~ snakecase::to_any_case(stringi::stri_enc_toascii(.x))
     )
 }
-

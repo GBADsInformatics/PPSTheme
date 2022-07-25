@@ -38,7 +38,7 @@ config <- config::get()
 print_table <- function(data, caption) {
   data |>
     knitr::kable(caption = caption) |>
-    kableExtra::kable_styling(font_size = 8)
+    kableExtra::kable_styling(font_size = 6)
 }
 ```
 
@@ -81,11 +81,86 @@ during the observational period.
 
 
 ```{r, fig.cap="Livestock Asset Value Calculation Flow Diagram"}
-mermaid("graph TB;A[Number Livestock Slaughtered]-->C;B[Quanitity Livestock Slaughtered]-->C;C[Tonnes/Head = Carcass Yield] -->E;D[Carcass Percentage]-->E;E[Yield/Carcass Percentage = Average Live Body Weight]-->G;F[Liveweight Price Per Tonne]-->G;G[Liveweight Price Per Tonne/Average Live Body Weight = Price Per Live Animal]-->I;H[Livestock Population]-->I;I[Asset Value];")
+mermaid("graph TB;
+        A[Number Livestock Slaughtered]-->C;
+        B[Quanitity Livestock Slaughtered]-->C;
+        C[Tonnes/Head = Carcass Yield] -->E;
+        D[Carcass Percentage]-->E;
+        E[Yield/Carcass Percentage = Average Live Body Weight]-->G;
+        F[Liveweight Price Per Tonne]-->G;
+        G[Liveweight Price Per Tonne/Average Live Body Weight = Price Per Live Animal]-->I;
+        H[Livestock Population]-->I;
+        I[Asset Value];
+        ")
 ```
 
 \newpage
 
+## Constant $2014-2016$ USD Calculations 
+
+To convert currencies into constant $2014-2016$ USD the following procedure is used. 
+
+1. Obtain the weighted mean price for each commodity in Local Currency units
+for the base period of $2014-2016$. Where the weights applied to each of these
+prices are the annual production value when being used to calculate livestock or
+Aquaculture outputs in constant USD, or a countries amount of stock when being
+used to calculate asset values. In the case where a price is missing for one of
+these three years, the remaining available years are used without imputation of
+an additional value.
+
+2. Determine the weighted average annual exchange rate to *USD* from *LCU*  
+using the same weighting scheme as mentioned in the previous point. 
+
+3. Convert the $2014-2016$ Weighted average prices in Local Currency Units to 
+*USD* using the weighted average exchange rate derived in the previous step. 
+
+The flow of this calculation is outlined in the following figure  
+
+```{r constant-usd-figure, fig.cap="Constant 2014-2016 USD Calculation Flow Diagram"}
+mermaid("graph LR;
+        A[2014-2016 Commodity Producer Price  in LCU]-->C;
+        B[Livestock Commodity Quantity/Livestock Head]-->C;
+        C[Weighted mean 2014-2016 Producer Price in SLC] -->E;
+        D[LCU to USD 2014-2016 Average Annual Exchange Rate] -->G;
+        F[Livestock Commodity Quantity/Livestock Head]-->G;
+        G[Weighted Average Annual LCU to USD 2014-2016 Exchange Rate]-->E;
+        E[Constant 2014-2016 USD Value per Tonne]
+")
+```
+
+
+Or to show this in a more mathematical manner, let
+$\mathbb{Y} = \{2014, 2015, 2016\}$ be the base years used in the constant dollars 
+calculation.
+
+If we then let 
+
+$$
+x_i ,  \ i \in \mathbb{Y}
+$$
+
+be the number of livestock or quantity of livestock output produced in the base
+period and $P_i,   \ i \in \mathbb{Y}$ be the *Producer Price* in standard local
+currency in that year and $E_i \ i \in \mathbb{Y}$ be the mean average local
+currency unit to USD  exchange rate as reported by the World Bank *PA.NUS.ATLS*
+or *PA.NUS.FCRF*.
+
+The value in constant *USD* is then 
+
+$$
+\Bigg( \sum_{i \in \mathbb{Y}} P_ix_i \Bigg) \Bigg(\sum_{i \in \mathbb{Y}}x_iE_i
+\Bigg) = \text{Constant 2014-2016 USD Value Per Tonne}
+$$
+
+
+This procedure was used to match the process used by the FAO in creating the
+Producer Price Index for each commodity item. A link to the document in which
+this procedure in described is available
+[here](https://fenixservices.fao.org/faostat/static/documents/PP/PP_e.pdf)
+(Valid Link as of 25-07-2022).
+
+\newpage
+ 
 # Codes 
 
 ## Aquaculture
@@ -177,12 +252,21 @@ readRDS(
 The following table shows the ISO3 codes for regions which are included in this
 analysis, including the years in which the code designation applies.
 
+
 ```{r}
 
 arrow::read_parquet(here::here(config$data$codes$faostat$country_codes$output_codes)) |>
   dplyr::select(country, m49_code, iso3_code, start_year, end_year) |>
   print_table(caption = "ISO3 Country Codes Included in this Analysis")
 ```
+
+
+These codes are sourced directly from the following location 
+
+```{r, results='asis'}
+config$data$codes$faostat$country_codes$url
+```
+
 
 \newpage
 

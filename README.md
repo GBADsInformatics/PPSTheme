@@ -37,7 +37,7 @@ if (!require(remotes)) {
 }
 
 remotes::install_github(
-  repo = "GBADsInformatics/PPSTheme/",
+  repo = "GBADsInformatics/PPSTheme",
   ref = "livestock-value"
 )
 ```
@@ -64,7 +64,10 @@ make name-of-file-to-make
 
 Project locations and directory structure are outlined in the project
 configuration file `conf/config.yml`, in accessing these parameters in
-code is managed by the `R` package `config`.
+code is managed by the `R` package `config`. The location of the
+configuration file can be modified, however, if this is done, then one
+must also modify the environment variable `R_CONFIG_FILE` to match this
+new location.
 
 Environment and package management is done using `renv`, `renv.lock`
 specifies the hashes for each package used. Package imports are also

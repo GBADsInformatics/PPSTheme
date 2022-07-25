@@ -54,6 +54,7 @@ economic value of farmed livestock and aquaculture based on
 To install this package run the following code 
 
 ```{r eval=FALSE}
+
 if (!require(remotes)) {
   install.packages("remotes")
 }
@@ -73,7 +74,9 @@ doubt change.
 This repository is structured similar to an R package, however, there are
 minimal differences which make this package non-conforming to certain standards.
 
+
 ## Make
+
 
 The `R` directory contains any common functions which are used across the entire
 project. The `inst` directory contains `R` scripts which are intended to be run
@@ -130,7 +133,7 @@ This project is under a creative commons licence.
 ```{r, echo=FALSE, include=FALSE, message=FALSE, error=FALSE, warning=FALSE}
 # Attach all packages in lockfile
 sapply(unique(renv::dependencies()$Package),
-  require,
+  library,
   character.only = TRUE
 )
 ```

@@ -15,6 +15,9 @@ if __name__ == '__main__':
 	elif sys.argv[2] != 'oie' and sys.argv[2] != 'faostat':
 		sys.exit('Please provide valid data source: faostat or oie')
 	else: 
+	# file = path to liveweights file 
+	# data_source = either oie or faostat 
+	# outpath = where to put data 
 		file = sys.argv[1]
 		data_source = sys.argv[2]
 		outpath = sys.argv[3]
@@ -58,7 +61,11 @@ if __name__ == '__main__':
 
 	df_full = pd.concat(dfs)
 
+	# Fix data types 
 	df_full['biomass'] = df_full['biomass'].astype(int)
+
+	# Remove carcass weight field
+	df_full = df_full.drop(['carcass_weight'], axis=1)
 
 	# Create outfile name 
 	now = datetime.datetime.now()

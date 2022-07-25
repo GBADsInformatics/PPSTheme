@@ -45,7 +45,7 @@ if __name__ == '__main__':
 	else: 
 		file = sys.argv[1]
 	try:
-		con_table = pd.read_csv(file, encoding='utf8')
+		con_table = pd.read_csv(file, encoding='utf-8-sig')
 	except: 
 		sys.exit('Please provide valid file.')
 
@@ -71,7 +71,7 @@ if __name__ == '__main__':
 	# Dictionary of mappings
 	country_mappings = {
 		"Congo - Brazzaville": "Congo",
-		"CÙte díIvoire": "Cte d'Ivoire",
+		"CÙte díIvoire": "Côte d'Ivoire",
 		"Tanzania": "United Republic of Tanzania",
 		"Congo - Kinshasa": "Democratic Republic of the Congo",
 		"Antigua & Barbuda": "Antigua and Barbuda",
@@ -118,6 +118,8 @@ if __name__ == '__main__':
 		else: 
 			match.append(i)
 
+	print(no_match)
+
 	# Remove all non-matches from the conversion table dataframe 
 	con_table = con_table.set_index('country')
 
@@ -148,6 +150,9 @@ if __name__ == '__main__':
 	# Drop remaining unneeded columns
 	con_table = con_table.drop(columns=['animal'])
 
+	con_table = con_table.sort_values(by='country')
+
+
 	# Save to outfile
-	con_table.to_csv(outfile, index = False)
+	con_table.to_csv(outfile, index = False, encoding='utf-8-sig')
 	 

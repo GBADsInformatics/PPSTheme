@@ -16,23 +16,28 @@ default:
                     url: 'https://fenixservices.fao.org/faostat/static/bulkdownloads/Production_Crops_Livestock_E_All_Data_(Normalized).zip'
                     dir: data/source/faostat/crops_and_livestock_products
                     type: 'zip'
+                    last_download: 20220321
                 value_of_production:
                     url: 'https://fenixservices.fao.org/faostat/static/bulkdownloads/Value_of_Production_E_All_Data_(Normalized).zip'
                     dir: data/source/faostat/value_of_production
                     type: 'zip'
+                    last_download: 20220321
                 producer_prices:
                     url: 'https://fenixservices.fao.org/faostat/static/bulkdownloads/Prices_E_All_Data_(Normalized).zip'
                     dir: data/source/faostat/producer_prices
                     type: 'zip'
+                    last_download: 20220321
                 global_aquaculture_production:
                     url: 'https://www.fao.org/fishery/static/Data/Aquaculture_2021.1.2.zip'
                     dir: data/source/faostat/global_aquculture_production
                     type: 'zip'
+                    last_download: 20220412
                 # Purchasing power parity to International (USD) $
                 ppp_conversion:
                     url: 'https://api.worldbank.org/v2/country/all/indicator/PA.NUS.PPP?downloadformat=csv'
                     dir: data/source/world_bank/ppp_conversion
                     type: 'zip'
+                    last_download: 20220408
                 # Annual USD Conversion to LCU
                 # Note: This is the weighted average conversion rate
                 # which will give a better idea about the current situation
@@ -40,15 +45,18 @@ default:
                     url: 'https://api.worldbank.org/v2/country/all/indicator/PA.NUS.ATLS?downloadformat=csv'
                     dir: data/source/world_bank/lcu_conversion
                     type: 'zip'
+                    last_download: 20220411
                 lcu_conversion_official:
                     url: 'https://api.worldbank.org/v2/country/all/indicator/PA.NUS.FCRF?downloadformat=csv'
                     dir: data/source/world_bank/lcu_conversion_official
                     type: 'zip'
+                    last_download: 20220411
                 # Global population
                 population:
                     url: 'https://api.worldbank.org/v2/country/all/indicator/SP.POP.TOTL?downloadformat=csv'
                     dir: data/source/world_bank/population
                     type: 'zip'
+                    last_download: 20220324
                 gdp_per_capita_ppp:
                     url:   'https://api.worldbank.org/v2/country/all/indicator/NY.GDP.PCAP.PP.CD?downloadformat=csv'
                     dir: data/source/world_bank/gdp_per_capita_ppp
@@ -58,12 +66,11 @@ default:
                     dir: data/source/world_bank/income_classification_history
                     file_name: OGHIST.xlsx
                     type: 'xlsx'
+                    last_download: 20220324
                 surface_area_sqkm:
                     url: 'https://api.worldbank.org/v2/country/all/indicator/AG.SRF.TOTL.K2?downloadformat=csv'
-
                     dir: data/source/world_bank/surface_area_sqkm/
                     type: 'zip'
-
         processed:
             # Processed data directory locations
             faostat: data/processedfaostat/

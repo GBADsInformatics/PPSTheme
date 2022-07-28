@@ -64,6 +64,8 @@ remotes::install_github(
   ref = "livestock-value"
 )
 ```
+although the base package is currently named `LivestockValueGBADS`.
+
 
 ***Note:*** In the future the location of where this code is stored will no 
 doubt change. 
@@ -74,9 +76,7 @@ doubt change.
 This repository is structured similar to an R package, however, there are
 minimal differences which make this package non-conforming to certain standards.
 
-
 ## Make
-
 
 The `R` directory contains any common functions which are used across the entire
 project. The `inst` directory contains `R` scripts which are intended to be run
@@ -86,6 +86,12 @@ target. Targets are run using the syntax
 ```{bash, eval = FALSE}
 make name-of-file-to-make
 ```
+
+Currently, not all the dependencies for the targets which download data are
+specified in subsequent targets, due to some side effects of the download
+process,  however, all files in the `data/processed` and `data/output`
+directories should be targets which can be recreated by the project  `Makefile`. 
+
 
 Project locations and directory structure are outlined in the project
 configuration file `conf/config.yml`, in accessing these parameters in code is
@@ -99,11 +105,18 @@ package `DESCRIPTION` file.
 
 ## Data 
 
+
 Currently the processed and output data is located in `data/processed/` and
 `data/output`. Source data is located in `data/source` and is not included in
 this repository due to its size. Data was originally tracked using
 [***DVC***](https://dvc.org/) but has been removed due to issues with the cloud
-storage configuration. Output data is primarily stored in `parquet` files.
+storage configuration. The versions of the source data which was downloaded for
+this project is backed up on a internal *CSIRO* cloud storage platform.
+
+
+Output data is primarily stored in `parquet` files in the `data/output` directory.
+
+*(Note: These locations are specified in the project configuration yaml file)*
 
 ## Figures and Tables 
 

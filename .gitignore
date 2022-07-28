@@ -19,7 +19,9 @@ renv/**/*
 # Directories that can be ignored
 report/*
 
-
+# Ignore source data
+# This data is backed up locally on CSIRO Bowen Storage 
+data/source/*
 
 # Any binary word doc files
 *.docx

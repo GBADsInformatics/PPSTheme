@@ -4,6 +4,7 @@
 R_DIR=R/
 SCRIPT_DIR=inst/
 SOURCE_DATA_DIR=data/source/
+METADATA_DIR=data/metadata
 PROCESSED_DATA_DIR=data/processed/
 OUTPUT_DATA_DIR=data/output/
 FIGURE_DIR=output/figures/
@@ -103,6 +104,11 @@ $(OUTPUT_DATA_DIR)faostat/faostat_crop_values.parquet:
 # Initial Data for the Informatics Dashboard
 $(OUTPUT_DATA_DIR)informatics/20220603_informatics_tev_data.parquet:
 	Rscript --vanilla $(SCRIPT_DIR)/values/get-info-data.R
+
+
+# Generate metadata in the GBADS format for all files
+$(METADATA_DIR):
+	Rscript  $(SCRIPT_DIR)/metadata/get-gbads-metadata.R
 
 
 #--------------------------------------

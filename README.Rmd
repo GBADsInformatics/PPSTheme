@@ -114,9 +114,17 @@ storage configuration. The versions of the source data which was downloaded for
 this project is backed up on a internal *CSIRO* cloud storage platform.
 
 
-Output data is primarily stored in `parquet` files in the `data/output` directory.
+Output data is primarily stored in `parquet` files in the `data/output`
+directory.
 
 *(Note: These locations are specified in the project configuration yaml file)*
+
+### Metadata 
+
+Metadata for this project in JSON format for the GBADS Knowledge Engine 
+is stored in the directory `data/metadata` and can be 
+generated using the Makefile target `make data/metadata`. 
+
 
 ## Figures and Tables 
 
@@ -135,22 +143,14 @@ FAOSTAT item codes and country codes are located in `data/codes`.
 [pkgdown](https://pkgdown.r-lib.org/) Documentation is available in the in the
 `docs/` directory and can be accessed locally.
  
+
+
  
 # Licence 
  
 This project is under a creative commons licence.
 
-
-# R Package References
-
-```{r, echo=FALSE, include=FALSE, message=FALSE, error=FALSE, warning=FALSE}
-# Attach all packages in lockfile
-sapply(unique(renv::dependencies()$Package),
-  library,
-  character.only = TRUE
-)
-```
-
+# Package Reference 
 
 ```{r, results='asis', echo=FALSE, error=FALSE, warning=FALSE, message=FALSE}
 report::cite_packages(sessionInfo())

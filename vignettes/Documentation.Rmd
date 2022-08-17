@@ -32,9 +32,12 @@ suppressPackageStartupMessages({
 ```
 
 
-```{r}
+```{r config}
 config <- config::get()
+```
 
+
+```{r print-table}
 print_table <- function(data, caption) {
   data |>
     knitr::kable(caption = caption) |>
@@ -44,13 +47,13 @@ print_table <- function(data, caption) {
 
 \newpage
 
+
+
 # Calculations 
 
 
 The following section details the process of obtaining both asset value and 
 output value estimates for terrestrial livestock and aquaculture. 
-
-
 
 ### Livestock 
 
@@ -136,7 +139,7 @@ calculation.
 If we then let 
 
 $$
-x_i ,  \ i \in \mathbb{Y}
+x_i  \qquad i \in \mathbb{Y}
 $$
 
 be the number of livestock or quantity of livestock output produced in the base
@@ -148,8 +151,7 @@ or *PA.NUS.FCRF*.
 The value in constant *USD* is then 
 
 $$
-\Bigg( \sum_{i \in \mathbb{Y}} P_ix_i \Bigg) \Bigg(\sum_{i \in \mathbb{Y}}x_iE_i
-\Bigg) = \text{Constant 2014-2016 USD Value Per Tonne}
+\left(\sum_{i \in \mathbb{Y}} P_ix_i \right) \left(\sum_{i \in \mathbb{Y}}x_iE_i\right) \qquad = \qquad \text{Constant 2014-2016 USD Value Per Tonne}
 $$
 
 
@@ -158,6 +160,48 @@ Producer Price Index for each commodity item. A link to the document in which
 this procedure in described is available
 [here](https://fenixservices.fao.org/faostat/static/documents/PP/PP_e.pdf)
 (Valid Link as of 25-07-2022).
+
+## Uncertainty 
+
+As is stated in the following datasets metadata files on the main 
+sources of error. 
+
+* [FAOSTAT QCL](https://www.fao.org/faostat/en/#data/QCL/metadata)
+* [FAOSTAT PP](https://www.fao.org/faostat/en/#data/PP/metadata)
+* [FAOSTAT QV](https://www.fao.org/faostat/en/#data/QV/metadata)
+
+
+> "It is not possible to assess the overall accuracy of the dataset, as the
+> source data is largely collected by member countries. For data that is imputed
+> (including for non-reporting countries or for products for which countries do
+> not collect official data), the accuracy of the imputations is unknown. However,
+> imputation processes are assessed and adjusted on a regular basis."
+>
+> Overall Accuracy (QCL, QV) (2022-08-08)
+
+
+
+> "No information is available regarding sampling error. In the EU, regulations
+> mandate that the coefficient of variation shall not exceed 3% for the area of
+> cultivation for main crops. For non-EU countries, the coefficient of variation
+> may be significantly larger. For further information, see country metadata (if
+> available)."
+> 
+> Sampling Error (QCL, QV) (2022-08-08)
+
+
+> "No information is available regarding the magnitude of non-sampling errors.
+> Non-sampling errors may occur as a result of measurement errors, caused by a
+> lack of harmonization in statistical methods. For instance, significant
+> measurement errors may be present in instances where FAO concepts do not fit
+> with national concepts."
+> 
+> Non-sampling error  (QCL, QV) (2022-08-08)
+
+This makes any calculation of the uncertainty in these estimates difficult, due
+to the poor and inconsistent quality of the underlying datasets due to
+differences in countries reporting periods, methodologies and interpretation of
+different commodities classifications.
 
 \newpage
  
@@ -179,6 +223,8 @@ the data are also given in `NOTES_AQUACULTURE_COUNTRY_EN.html`[@FAO2021b].
  
  
 ## Crops 
+
+Crop mappings from 
 
 The following table shows the crop codes used [@FAO2021c]. 
 
@@ -295,7 +341,6 @@ arrow::read_parquet(
 ) |>
   dplyr::glimpse()
 ```
-
 
 
 

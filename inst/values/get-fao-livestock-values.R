@@ -95,86 +95,6 @@ config <- config::get()
 
 
 
-# Select correct FAOSTAT Item Codes For Matching --------------------------
-
-#' get_livestock_codes
-#'
-#' Returns the FAO item codes which will be used in the
-#' valuation of livestock types
-#'
-#' @param code_dir directory containing rds files of FAOSTAT item codes
-#'
-#' @return a vector containing the livestock codes used
-get_livestock_codes <- function(code_dir = config$data$codes$faostat$dir) {
-
-  # FAOSTAT Item Codes to Use for each category that will be used
-  code_rds_files <- list.files(
-    config$data$codes$faostat$dir,
-    full.names = TRUE,
-    pattern = "*.rds$"
-  )
-
-  # Name files
-  names(code_rds_files) <- basename(code_rds_files) |>
-    stringr::str_remove_all(".rds") |>
-    stringr::str_remove_all("FAOSTAT_")
-
-  # Read in the item code data
-  faostat_item_codes <- purrr::map(
-    code_rds_files,
-    ~ readRDS(.x) |>
-      janitor::clean_names()
-  )
-
-  names(faostat_item_codes) <- names(faostat_item_codes) |>
-    janitor::make_clean_names()
-
-  # Names of RDS files
-  rds_names <- c(
-    "livestock_codes",
-    "vop_items_non_indigenous_codes",
-    "meat_live_weight_codes",
-    "livestock_meat_item_codes"
-  )
-
-  if (length(setdiff(rds_names, names(faostat_item_codes))) > 0) {
-    stop("Incorrect code RDS file names")
-  }
-
-  # - Unique Livestock Codes that will be used
-  livestock_codes <- unique(
-    c(
-      faostat_item_codes$livestock_codes$item_code,
-      faostat_item_codes$vop_items_non_indigenous_codes$item_code,
-      faostat_item_codes$meat_live_weight_codes$item_code,
-      faostat_item_codes$livestock_meat_item_codes$item_code
-    )
-  )
-
-  # Save the current version of codes used
-  write.csv(
-    faostat_item_codes$item_codes |>
-      dplyr::filter(
-        item_code %in% livestock_codes,
-        domain_code %in% c("QCL", "QV", "PP")
-      ),
-    file.path(
-      code_dir,
-      "livestock_item_codes.csv"
-    ),
-    row.names = FALSE
-  )
-
-  return(
-    list(
-      codes = livestock_codes,
-      code_list = faostat_item_codes
-    )
-  )
-}
-
-
-
 # Load Data ---------------------------------------------------------------
 get_data <- function(files, codes, use_years = 1994:2018) {
   data <- purrr::map(
@@ -543,6 +463,12 @@ matches <- setNames(
   c("stock_code", "price_code", "yield_code")
 )
 
+# Save this table to the codes directory
+saveRDS(
+  match_live_weight_items |>
+    setNames(c("qvl_stock_code", "pp_price_code", "qvl_yield_code")),
+  file.path("data", "codes", "faostat_livestock_matching_codes.rds")
+)
 
 
 # Match Item and Animal ---------------------------------------------------

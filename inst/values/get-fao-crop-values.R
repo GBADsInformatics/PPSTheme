@@ -1,3 +1,5 @@
+#!/usr/bin/env Rscript --vanilla
+
 ################################################################
 #
 # Project: GBADS: Global Burden of Animal Disease
@@ -17,11 +19,16 @@
 # Description:  Generates Crop values
 # parquet file for analysis.
 #
-# I/O: Defined on project config file and makefile
+#
+#
+#
 ####################################
+
 renv::activate(project = ".")
 
-## 0 - Libraries  ------------------------------#
+
+# Libraries ---------------------------------------------------------------
+
 suppressPackageStartupMessages({
   library(here)
   library(purrr)
@@ -35,13 +42,14 @@ suppressPackageStartupMessages({
 })
 
 
+# Logging configuration
 basicConfig()
 
+
 # Config ------------------------------------------------------------------
+
+# Read in the project configuration file
 config <- config::get()
-
-
-
 
 
 
@@ -64,8 +72,11 @@ get_data <- function(files, use_years = 1994:2018) {
 
 # Crop codes which are used
 loginfo("Importing Crop Codes")
+
+# Import the Crop codes which will be used
 crop_codes <- config$data$codes$faostat$crops |>
   readRDS()
+
 
 output_results_dir <- here::here(
   "output", "tables",
@@ -74,12 +85,14 @@ output_results_dir <- here::here(
     format(Sys.Date(), format = "%Y%m%d")
   )
 )
+
 dir.create(output_results_dir, recursive = TRUE)
 
 readr::write_csv(crop_codes |>
   dplyr::select(item, item_code, group),
 file = here::here(output_results_dir, "faostat_crop_groupings.csv")
 )
+
 logging::loginfo("Zipping results directory %s", output_results_dir)
 zip(
   zipfile = paste0(output_results_dir, ".zip"),
@@ -99,16 +112,22 @@ logging::loginfo(
   output_results_dir
 )
 
+
+
+# Read in processed source data -------------------------------------------
+
 # Input files
 processed_files <- config$data$processed$tables
 
 # Import files for crops
 loginfo("Importing FAOSTAT data files")
+
 crops <- get_data(processed_files[grep("faostat", processed_files)])
 
 
 # Subset for crop crop codes
 loginfo("Subsetting for required crop data")
+
 crops <- purrr::map(
   crops,
   ~ filter(.x, item_code %in% unique(crop_codes$item_code)) %>%
@@ -117,11 +136,13 @@ crops <- purrr::map(
     relocate(group, .after = item)
 )
 
-# Filter specific things
+# Filter  for just production element
+
 crops$production <- filter(
   crops$crops_and_livestock_products,
   element == "production"
 )
+
 crops$prices <- filter(crops$producer_prices, months_code == 7021)
 
 

@@ -78,7 +78,7 @@
 #
 # Which are both located at
 #
-# - data/output/fao/fao_aquacultur_values.parquet
+# - data/output/fao/fao_aquaculture_values.parquet
 #
 # The location of all the input and output files should be specified in
 # - conf/config.yml
@@ -237,7 +237,7 @@ aqua$fisheries_quantity <- readr::read_csv(
   assertr::verify(value >= 0) |>
   dplyr::filter(
     period %in% params$use_years,
-    value > 0 # Subset out negligable values (Status = N)
+    value > 0 # Subset out negligible values (Status = N)
   ) %>%
   dplyr::group_by(
     country_un_code,

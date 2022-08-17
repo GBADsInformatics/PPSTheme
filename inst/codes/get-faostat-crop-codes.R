@@ -1,6 +1,6 @@
-#! /usr/bin/Rscript --vanilla
+#!/usr/bin/Rscript --vanilla
 
-################################################################
+# ------------------------------------------------------------------------------
 #
 # Project: GBADS: Global Burden of Animal Disease
 #
@@ -14,13 +14,45 @@
 #
 # GitHub ID: denn173
 #
-# Maps FAOSTAT crop codes to CPC codes
-# I/O: defined in the config and makefile
-####################################
+# Maps FAOSTAT crop codes to CPC codes and in particular
+# the crop groupings that were used initially in this analysis.
+#
+# The only groupings which are included in the crop codes
+# are the CPC groupings from Division 01
+#
+# "Products of Agriculture Horticulture and market Gardening"
+#
+# In particular, the groupings
+# type, code_group
+# "cereals", "011",
+# "vegetables", "012",
+# "fruits_nuts", "013",
+# "oilseed_oil_fruits", "014",
+# "roots_tubers", "015",
+# "coffee_spice_crops", "016",
+# "pulses", "017",
+# "sugar_crops", "018"
+#
+# The CPC to FAO Groupings are available at the following URL
+#
+# - https://www.fao.org/fileadmin/templates/ess/classifications/Correspondence_CPCtoFCL.xlsx
+#
+# Which is also located at
+#
+# - data/codes/faostat/CPCtoFCL_codes.xlsx
+#
+# Which can be re-downloaded using a Makefile recipe and target
+#
+# ------------------------------------------------------------------------------
 
 
+# Project -----------------------------------------------------------------
 
-## 0 - Libraries  ------------------------------#
+renv::activate(".")
+
+
+# Libraries ---------------------------------------------------------------
+
 suppressPackageStartupMessages({
   library(here)
   library(dplyr)
@@ -32,6 +64,7 @@ suppressPackageStartupMessages({
 
 
 # Config ------------------------------------------------------------------
+
 config <- config::get()
 
 
@@ -40,6 +73,7 @@ config <- config::get()
 # The Food groups don't match perfectly
 #  - USE the CPC groupings given by
 #  https://www.fao.org/fileadmin/templates/ess/classifications/Correspondence_CPCtoFCL.xlsx
+
 food_groups <- tribble(
   ~group, ~code,
   "cereals", "011",
@@ -47,7 +81,7 @@ food_groups <- tribble(
   "fruits_nuts", "013",
   "oilseed_oil_fruits", "014",
   "roots_tubers", "015",
-  "coffe_spice_crops", "016",
+  "coffee_spice_crops", "016",
   "pulses", "017",
   "sugar_crops", "018"
 )
@@ -62,7 +96,9 @@ faostat_item_codes <- config$data$codes$faostat$items$item_codes |>
 
 # Need to check further how to avoid double counting
 #  - Keep as is for now as it seems that the separate codes
-#    remove the issues of double counting
+#    remove the issues of double counting as these are not aggregated
+#    products
+
 crop_groups <- faostat_item_codes |>
   dplyr::filter(domain_code == "QCL") |>
   select(item, item_code, cpc_code) |>
@@ -75,13 +111,15 @@ crop_groups <- faostat_item_codes |>
 
 
 # Write to output codes directories ---------------------------------------
+
 saveRDS(
   crop_groups,
   file.path(
     config$data$codes$faostat$dir,
-    "FAOSTAT-CPC_cropItemCodes.rds"
+    "FAOSTAT_CPC_cropItemCodes.rds"
   )
 )
+
 saveRDS(
   food_groups,
   file.path(

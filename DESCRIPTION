@@ -25,6 +25,7 @@ Imports:
     glue,
     here,
     janitor,
+    jsonlite,
     kableExtra,
     latex2exp,
     logging,

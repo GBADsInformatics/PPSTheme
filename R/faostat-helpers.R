@@ -42,39 +42,6 @@ get_gbads_file <- function(str, dir) {
 
 
 
-#' get_fao_metadata
-#'
-#' import metadata for set of FAOSTAT datasets
-#' from the FAOSTAT metadata json file
-#'
-#' @param dataset_codes character vector of dataset codes
-#' @param metadata_json location of the metadata json
-#' @return list of dataset metadata
-#' @export
-#'
-#' @examples
-#'
-#' get_fao_metadata("QCL")
-#'
-get_fao_metadata <- function(dataset_codes,
-                             metadata_json = Sys.glob(
-                               here::here(
-                                 "data",
-                                 "FAOSTAT",
-                                 "*FAOSTAT_datasets_E.json"
-                               )
-                             )) {
-  metadata <- rjson::fromJSON(file = metadata_json)
-
-  # Filter through and extract dataset codes
-  metadata <- metadata$Datasets$Dataset %>%
-    purrr::discard(~ !(.x$DatasetCode %in% dataset_codes))
-
-  names(metadata) <- purrr::map(metadata, ~ .x$DatasetCode)
-  return(metadata)
-}
-
-
 #' clean_countries
 #'
 #' Cleans the countries imported from FAOSTAT by removing multiple versions

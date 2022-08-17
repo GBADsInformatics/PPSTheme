@@ -10,21 +10,29 @@ default:
             faostat_dir: data/source/faostat
             fao_dir: data/source/fao
             world_bank_dir: data/source/world_bank
-            # URL location of source data
+            # url: url location of source data
+            # metadata_url: url location of the datasets metadata
+            # dir: relative path to the directory containing the bulk downloaded source data
+            # metadata_dir: relative path to the directory containing the bulk downloaded metadata
+            # type: file type of bulk downloaded source data
+            # last_download: YYYYMMDD formatted date of last bulk data download
             tables:
                 crops_and_livestock_products:
                     url: 'https://fenixservices.fao.org/faostat/static/bulkdownloads/Production_Crops_Livestock_E_All_Data_(Normalized).zip'
+                    metadata_url: https://www.fao.org/faostat/en/#data/QCL/metadata
                     dir: data/source/faostat/crops_and_livestock_products
                     type: 'zip'
                     last_download: 20220321
                 value_of_production:
                     url: 'https://fenixservices.fao.org/faostat/static/bulkdownloads/Value_of_Production_E_All_Data_(Normalized).zip'
                     dir: data/source/faostat/value_of_production
+                    metadata_url: https://www.fao.org/faostat/en/#data/QV/metadata
                     type: 'zip'
                     last_download: 20220321
                 producer_prices:
                     url: 'https://fenixservices.fao.org/faostat/static/bulkdownloads/Prices_E_All_Data_(Normalized).zip'
                     dir: data/source/faostat/producer_prices
+                    metadata_url: https://www.fao.org/faostat/en/#data/PP/metadata
                     type: 'zip'
                     last_download: 20220321
                 global_aquaculture_production:
@@ -94,7 +102,7 @@ default:
                     url: https://www.fao.org/faostat/en/?#definitions
                     raw_codes: data/codes/faostat/country_codes/faostat_country_codes_20220411.csv
                     output_codes: data/output/codes/faostat_iso3_country_codes.parquet
-                crops: data/codes/FAOSTAT/FAOSTAT-CPC_cropItemCodes.rds
+                crops: data/codes/faostat/FAOSTAT_CPC_cropItemCodes.rds
             cpc:
                 url: 'https://www.fao.org/fileadmin/templates/ess/classifications/Correspondence_CPCtoFCL.xlsx'
 

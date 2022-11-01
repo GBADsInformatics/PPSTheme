@@ -26,3 +26,4 @@ data/source/*
 # Any binary word doc files
 *.docx
 
+**archive

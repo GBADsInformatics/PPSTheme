@@ -1,0 +1,278 @@
+#!/usr/bin/Rscript --vanilla
+
+# ------------------------------------------------------------------------------
+#
+# Name: inst/figures/generate-figures.R
+# Project: GBADS
+# Author: Gabriel Dennis <gabriel.dennis@csiro.au>
+#
+# Generates  Figure 2 for the livestock value manuscript
+#
+# For detail on descriptions of each figure
+# See:  output/figures/README.md#figure-descriptions
+#
+# For details on the figure specifications used here
+# See: output/figures/README.md#figure-specifications
+# -------------------------------------------------------------------------
+
+
+# Project Library ---------------------------------------------------------
+renv::activate(project = ".")
+
+# Libraries ---------------------------------------------------------------
+suppressPackageStartupMessages({
+    library(dplyr)
+    library(magrittr)
+    library(ggplot2)
+    library(ggthemes)
+    library(hrbrthemes)
+    library(tidyr)
+    library(LivestockValueGBADS)
+})
+# -------------------------------------------------------------------------
+
+
+
+# Import output files -----------------------------------------------------
+config <- config::get()
+
+
+# Have to remove this
+theme_set(
+    panel_plot_theme()
+)
+
+
+# Preparation functions ---------------------------------------------------
+config <- config::get()
+
+# Function to prepare data for initial plots
+prep_data <- function() {
+    df_list <- purrr::keep(config$data$output, ~ grepl("values", .x, ignore.case = TRUE))
+    data <- list()
+    livestock_value <- df_list$livestock_values |>
+        arrow::read_parquet() |>
+        dplyr::mutate(
+            gross_production_value_constant_2014_2016_usd = gross_production_value_constant_2014_2016_thousand_us * 1e3
+        )
+
+    livestock_value <- df_list$livestock_values |>
+        arrow::read_parquet() |>
+        dplyr::mutate(
+            gross_production_value_constant_2014_2016_usd = gross_production_value_constant_2014_2016_thousand_us * 1e3
+        )
+
+    data$livestock_asset <- get_livestock_asset_output_value(livestock_value)
+
+    data$livestock_output <- get_livestock_asset_output_value(
+        livestock_value,
+        gross_production_value_constant_2014_2016_usd
+    )
+
+    data$aquaculture_value <- df_list$aquaculture_values |>
+        arrow::read_parquet() |>
+        get_aquaculture_value()
+
+
+    data$crop_value <- df_list$crop_values |>
+        arrow::read_parquet() |>
+        dplyr::mutate(
+            gross_production_value_constant_2014_2016_usd = gross_production_value_constant_2014_2016_thousand_us * 1e3
+        ) |>
+        get_crop_value()
+
+
+    data
+}
+
+# -------------------------------------------------------------------------
+
+# Get data for initial plots
+data <- prep_data()
+
+
+
+# Helper Functions  -------------------------------------------------------
+
+# Function to get the total value
+get_total_df <- function(df, value_col) {
+    df |>
+        dplyr::group_by(year) |>
+        dplyr::summarise(
+            value = sum({{ value_col }}, na.rm = TRUE),
+            .groups = "drop"
+        )
+}
+
+# Figure 3 ----------------------------------------------------------------
+
+
+
+df <- bind_rows(data$livestock_asset, data$livestock_output) |>
+    dplyr::group_by(year) |>
+    dplyr::summarise(
+        value = sum(value, na.rm = TRUE)
+    ) |>
+    dplyr::mutate(
+        type = "direct+market"
+    )
+
+df <- df |>
+    dplyr::bind_rows(
+        data$livestock_asset |>
+            dplyr::group_by(year) |>
+            dplyr::summarise(
+                value = sum(value, na.rm = TRUE)
+            ) |>
+            dplyr::mutate(type = "market")
+    )
+
+df_outputs <- get_total_df(data$livestock_output, value)
+df_crops <- data$crop_value
+
+# Generate the arrow location plot
+arrow_locations <- df |>
+  group_by(year) |>
+  mutate(
+    x = year,
+    xend = year,
+    y = min(value) + 1.5e11,
+    yend = max(value) - 1.5e11
+  ) |>
+  ungroup() |>
+  filter(year != 2008)
+
+# Text location
+text_locations <- df |>
+  mutate(
+    x = year,
+    y = ifelse(type == "market", value + 0.8e11, value + 0.8e11),
+    label = scales::dollar(value, accuracy = 0.01, scale = 1e-12, suffix = "T", prefix = "$ ")
+  )
+
+
+# Colors for both
+nat_pal <- setNames(c("black", "black"), c("direct+market", "market"))
+csiro_blue <- "#0989B2"
+annotate_size <- 3.5
+years <- seq(1998, 2018, by =  5)
+
+# Geom ribbon
+df_ribbon <- df |>
+  spread(type, value)
+
+
+fig3 <- df |>
+  ggplot(aes(x = year, y = value, color = type)) +
+  geom_ribbon(
+    data = df_ribbon,
+    aes(x = year, ymin = `market`, ymax = `direct+market`), inherit.aes = F,
+    alpha = 0.1, color = csiro_blue
+  ) +
+  geom_point(size = 2) +
+  geom_line(size = 1.5) +
+  scale_color_manual(values = nat_pal) +
+  scale_y_continuous(
+    labels = scales::dollar_format(
+      scale = 1e-12,
+      suffix = "T",
+      accuracy = 0.1,
+    ),
+    limits = c(9e11, 3.2e12)
+  ) +
+  scale_x_continuous(breaks = years) +
+  geom_text(
+    data = text_locations,
+    aes(x = x, y = y, label = label),
+    size = annotate_size,
+    fontface = "bold.italic",
+    inherit.aes = FALSE
+  ) +
+  geom_point(
+    data = df_outputs,
+    aes(x = year, y = value),
+    inherit.aes = FALSE,
+    size = 2,
+    color = nature_color_scheme()["Cattle"]
+  ) +
+  geom_line(
+    data = df_outputs,
+    aes(x = year, y = value),
+    inherit.aes = FALSE,
+    linetype = "dashed",
+    size = 1.5,
+    color = nature_color_scheme()["Cattle"]
+  ) +
+  geom_point(
+    data = df_crops,
+    size = 2,
+    aes(x = year, y = value),
+    inherit.aes = FALSE,
+    color = nature_color_scheme()["Sheep"]
+  ) +
+  geom_line(
+    data = df_crops,
+    size = 1.5,
+    aes(x = year, y = value),
+    inherit.aes = FALSE,
+    linetype = "dashed",
+    color = nature_color_scheme()["Sheep"]
+  ) +
+  annotate(
+    "text",
+    x = 2008,
+    y = df_crops$value[df_crops$year == 2008] + 0.8e11,
+    label = "atop(bold('Value of Crops'))",
+    parse = TRUE,
+    size = annotate_size,
+    color = nature_color_scheme()["Sheep"]
+  ) +
+  annotate(
+    "text",
+    x = 2008,
+    y = df_outputs$value[df_outputs$year == 2008] - 1.1e11,
+    label = "atop(bold('Value of Animal Outputs'))",
+    parse = TRUE,
+    size = annotate_size,
+    color = nature_color_scheme()["Cattle"]
+  ) +
+  annotate("text",
+    x = 2008,
+    y = 1.3e12,
+    label = "atop(bold('Value of Live Animals'))",
+    parse = TRUE,
+    size = annotate_size
+  ) +
+  annotate("text",
+    x = 2008,
+    y = 2.8e12,
+    label = "atop(bold('Value of Live Animals +\nValue of Animal Outputs'))",
+    size = annotate_size,
+    parse = TRUE
+  ) +
+  labs(
+    x = "Year",
+    y = "Constant USD (Trillion)",
+    fill = " ",
+    title = "Comparison of the value of Live Animals and Live Animal Outputs."
+  ) +
+  panel_plot_theme() +
+  theme(
+    legend.position = "none",
+    plot.margin = margin(50, 50, 50, 50),
+    plot.title = element_text(face = "italic"),
+    axis.title.x.bottom = element_text(size = 12, face = "italic", vjust = -1.5),
+    axis.text = element_text(size = 12),
+    axis.title.y = element_text(vjust = 3)
+  )
+
+# Save Output -------------------------------------------------------------
+ggsave(
+    plot = fig3,
+    filename = "output/figures/figure_3.png",
+    width = 16,
+    height = 10,
+    dpi = 300,
+    device = "png"
+)
+

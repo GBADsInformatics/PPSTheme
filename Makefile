@@ -1,5 +1,17 @@
 # Makefile to make all analysis targets in this project
 
+document:
+	R -q -e 'devtools::document()'
+
+test:
+	R -q -e 'devtools::test()'
+
+format:
+	R -q -e 'styler::style_pkg()'
+
+
+.PHONY: figures
+
 # Variables
 R_DIR=R/
 SCRIPT_DIR=inst/
@@ -12,11 +24,8 @@ TABLE_DIR=output/tables/
 
 #-----------------------------------------
 # Data
-#
 # Downloads the latest datasets
 # ---------------------------------------
-
-# TODO: Turn this into a single make
 
 # Downloads the FAOSTAT VOP Table
 $(PROCESSED_DATA_DIR)faostat/value_of_production.parquet:
@@ -82,7 +91,7 @@ data/output/codes/faostat_iso3_country_codes.parquet:
 #-----------------------------------------
 # Analysis
 # ---------------------------------------
-#
+
 # Reproduces the livestock value table
 $(OUTPUT_DATA_DIR)faostat/faostat_livestock_values.parquet:
 	Rscript --vanilla $(SCRIPT_DIR)/values/get-fao-livestock-values.R
@@ -113,25 +122,37 @@ $(METADATA_DIR):
 
 #--------------------------------------
 # Figures and tables
-#
-# TODO: add more command line arguments
-# depending on which journal the
-# submission is being made to
 # -------------------------------------
-$(FIGURE_DIR)figure_2.pdf:
-	Rscript --vanilla $(SCRIPT_DIR)/figures/generate-figures.R --figure 2
+$(FIGURE_DIR)figure_2.png:
+	Rscript --vanilla $(SCRIPT_DIR)figures/figure_2.R 1>/dev/null &
 
-$(FIGURE_DIR)figure_3.pdf:
-	Rscript --vanilla $(SCRIPT_DIR)/figures/generate-figures.R --figure 3
+$(FIGURE_DIR)figure_3.png:
+	Rscript --vanilla $(SCRIPT_DIR)figures/figure_3.R 1>/dev/null &
 
-$(FIGURE_DIR)figure_4.pdf:
-	Rscript --vanilla $(SCRIPT_DIR)/figures/generate-figures.R --figure 4
+$(FIGURE_DIR)figure_4.png:
+	Rscript --vanilla $(SCRIPT_DIR)figures/figure_4.R 1>/dev/null &
 
-$(FIGURE_DIR)figure_5.pdf:
-	Rscript --vanilla $(SCRIPT_DIR)/figures/generate-figures.R --figure 5
+$(FIGURE_DIR)figure_6.png:
+	Rscript --vanilla $(SCRIPT_DIR)figures/figure_6.R 1>/dev/null &
 
-$(FIGURE_DIR)figure_6.pdf:
-	Rscript --vanilla $(SCRIPT_DIR)/figures/generate-figures.R --figure 6
+$(FIGURE_DIR)figure_7.png:
+	Rscript --vanilla $(SCRIPT_DIR)figures/figure_7.R 1>/dev/null &
+
+$(FIGURE_DIR)figure_A2.png:
+	Rscript --vanilla $(SCRIPT_DIR)figures/figure_A2.R 1>/dev/null &
+
+
+$(FIGURE_DIR)figure_A4.png:
+	Rscript --vanilla $(SCRIPT_DIR)figures/figure_A4.R 1>/dev/null &
+
+
+
+# Make all figure
+figures:
+	make $(FIGURE_DIR)figure_2.png $(FIGURE_DIR)figure_3.png $(FIGURE_DIR)figure_6.png $(FIGURE_DIR)figure_7.png $(FIGURE_DIR)figure_4.png $(FIGURE_DIR)figure_A2.png $(FIGURE_DIR)figure_A4.png
+
+
+
 
 #------------------------------------
 # Tests

@@ -1,220 +1,349 @@
-################################################################
-#
-# Project: GBADS: Global Burden of Animal Disease
-#
-# Author: Gabriel Dennis
-#
-# Position: Research Technician, CSIRO
-#
-# Email: gabriel.dennis@csiro.au
-#
-# CSIRO ID: den173
-#
-# GitHub ID: denn173
-#
-# Date Created:  20220214
-#
-# Description:  This script contains helper functions for creating plots
-# which will potentially be added to the manuscript
-####################################
-
-
-
-# Stacked Area Charts -----------------------------------------------------
-# Function to create a stacked area chart
-
-library(ggthemes)
-library(ggplot2)
-th <-  theme(
-    legend.position = "bottom",
-    legend.title = element_text(size = 18, face = "bold.italic"),
-    legend.text = element_text(size = 20, face = "italic"),
-    plot.title = element_text(face = "bold.italic", size = 25),
-    plot.subtitle = element_text(face = "italic", size = 20),
-    axis.text.y = element_text(size = 20, face = "bold.italic"),
-    axis.title = element_text(hjust = 0.5),
-    axis.text.x = element_text(size = 20, face = "bold.italic")
-)
-
-
-
-#
-#  Returns the position and % for a stacked area chart
-#
-stacked_area.get_position <- function(df, value,group_var,  key_col, key_order) {
-    df %>%
-        mutate(
-            key = factor( {{ key_col }} , levels = key_order, ordered = TRUE)
-        ) %>%
-        group_by({{ group_var }}) %>%
-        arrange(desc(key)) %>%
-        mutate(
-            percentage = {{ value }}/sum({{ value }}, na.rm = TRUE),
-            position = cumsum({{ value }}) - 0.5 * {{ value }}
-        ) %>%
-        ungroup()
+#' scale_trill
+#'
+#' Scales axis to trillions of dollars
+#'
+#' @param x the numeric vector to be scaled
+#' @param accuracy  what accuracy to display the results at
+#'
+#' @return
+#' @export
+#'
+#' @examples
+scale_trill <- function(x, accuracy = 0.5) {
+  scales::dollar(x,
+    accuracy = accuracy,
+    scale = 1e-12,
+    suffix = " T"
+  )
 }
 
 
 
-#
-# Attaches initial and final labels to a stacked area chart
-#
-stacked_area.append_end_labels <- function(plot, df, year_col, position_col, per_col, ...) {
-    # Function to format percentages
-    pct <- scales::percent_format(accuracy = 1)
 
-    if (length(list(...)) == 0) {
-        geom_label_repel_settings <- list(
-            size = 10,
-            nudge_x = 1,
-            min.segment.length = 0.1,
-            box.padding = 1,
-            segment.size = 2,
-            label.padding = 0.5
-        )
-    } else {
-        geom_label_repel_settings <- list(...)
-    }
-
-    # Create the labels
-    plot +
-        ggrepel::geom_label_repel(
-            data = df %>%
-                filter({{ year_col }} %in% final_year),
-            aes(x = {{ year_col}}, y = {{ position_col }} , label = pct( {{ per_col }} ))) +
-        ggrepel::geom_label_repel(
-
-            data = df %>%
-                filter({{ year_col }} %in% first_year),
-            aes(x = {{ year_col}}, y = {{ position_col }}, label = pct( {{ per_col }} )),
-        )
-
+#' nature_color_scheme
+#' Obtained from \code{ggsci::pal_npg()(7)}
+#' Visualise through \code{scales::show_col(ggsci::pal_npg()(7))}
+#'
+#' @return nature colorscheme
+#' @export
+#'
+nature_color_scheme <- function() {
+  c(
+    "Crops" = "#91D1C2FF",
+    "Cattle" = "#E64B35FF",
+    "Chicken" = "#F39B7FFF",
+    "Pig" = "#4DBBD5FF",
+    "Aquaculture" = "#3C5488FF",
+    "Sheep" = "#00A087FF",
+    "Other Livestock" = "#8491B4FF"
+  )
 }
 
 
-stacked_area.plot <- function(df, keys,  color_pal, ...) {
+#' panel_plot_theme_nature_food
+#'
+#' @return
+#' @export
+#'
+#' @examples
+panel_plot_theme <- function() {
+  ggthemes::theme_clean() +
+    ggplot2::theme(
+      legend.position = "bottom",
+      legend.title = ggplot2::element_text(
+        family = "Helvetica",
+        size = 10
+      ),
+      legend.text = ggplot2::element_text(
+        family = "Helvetica",
+        size = 10
+      ),
+      plot.title = ggplot2::element_text(
+        family = "Helvetica",
+        face = "bold.italic",
+        size = 15
+      ),
+      plot.subtitle = ggplot2::element_text(
+        face = "italic",
+        family = "Helvetica",
+        size = 12
+      ),
+      axis.text.y = ggplot2::element_text(
+        family = "Helvetica",
+        size = 10
+      ),
+      axis.title = ggplot2::element_text(
+        family = "Helvetica",
+        face = "italic",
+        size = 10
+      ),
+      axis.text.x = ggplot2::element_text(
+        family = "Helvetica",
+        size = 10
+      ),
+      axis.title.x = ggplot2::element_text(
+        face = "italic",
+        family = "Helvetica",
+        size = 10
+      ),
+      panel.border = ggplot2::element_blank(),
+      legend.background = ggplot2::element_blank(),
+      plot.background = ggplot2::element_blank(),
+      axis.line.y = ggplot2::element_blank(),
+      axis.line.x = ggplot2::element_blank(),
+      axis.ticks = ggplot2::element_blank(),
+      axis.title.x.bottom = ggplot2::element_blank(),
+      plot.margin = margin(t = 25, r = 25, b = 10, l = 25)
 
-    # Extract the first and last year
-    first_year <- df %>% pull(year) %>% min()
-    final_year <- df %>% pull(year) %>% max()
+    )
+}
 
-
-
-    ggplot(df,  aes(year, value)) +
-        geom_area(aes(fill = {{keys}})) +
-        ggrepel::geom_label_repel(
-            data = df %>%
-                filter(year  == final_year),
-            aes(x =  year,
-                y = position,
-                label = pct(percentage),
-                color = {{ keys }}
-            ),
-            size = 6,
-            nudge_x = 1,
-            min.segment.length = 0.1,
-            box.padding = 1,
-            segment.size = 2,
-            label.padding = 0.5,
-        )   +
-        ggrepel::geom_label_repel(
-            data = df %>%
-                filter(year  == first_year),
-            aes(x =  year,  y = position, label = pct(percentage), color = {{keys}}),
-            size = 6,
-            nudge_x = -1,
-            min.segment.length = 0.1,
-            box.padding = 1,
-            segment.size = 2,
-            label.padding = 0.5,
-        )   +
-        scale_fill_manual(values = color_pal) +
-        scale_color_manual(values = color_pal, guide = FALSE) +
-        guides(fill = guide_legend(nrow = 1)) +
-        scale_y_continuous(labels = scales::dollar_format(scale = 1e-12, suffix = " Trillion", accuracy = .1)) +
-        scale_x_continuous(limits = c(first_year - 2, final_year + 2)) +
-        labs(...) +
-        theme_ipsum() +
-        th
+#' world_map_theme
+#'
+#' @return
+#' @export
+#'
+#' @examples
+world_map_theme <- function() {
+  figure_spec <- config::get()$figure_specification$nature_food
+  ggthemes::theme_economist() +
+    ggplot2::theme(
+      legend.position = "bottom",
+      axis.text.x = ggplot2::element_blank(),
+      axis.ticks.x = ggplot2::element_blank(),
+      panel.border = ggplot2::element_blank(),
+      strip.text.x = ggtext::element_markdown(
+        size = figure_spec$font_size,
+        family = figure_spec$family,
+        vjust = 1
+      ),
+      legend.text = ggtext::element_markdown(
+        size = figure_spec$font_size,
+        family = figure_spec$family
+      ),
+      legend.title = ggtext::element_markdown(
+        size = figure_spec$font_size,
+        family = figure_spec$family
+      ),
+      panel.grid.major = ggplot2::element_blank(),
+      axis.line.x = ggplot2::element_blank(),
+      plot.subtitle = ggtext::element_markdown(
+        size = figure_spec$font_size,
+        family = figure_spec$family
+      ),
+      plot.title.position = "plot",
+      plot.title = ggtext::element_markdown(
+        size = 18,
+        family = "sans" ,
+        face = "italic",
+        vjust = 0, hjust = 0
+      ),
+      plot.caption = ggtext::element_markdown(
+        size = figure_spec$font_size,
+        family = figure_spec$family, hjust = 0
+      ),
+      plot.margin = margin(75, 0, 0, 75)
+    )
 }
 
 
 
-# Pie Charts --------------------------------------------------------------
+# Function to Save Plots  -------------------------------------------------
+
+#' save_panel_plot
+#'
+#' @param p
+#' @param filename
+#' @param figure_spec
+#' @param ...
+#'
+#' @return
+#' @export
+#'
+#' @examples
+save_panel_plot <- function(p, filename, ...) {
+  if (!(tools::file_ext(filename) %in% c(".png", ".pdf"))) {
+    stop("Incorrect file extension!!")
+  }
+
+  ggplot2::ggsave(
+    plot = p,
+    filename = filename,
+    ...
+  )
+}
 
 
-pie_chart.yearly_value <- function(df, date, id_col,color_pal, title ="", subtitle="", footnotes="") {
+# Functions to prepare the data  ------------------------------------------
 
-    require(scales)
-    require(forcats)
-    require(ggplot2)
-    require(ggrepel)
+#' get_livestock_asset_output_value
+#'
+#' @param livestock_value
+#' @param value_col
+#' @param years
+#' @param in_cat
+#' @param out_cat
+#'
+#' @return
+#' @export
+#'
+#' @examples
+get_livestock_asset_output_value <- function(livestock_value,
+                                             value_col = stock_value_constant_2014_2016_usd,
+                                             years = c(1998, 2003, 2008, 2013, 2018),
+                                             in_cat = c("cattle", "chicken", "pig", "sheep"),
+                                             out_cat = "Other Livestock") {
+  livestock_value |>
+    dplyr::rename(value = {{ value_col }}) |>
+    dplyr::filter(
+      (head > 0 | tonnes > 0),
+      value > 0,
+      year %in% years
+    ) |>
+    dplyr::mutate(
+      category = case_when(
+        !(animal %in% in_cat) ~ out_cat,
+        TRUE ~ tools::toTitleCase(animal)
+      )
+    ) |>
+    dplyr::group_by(year, category) |>
+    dplyr::summarise(
+      value = sum(value, na.rm = TRUE),
+      tonnes = sum(tonnes, na.rm = TRUE),
+      .groups = "drop"
+    ) |>
+    dplyr::group_by(year) |>
+    dplyr::mutate(
+      percentage = value / sum(value, na.rm = TRUE)
+    ) |>
+    dplyr::ungroup() |>
+    dplyr::mutate(
+      category = forcats::fct_reorder(category, value, mean, .desc = FALSE)
+    ) |>
+    assertr::verify(
+      assertr::not_na(value)
+    ) |>
+    assertr::verify(
+      value < 2e12 & value >= 1e9 # Less than 2 trillion
+    ) |>
+    assertr::verify(
+      assertr::has_all_names(
+        "year", "category", "value", "tonnes", "percentage"
+      )
+    )
+}
 
-    # Transform input data
-    df <- df %>%
-        filter(year == date) %>%
-        mutate(
-            sector = str_to_title({{id_col}}),
-            value_label = dollar(value,
-                scale = 1e-9, suffix = "B", accuracy = .1),
-            value_pct = value / sum(value, na.rm = TRUE)
-        ) %>%
-        mutate(sector = fct_reorder(sector, value, sum)) %>%
-        arrange(desc(sector))
+#' get_livestock_output_value
+#'
+#' @inheritParams get_livestock_asset_value
+#' @param out_cat
+#' @return
+#' @export
+#'
+#' @examples
+get_livestock_output_value <- function(livestock_value,
+                                       value_col = gross_production_value_constant_2014_2016_usd,
+                                       years = c(1998, 2003, 2008, 2013, 2018),
+                                       in_cat = c("cattle", "chicken", "pig", "sheep"),
+                                       out_cat = "Other Livestock") {
+  livestock_value |>
+    dplyr::rename(value = {{ value_col }}) |>
+    dplyr::filter(value > 0, year %in% years) |>
+    mutate(
+      category = case_when(
+        !(animal %in% in_cat) ~ out_cat,
+        TRUE ~ tools::toTitleCase(animal)
+      )
+    ) |>
+    dplyr::group_by(year, category) |>
+    dplyr::summarise(
+      value = sum(value, na.rm = TRUE),
+      tonnes = sum(tonnes, na.rm = TRUE),
+      .groups = "drop"
+    ) |>
+    dplyr::group_by(year) |>
+    dplyr::mutate(
+      percentage = value / sum(value, na.rm = TRUE)
+    ) |>
+    dplyr::ungroup() |>
+    assertr::verify(
+      assertr::not_na(value)
+    ) |>
+    assertr::verify(
+      value > 0 & value < 2e12
+    ) |>
+    assertr::verify(
+      assertr::has_all_names(
+        "year", "category", "value", "tonnes"
+      )
+    )
+}
+
+#' get_aquaculture_value
+#'
+#' @param aquaculture_value
+#' @param value_col
+#' @param years
+#'
+#' @return
+#' @export
+#'
+#' @examples
+get_aquaculture_value <- function(aquaculture_value,
+                                  value_col = constant_2014_2016_usd_value,
+                                  years = c(1998, 2003, 2008, 2013, 2018)) {
+  aquaculture_value |>
+    dplyr::rename(value = {{ value_col }}) |>
+    dplyr::filter(value > 0, year %in% years) |>
+    dplyr::group_by(year) |>
+    dplyr::summarise(
+      value = sum(value, na.rm = TRUE),
+      .groups = "drop"
+    ) |>
+    dplyr::mutate(
+      category = "Aquaculture"
+    ) |>
+    assertr::verify(
+      value > 0 & value < 5e11
+    ) |>
+    assertr::verify(
+      assertr::has_all_names(
+        "year", "category", "value"
+      )
+    )
+}
 
 
-    # Get the position to place the pie chart labels
-    df2 <- df %>%
-        arrange(desc(sector)) %>%
-        mutate(
-            csum = rev(cumsum(rev(value))),
-            pos = value * 0.5 + lead(csum, 1),
-            pos = if_else(is.na(pos), value * 0.5, pos)
-        )
-
-
-    # Global total
-    total <- dollar(sum(df$value), scale = 1e-12, suffix = "T")
-
-    ##  Create Pie Chart
-    chart <- df %>%
-        ggplot(
-            aes(x = "", y = value, fill = fct_inorder(sector)), color = "grey") +
-        geom_col(width = 1, color = "grey") +
-        coord_polar(theta = "y") +
-        scale_fill_manual(values = color_pal[levels(df$sector)]) +
-        ggrepel::geom_label_repel(
-            data = df2,
-            aes(
-                y = pos, label = paste0(sector,
-                                        ":",
-                                        value_label,
-                                        "\n ",
-                                        percent(value_pct, accuracy = .1)),
-                fill = sector
-            ),
-            size = 6,
-            nudge_x = 0,
-            nudge_y = 5,
-            segment.color = rev(color_pal[levels(df$sector)]),
-            show.legend = FALSE,
-            color = "white",
-            min.segment.length = 5,
-            box.padding = 0.5,
-            label.size = 0,
-            label.padding = 0.5,
-            force = 20
-        ) +
-        theme_void() +
-        labs(
-            title = title,
-            subtitle = subtitle
-        ) +
-        theme(
-            legend.position = "none",
-            plot.title = element_text(size = 30, face = "bold.italic"),
-            plot.subtitle = element_text(size = 20, face = "italic")
-        )
-    return(chart)
+#' get_crop_value
+#'
+#' Returns the crop values for the specified years
+#'
+#' @param crop_value a dataframe containing the crop values
+#' @param value_col
+#' @param years
+#'
+#' @return
+#' @export
+#'
+#' @examples
+get_crop_value <- function(crop_value,
+                           value_col = gross_production_value_constant_2014_2016_usd,
+                           years = c(1998, 2003, 2008, 2013, 2018)) {
+  crop_value |>
+    dplyr::rename(value = {{ value_col }}) |>
+    dplyr::filter(value > 0, year %in% years) |>
+    dplyr::group_by(year) |>
+    dplyr::summarise(
+      value = sum(value, na.rm = TRUE),
+      tonnes = sum(tonnes, na.rm = TRUE),
+      .groups = "drop"
+    ) |>
+    dplyr::mutate(
+      category = "Crops"
+    ) |>
+    assertr::verify(
+      assertr::has_all_names(
+        "year", "category", "value", "tonnes"
+      )
+    )
 }

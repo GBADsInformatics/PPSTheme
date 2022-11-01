@@ -63,6 +63,7 @@ default:
                 population:
                     url: 'https://api.worldbank.org/v2/country/all/indicator/SP.POP.TOTL?downloadformat=csv'
                     dir: data/source/world_bank/population
+                    metadata_files: "data/source/world_bank/population/20220324_population"
                     type: 'zip'
                     last_download: 20220324
                 gdp_per_capita_ppp:

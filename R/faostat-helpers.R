@@ -107,3 +107,86 @@ sanitize_columns <- function(df, exclude = c("iso3_code")) {
       ~ snakecase::to_any_case(stringi::stri_enc_toascii(.x))
     )
 }
+
+
+# -------------------------------------------------------------------------
+
+#' get_livestock_codes
+#'
+#' Returns the FAO item codes which will be used in the
+#' valuation of livestock types
+#'
+#' @param code_dir directory containing rds files of FAOSTAT item codes
+#'
+#' @return a vector containing the livestock codes used
+#' @export
+get_livestock_codes <- function(code_dir = config$data$codes$faostat$dir,
+                                write_codes = TRUE) {
+
+  # FAOSTAT Item Codes to Use for each category that will be used
+  code_rds_files <- list.files(
+    config$data$codes$faostat$dir,
+    full.names = TRUE,
+    pattern = "*.rds$"
+  )
+
+  # Name files
+  names(code_rds_files) <- basename(code_rds_files) |>
+    stringr::str_remove_all(".rds") |>
+    stringr::str_remove_all("FAOSTAT_")
+
+  # Read in the item code data
+  faostat_item_codes <- purrr::map(
+    code_rds_files,
+    ~ readRDS(.x) |>
+      janitor::clean_names()
+  )
+
+  names(faostat_item_codes) <- names(faostat_item_codes) |>
+    janitor::make_clean_names()
+
+  # Names of RDS files
+  rds_names <- c(
+    "livestock_codes",
+    "vop_items_non_indigenous_codes",
+    "meat_live_weight_codes",
+    "livestock_meat_item_codes"
+  )
+
+  if (length(setdiff(rds_names, names(faostat_item_codes))) > 0) {
+    stop("Incorrect code RDS file names")
+  }
+
+  # - Unique Livestock Codes that will be used
+  livestock_codes <- unique(
+    c(
+      faostat_item_codes$livestock_codes$item_code,
+      faostat_item_codes$vop_items_non_indigenous_codes$item_code,
+      faostat_item_codes$meat_live_weight_codes$item_code,
+      faostat_item_codes$livestock_meat_item_codes$item_code
+    )
+  )
+
+  # Save the current version of codes used
+  if (write_codes) {
+    write.csv(
+      faostat_item_codes$item_codes |>
+        dplyr::filter(
+          item_code %in% livestock_codes,
+          domain_code %in% c("QCL", "QV", "PP")
+        ),
+      file.path(
+        code_dir,
+        "livestock_item_codes.csv"
+      ),
+      row.names = FALSE
+    )
+  }
+
+  return(
+    list(
+      codes = livestock_codes,
+      code_list = faostat_item_codes
+    )
+  )
+}

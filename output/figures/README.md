@@ -29,19 +29,21 @@ A 3 by 2 plot showing the following comparisons.
 
 | Row | Panel Left                                    | Panel Right                    |
 |-----|-----------------------------------------------|--------------------------------|
-| 1   | Livestock Assets over time                    | Live body weight vs population |
+| 1   | Livestock and  Assets over time               | Live body weight vs population |
 | 2   | Livestock Outputs over time                   | Weight vs population           |
 | 3   | Crop Outputs over time (different categories) | Crop weights vs population     |
 |-----|-----------------------------------------------|--------------------------------|
 
 Each plot is a stacked area plot showing the different percentages over time. 
 
-![Figure 2](figure_2.png)
+![Figure 2: Global asset and output value of farmed animals and crops between 1998 and 2018](figure_2.png)
+
 
 ## Figure 3 
 
+![Figure 3: Approximation of the true global market value of farmed animals and global crop value.](figure_3.png)
 
-![Figure 3](figure_3.png)
+
 
 ## Figure 4 
 

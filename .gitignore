@@ -26,4 +26,11 @@ data/source/*
 # Any binary word doc files
 *.docx
 
-**archive
+# Archived data files 
+**/**archive**
+
+# duplicated figures 
+**/**updated**
+
+# Org files 
+**.org

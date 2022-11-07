@@ -55,7 +55,7 @@ df_list <- config$data$output[c(
 
 
 # Constants ---------------------------------------------------------------
-year <- 2018
+date <- 2018
 
 # Prep Data ---------------------------------------------------------------
 
@@ -64,7 +64,7 @@ year <- 2018
 data <- purrr::map(
   df_list,
   ~ arrow::read_parquet(.x, as_data_frame = TRUE) |>
-    dplyr::filter(year == year)
+    dplyr::filter(year == date)
 )
 
 
@@ -134,7 +134,7 @@ data_tev <- bind_rows(
 
 # World Bank Population File
 population <- LivestockValueGBADS::world_bank_population |>
-  dplyr::filter(year == year) |>
+  dplyr::filter(year == date) |>
   dplyr::rename(iso3_code = country_code)
 
 

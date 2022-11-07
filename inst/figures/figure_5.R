@@ -28,7 +28,7 @@
 
 # Project -----------------------------------------------------------------
 
-renv::activate(project = ".")
+renv::activate(project = here::here("."))
 
 
 
@@ -42,7 +42,6 @@ suppressPackageStartupMessages({
     library(rnaturalearth)
     library(rnaturalearthdata)
     library(sf)
-    library(glue)
     library(LivestockValueGBADS)
 })
 
@@ -202,7 +201,7 @@ world_asset_value <- left_join(world, asset_map_data, by = c("iso3_code"))
 
 
 # Breaks and labels
-break_labels <- c( "&lt;10B", "10-50B", "50-100B", "&gt; 100B" )
+break_labels <- c( "&lt;10B", "10B-50B", "50B-100B", "&gt; 100B" )
 break_vals <- c(0, 10e9 , 50e9 , 100e9, 100e20)
 break_label_na <- c(break_labels, "NA")
 cpal <- setNames(
@@ -251,13 +250,12 @@ plot_data <- function(df, value_col, fill_title, break_vals, break_labels, cpall
 
 
 # Total Values
-p11 <- plot_data(world_output_value, value, "Int ($)", break_vals, break_labels, cpal)
-p12 <- plot_data(world_asset_value, value, "Int ($)", break_vals, break_labels, cpal)
+p11 <- plot_data(world_asset_value, value, "Int.  $", break_vals, break_labels, cpal)
+p12 <- plot_data(world_output_value, value, "Int.   $", break_vals, break_labels, cpal)
 
 # Per capita
-p21 <- plot_data(world_output_value, value_percap, "Int ($) per capita", break_vals_percap, break_labels_percap, cpal_percap)
-p22 <- plot_data(world_asset_value, value_percap, "Int ($) per capita", break_vals_percap, break_labels_percap, cpal_percap)
-
+p21 <- plot_data(world_asset_value, value_percap, "Int. $  per   capita", break_vals_percap, break_labels_percap, cpal_percap)
+p22 <- plot_data(world_output_value, value_percap, "Int.  $  per   capita", break_vals_percap, break_labels_percap, cpal_percap)
 
 
 
@@ -274,10 +272,10 @@ fig5 <- ggpubr::ggarrange(
     vjust = 4,
     legend = "bottom",
     labels = c(
-        "A - Global value of animal outputs (2018) (PPP Int ($))",
-        "B - Global value of live animals (2018) (PPP Int ($))",
-        "C - Global value of animal outputs (2018) (PPP Int ($) per Capita)",
-        "D - Global value of live animals (2018) (PPP Int ($) per Capita)"
+        "A - Global Asset Value (2018) (PPP Int. $)",
+        "B - Global Output Value (2018) (PPP Int. $)",
+        "C - Global Asset Value (2018) (PPP Int. $ per capita)",
+        "D - Global Output Value (2018) (PPP Int. $ per capita)"
     ),
     font.label = list(
         size = 14,
@@ -285,9 +283,11 @@ fig5 <- ggpubr::ggarrange(
         face = "italic",
         family = "sans"
     )
-) +  theme(panel.background = element_rect(fill = "#D5E4EB", colour = "#D5E4EB"),
+) +
+  theme(
+    panel.background = element_rect(fill = "#D5E4EB", colour = "#D5E4EB"),
            plot.margin = margin(0, 0, 0, 0)
-)
+    )
 
 
 

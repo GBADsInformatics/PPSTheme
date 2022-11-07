@@ -281,7 +281,8 @@ plot_panel_col_2 <- function(df,
                 ),
                 position = position_stack(vjust = 1 + total_offset),
                 inherit.aes = F,
-                size = total_text_size
+                size = total_text_size,
+                fontface = "bold"
             ) +
         geom_label(
             data = population_df,
@@ -364,7 +365,7 @@ p12 <- plot_panel_col_2(
     value_col = tonnes,
     fill_values = get_fill_values(data$livestock_asset$category),
     coef = 10,
-    scale_fun = scales::comma_format(scale = 1e-9, accuracy = .1, suffix = " B"),
+    scale_fun = scales::comma_format(scale = 1e-9, accuracy = .01, suffix = " B"),
     y1_axis_title = "Live animals (Tonnes)",
     pct_lower_bound = 0.05
 )
@@ -373,7 +374,7 @@ p22 <- plot_panel_col_2(
     df = data$livestock_output,
     value_col = tonnes,
     fill_values = get_fill_values(data$livestock_output$category),
-    scale_fun = scales::comma_format(scale = 1e-9, accuracy = .1, suffix = " B"),
+    scale_fun = scales::comma_format(scale = 1e-9, accuracy = .01, suffix = " B"),
     coef = 5,
     y1_axis_title = "Animal outputs (Tonnes)",
     pct_lower_bound = 0.06
@@ -384,7 +385,7 @@ p32 <- plot_panel_col_2(
     value_col = tonnes,
     fill_values = get_fill_values(data$crop_value$category),
     coef = .7,
-    scale_fun = scales::comma_format(scale = 1e-9, accuracy = .1, suffix = " B"),
+    scale_fun = scales::comma_format(scale = 1e-9, accuracy = .01, suffix = " B"),
     y1_axis_title = "Crop outputs (Tonnes)"
 )
 

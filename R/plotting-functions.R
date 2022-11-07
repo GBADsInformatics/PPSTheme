@@ -9,7 +9,7 @@
 #' @export
 #'
 #' @examples
-scale_trill <- function(x, accuracy = 0.5) {
+scale_trill <- function(x, accuracy = 0.01) {
   scales::dollar(x,
     accuracy = accuracy,
     scale = 1e-12,

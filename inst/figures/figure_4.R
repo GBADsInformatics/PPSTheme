@@ -74,7 +74,8 @@ data <- purrr::map(
 data$livestock_outputs <- data$livestock_values |>
   filter(
     gross_production_value_current_thousand_slc > 0,
-    tonnes > 0
+    tonnes > 0,
+    item != "stock"
   ) |>
   drop_na(gross_production_value_current_thousand_slc) |>
   group_by(iso3_code) |>
@@ -176,7 +177,7 @@ world_value <- select(world_value, name, iso3_code, value, geometry) %>%
 p1 <- ggplot2::ggplot(data = world) +
   ggplot2::geom_sf(fill = "#808080", color = "#D5E4EB") +
   ggplot2::geom_sf(data = world_value, aes(fill = value_bins), color = "#D5E4EB") +
-  ggplot2::coord_sf(ylim = c(-55, 78)) +
+  ggplot2::coord_sf(ylim = c(-55, 78), xlim = c(-180, 180)) +
   ggplot2::scale_fill_manual(
     values = rev(list(
       "NA" = "#808080",

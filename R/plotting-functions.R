@@ -298,17 +298,24 @@ get_aquaculture_value <- function(aquaculture_value,
     dplyr::group_by(year) |>
     dplyr::summarise(
       value = sum(value, na.rm = TRUE),
+      tonnes = sum(tonnes, na.rm = TRUE),
       .groups = "drop"
     ) |>
     dplyr::mutate(
       category = "Aquaculture"
     ) |>
     assertr::verify(
+      assertr::not_na(value) & assertr::not_na(tonnes)
+    ) |>
+    assertr::verify(
       value > 0 & value < 5e11
     ) |>
     assertr::verify(
+      tonnes > 0
+    ) |>
+    assertr::verify(
       assertr::has_all_names(
-        "year", "category", "value"
+        "year", "category", "value", "tonnes"
       )
     )
 }

@@ -153,7 +153,7 @@ $(FIGURE_DIR)figure_A4.png:
 
 # Make all figure
 figures:
-	make $(FIGURE_DIR)figure_2.png $(FIGURE_DIR)figure_3.png $(FIGURE_DIR)figure_6.png $(FIGURE_DIR)figure_7.png $(FIGURE_DIR)figure_4.png $(FIGURE_DIR)figure_A2.png $(FIGURE_DIR)figure_A4.png $(FIGURE_DIR)figure_A5.png
+	make $(FIGURE_DIR)figure_2.png $(FIGURE_DIR)figure_3.png $(FIGURE_DIR)figure_6.png $(FIGURE_DIR)figure_7.png $(FIGURE_DIR)figure_4.png $(FIGURE_DIR)figure_A2.png $(FIGURE_DIR)figure_A4.png $(FIGURE_DIR)figure_5.png
 
 
 

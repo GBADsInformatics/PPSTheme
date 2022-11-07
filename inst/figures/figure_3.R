@@ -104,9 +104,9 @@ get_total_df <- function(df, value_col) {
         )
 }
 
-# Figure 3 ----------------------------------------------------------------
 
 
+# Data Prep ---------------------------------------------------------------
 
 df <- bind_rows(data$livestock_asset, data$livestock_output) |>
     dplyr::group_by(year) |>
@@ -127,8 +127,10 @@ df <- df |>
             dplyr::mutate(type = "market")
     )
 
+
 df_outputs <- get_total_df(data$livestock_output, value)
 df_crops <- data$crop_value
+
 
 # Generate the arrow location plot
 arrow_locations <- df |>
@@ -141,6 +143,7 @@ arrow_locations <- df |>
   ) |>
   ungroup() |>
   filter(year != 2008)
+
 
 # Text location
 text_locations <- df |>
@@ -162,12 +165,14 @@ df_ribbon <- df |>
   spread(type, value)
 
 
+# Figure 3 ----------------------------------------------------------------
 fig3 <- df |>
   ggplot(aes(x = year, y = value, color = type)) +
   geom_ribbon(
     data = df_ribbon,
     aes(x = year, ymin = `market`, ymax = `direct+market`), inherit.aes = F,
-    alpha = 0.1, color = csiro_blue
+    alpha = 0.1,
+    color = csiro_blue
   ) +
   geom_point(size = 2) +
   geom_line(size = 1.5) +
@@ -222,7 +227,7 @@ fig3 <- df |>
     "text",
     x = 2008,
     y = df_crops$value[df_crops$year == 2008] + 0.8e11,
-    label = "atop(bold('Value of Crops'))",
+    label = "atop(bold('Crop Output Value'))",
     parse = TRUE,
     size = annotate_size,
     color = nature_color_scheme()["Sheep"]
@@ -231,7 +236,7 @@ fig3 <- df |>
     "text",
     x = 2008,
     y = df_outputs$value[df_outputs$year == 2008] - 1.1e11,
-    label = "atop(bold('Value of Animal Outputs'))",
+    label = "atop(bold('Animal Output Value'))",
     parse = TRUE,
     size = annotate_size,
     color = nature_color_scheme()["Cattle"]
@@ -239,22 +244,22 @@ fig3 <- df |>
   annotate("text",
     x = 2008,
     y = 1.3e12,
-    label = "atop(bold('Value of Live Animals'))",
+    label = "atop(bold('Animal Asset Value'))",
     parse = TRUE,
     size = annotate_size
   ) +
   annotate("text",
     x = 2008,
     y = 2.8e12,
-    label = "atop(bold('Value of Live Animals +\nValue of Animal Outputs'))",
+    label = "atop(bold('Animal Asset Value +\nAnimal Output Value'))",
     size = annotate_size,
     parse = TRUE
   ) +
   labs(
     x = "Year",
-    y = "Constant USD (Trillion)",
+    y = "Market Value in constant USD (Trillion)",
     fill = " ",
-    title = "Comparison of the value of Live Animals and Live Animal Outputs."
+    title = ""
   ) +
   panel_plot_theme() +
   theme(

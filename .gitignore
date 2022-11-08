@@ -35,3 +35,10 @@ data/source/*
 # Org files 
 **.org
 inst/doc
+docs/*
+*.pdf
+*.pptx
+*.tex
+*.log
+*.bbl
+*.csl

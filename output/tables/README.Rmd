@@ -1,0 +1,79 @@
+---
+title: Tables 
+output: 
+        github_document:
+            toc: true 
+html_preview: false
+---
+
+
+
+```{r, include = FALSE}
+
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  out.width = "100%"
+)
+
+```
+
+```{r, include=FALSE}
+
+suppressPackageStartupMessages({
+    library(openxlsx)
+})
+
+table_dir <- here::here("output", "tables")
+
+```
+
+
+# Tables 
+
+
+To regenerate tables, run 
+
+
+```bash 
+
+make tables # From the project root directory 
+
+```
+
+*Note: to regenerate this document, run `make README` from the project root directory*
+
+
+
+```{r}
+tables <- list.files(table_dir, pattern = "*1998-2018.xlsx$",full.names = TRUE) |> sort()
+```
+
+
+# Table 1 
+
+```{r}
+tables[1] |> 
+    readxl::read_excel(skip = 1) |> 
+    knitr::kable(format = "markdown") |> 
+    print()
+```
+
+# Table 2 
+
+```{r}
+tables[2] |> 
+    readxl::read_excel(skip = 1) |> 
+    knitr::kable(format = "markdown") |> 
+    print()
+```
+
+# Table 3 
+
+```{r}
+tables[3] |> 
+    readxl::read_excel(skip = 1) |> 
+    knitr::kable(format = "markdown") |> 
+    print()
+```
+

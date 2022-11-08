@@ -34,3 +34,4 @@ data/source/*
 
 # Org files 
 **.org
+inst/doc

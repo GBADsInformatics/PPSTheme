@@ -2,17 +2,50 @@
 
 
 # Description -------------------------------------------------------------
-# Generates different tables for the
+#
+# Project: GBADS
+# Name: generate-tables.R
+#
+# Author: Gabriel Dennis <gabriel.dennis@csiro.au>
+#
+# Description:  Generates different tables for the
 # livestock value manuscript
+#
+# For examples of output tables:
+# see output/tables/README.md
+#
+#
+# To remake output tables, run
+# `make tables` from the project root directory
+# -------------------------------------------------------------------------
 
+
+# Activate Project --------------------------------------------------------
+renv::activate(project = here::here("."))
+
+
+
+# Libraries ---------------------------------------------------------------
+suppressPackageStartupMessages({
+  library(arrow)
+  library(dplyr)
+  library(openxlsx)
+})
 
 
 
 # Configuration -----------------------------------------------------------
+config <- config::get()
 
-config <- config::get(  )
 
-library(dplyr)
+
+
+# Constants ---------------------------------------------------------------
+
+# Tempral range to show in each output table
+year_span <- 1998:2018
+
+
 
 
 # Create Excell Files of Tables -------------------------------------------
@@ -20,22 +53,21 @@ library(dplyr)
 # Livestock
 livestock <- config$data$output$livestock_values |>
   arrow::read_parquet() |>
-  dplyr::filter(year %in% 2006:2018)
+  dplyr::filter(year %in% year_span)
 
 # Aquaculture
 aquaculture <- config$data$output$aquaculture_values |>
   arrow::read_parquet() |>
-  dplyr::filter(year %in% 2006:2018)
+  dplyr::filter(year %in% year_span)
 
 # Crops
 crops <- config$data$output$crop_values |>
   arrow::read_parquet() |>
-  dplyr::filter(year %in% 2006:2018)
+  dplyr::filter(year %in% year_span)
 
 
 
 # Total Values ------------------------------------------------------------
-library(openxlsx)
 
 livestock_total <- livestock |>
   dplyr::group_by(year) |>
@@ -64,7 +96,7 @@ crop_total <- crops |>
     crops_tonnes = sum(tonnes, na.rm = TRUE)
   )
 
-total_table <- purrr::reduce((list(crop_total, livestock_total, aquaculture_total)), full_join) |>
+total_table <- purrr::reduce((list(crop_total, livestock_total, aquaculture_total)), full_join, by = "year") |>
   arrange(desc(year)) |>
   dplyr::mutate_at(vars(contains("tonnes")), ~ scales::comma(.x, scale = 1e-6, suffix = "M", accuracy = 1)) |>
   dplyr::mutate_at(vars(-contains("tonnes"), -year), ~ scales::dollar(.x, scale = 1e-9, suffix = "B", accuracy = 1))
@@ -90,13 +122,16 @@ writeData(wb,
   total_table,
   startCol = 1, startRow = 3
 )
-saveWorkbook(wb, here::here("output", "tables", "table_appendix_tev_crops_livestock_aquaculture_2006-2018.xlsx"),
+
+saveWorkbook(wb, here::here("output", "tables", glue::glue("table_appendix_tev_crops_livestock_aquaculture_{year_span[1]}-{year_span[2]}.xlsx")),
   overwrite = TRUE
 )
 
 
 # Total Values with Aquaculture ---------------------------------------------------------------
 
+
+# Livestock Totals
 livestock_total <- livestock |>
   dplyr::group_by(year) |>
   dplyr::summarise(
@@ -105,6 +140,7 @@ livestock_total <- livestock |>
     livestock_tonnes = sum(ifelse(item != "stock", tonnes, 0), na.rm = TRUE)
   )
 
+# Aquaculture Totals
 aquaculture_total <- aquaculture |>
   dplyr::group_by(year) |>
   dplyr::summarise(
@@ -114,10 +150,11 @@ aquaculture_total <- aquaculture |>
   )
 
 
-total_table <- purrr::reduce((list(livestock_total, aquaculture_total)), full_join) |>
+# Combined Totals
+total_table <- dplyr::full_join(livestock_total, aquaculture_total, by = "year") |>
   arrange(desc(year)) |>
-  dplyr::mutate_at(vars(contains("tonnes")), ~ scales::comma(.x, scale = 1e-6, suffix = "M", accuracy = 1)) |>
-  dplyr::mutate_at(vars(-contains("tonnes"), -year), ~ scales::dollar(.x, scale = 1e-9, suffix = "B", accuracy = 1))
+  dplyr::mutate_at(vars(contains("tonnes")), ~ ifelse(is.na(.x), NA, scales::comma(.x, scale = 1e-6, suffix = "M", accuracy = 1))) |>
+  dplyr::mutate_at(vars(-contains("tonnes"), -year), ~ ifelse(is.na(.x), NA, scales::dollar(.x, scale = 1e-9, suffix = "B", accuracy = 1)))
 
 names(total_table) <- c(
   "Year",
@@ -143,7 +180,9 @@ writeData(wb,
   startCol = 1, startRow = 3
 )
 
-saveWorkbook(wb, here::here("output", "tables", "table_appendix_asset_output_livestock_aquaculture_2006-2018.xlsx"),
+saveWorkbook(wb,
+  file = here::here("output", "tables",
+                    glue::glue("table_appendix_asset_output_livestock_aquaculture_{year_span[1]}-{year_span[2]}.xlsx")),
   overwrite = TRUE
 )
 
@@ -219,7 +258,9 @@ writeData(wb,
   table_df,
   startCol = 1, startRow = 3
 )
-saveWorkbook(wb, here::here("output", "tables", "table_appendix_bra_chn_ind_usa_2006-2018.xlsx"),
+
+saveWorkbook(wb,
+  file = here::here("output", "tables", glue::glue("table_appendix_bra_chn_ind_usa_{year_span[1]}-{year_span[2]}.xlsx")),
   overwrite = TRUE
 )
 
@@ -339,13 +380,15 @@ writeData(wb,
 
 writeData(wb,
   "LivestockLMICValue",
-  sprintf("Source: Income Classifications sourced from %s",
-          config$data$source$tables$income_classification_history$url),
+  sprintf(
+    "Source: Income Classifications sourced from %s",
+    config$data$source$tables$income_classification_history$url
+  ),
   startCol = 1, startRow = 25
 )
 
 
-saveWorkbook(wb, here::here("output", "tables", "table_lmic_proportion_2006-2018.xlsx"),
+saveWorkbook(wb, here::here("output", "tables", "table_lmic_proportion_1998-2018.xlsx"),
   overwrite = TRUE
 )
 
@@ -438,178 +481,3 @@ per_country_values <- lvst_df |>
 per_year_values <- lvst_df |>
   grouping_sum(asset_value, output_value, year) |>
   convert_to_table(suffix = "B")
-
-
-
-# Create vectors to recode the dataframes for writing to XLSX
-
-# http://www.sthda.com/english/wiki/r-xlsx-package-a-quick-start-guide-to-manipulate-excel-files-in-r
-library(xlsx)
-
-# Create workbook
-wb <- createWorkbook(type = "xlsx")
-
-TITLE_STYLE <- CellStyle(wb) + Font(
-  wb,
-  heightInPoints = 16,
-  color = "blue",
-  isBold = TRUE,
-  underline = 1
-)
-SUB_TITLE_STYLE <- CellStyle(wb) +
-  Font(wb,
-    heightInPoints = 14,
-    isItalic = TRUE,
-    isBold = FALSE
-  )
-
-# Styles for the data table row/column names
-TABLE_ROWNAMES_STYLE <- CellStyle(wb) + Font(wb, isBold = TRUE)
-TABLE_COLNAMES_STYLE <- CellStyle(wb) + Font(wb, isBold = TRUE) +
-  Alignment(wrapText = TRUE, horizontal = "ALIGN_CENTER") +
-  Border(
-    color = "black",
-    position = c("TOP", "BOTTOM"),
-    pen = c("BORDER_THIN", "BORDER_THICK")
-  )
-
-xlsx.addTitle <- function(sheet, rowIndex, title, titleStyle) {
-  rows <- createRow(sheet, rowIndex = rowIndex)
-  sheetTitle <- createCell(rows, colIndex = 1)
-  setCellValue(sheetTitle[[1, 1]], title)
-  setCellStyle(sheetTitle[[1, 1]], titleStyle)
-}
-
-# Create Global Value Sheet
-
-global_value <- createSheet(wb, sheetName = "GlobalValue")
-
-
-xlsx.addTitle(
-  global_value,
-  rowIndex = 1,
-  titleStyle = TITLE_STYLE,
-  title = "Global Value of Livestock Assets and Outputs (2006-2018)"
-)
-
-xlsx.addTitle(
-  global_value,
-  rowIndex = 2,
-  titleStyle = SUB_TITLE_STYLE,
-  title = "Note: All values in constant 2014-2016 USD"
-)
-
-xlsx.addTitle(
-  global_value,
-  rowIndex = 4,
-  titleStyle = SUB_TITLE_STYLE,
-  title = sprintf("Last Updated: %s", Sys.time())
-)
-
-
-
-addDataFrame(
-  as.data.frame(per_year_values),
-  global_value,
-  startRow = 10,
-  startColumn = 1,
-  colnamesStyle = TABLE_COLNAMES_STYLE,
-  rownamesStyle = TABLE_ROWNAMES_STYLE,
-  row.names = FALSE
-)
-# Change column width
-setColumnWidth(global_value,
-  colIndex = c(1:ncol(per_year_values)),
-  colWidth = 25
-)
-
-
-country_value <- createSheet(wb, sheetName = "CountryValue")
-
-
-xlsx.addTitle(
-  country_value,
-  rowIndex = 1,
-  titleStyle = TITLE_STYLE,
-  title = "Per Country Value of Livestock Assets and Outputs (2006-2018)"
-)
-
-xlsx.addTitle(
-  country_value,
-  rowIndex = 2,
-  titleStyle = SUB_TITLE_STYLE,
-  title = "Note: All values in constant 2014-2016 USD"
-)
-
-xlsx.addTitle(
-  country_value,
-  rowIndex = 4,
-  titleStyle = SUB_TITLE_STYLE,
-  title = sprintf("Last Updated: %s", Sys.time())
-)
-
-
-
-addDataFrame(
-  as.data.frame(per_country_values),
-  country_value,
-  startRow = 10,
-  startColumn = 1,
-  colnamesStyle = TABLE_COLNAMES_STYLE,
-  rownamesStyle = TABLE_ROWNAMES_STYLE,
-  row.names = FALSE
-)
-# Change column width
-setColumnWidth(country_value,
-  colIndex = c(1:ncol(per_country_values)),
-  colWidth = 25
-)
-
-
-livestock_value <- createSheet(wb, sheetName = "LivestockCountryValue")
-
-
-xlsx.addTitle(
-  livestock_value,
-  rowIndex = 1,
-  titleStyle = TITLE_STYLE,
-  title = "Per Country and Livestock Value of Livestock Assets and Outputs"
-)
-
-xlsx.addTitle(livestock_value,
-  rowIndex = 2,
-  titleStyle = SUB_TITLE_STYLE,
-  title = "Note: All values in constant 2014-2016 USD"
-)
-
-xlsx.addTitle(livestock_value,
-  rowIndex = 4,
-  titleStyle = SUB_TITLE_STYLE,
-  title = sprintf("Last Updated: %s", Sys.time())
-)
-
-
-
-addDataFrame(
-  as.data.frame(per_country_livestock_values),
-  livestock_value,
-  startRow = 10,
-  startColumn = 1,
-  colnamesStyle = TABLE_COLNAMES_STYLE,
-  rownamesStyle = TABLE_ROWNAMES_STYLE,
-  row.names = FALSE
-)
-
-# Change column width
-setColumnWidth(livestock_value,
-  colIndex = c(1:ncol(per_country_livestock_values)),
-  colWidth = 25
-)
-
-saveWorkbook(
-  wb,
-  file.path("output", "tables", sprintf(
-    "table_value_data_2006-2018_%s.xlsx",
-    format(Sys.Date(), format = "%Y%m%d")
-  ))
-)

@@ -10,7 +10,7 @@ format:
 	R -q -e 'styler::style_pkg()'
 
 
-.PHONY: figures
+.PHONY: figures tables README
 
 # Variables
 R_DIR=R/
@@ -156,6 +156,14 @@ figures:
 	make $(FIGURE_DIR)figure_2.png $(FIGURE_DIR)figure_3.png $(FIGURE_DIR)figure_6.png $(FIGURE_DIR)figure_7.png $(FIGURE_DIR)figure_4.png $(FIGURE_DIR)figure_A2.png $(FIGURE_DIR)figure_A4.png $(FIGURE_DIR)figure_5.png
 
 
+# Make tables
+tables:
+	Rscript --vanilla $(SCRIPT_DIR)tables/generate-tables.R
+
+
+# Any RMD files in the output folder
+README:
+	R -q -e 'rmarkdown::render("output/tables/README.rmd")' 1>/dev/null &
 
 
 #------------------------------------

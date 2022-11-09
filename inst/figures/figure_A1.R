@@ -159,7 +159,7 @@ fig_a1 <- ggplot(data = world) +
   scale_fill_manual(
     values = cut_labels
   ) +
-  facet_wrap(~category, nrow = 3) +
+  facet_wrap(~category, nrow = 2) +
   labs(
     title = "Global spatial distribution of the economic asset value by livestock type in 2018",
     fill = "Int. $",
@@ -179,7 +179,7 @@ fig_a1 <- ggplot(data = world) +
 ggsave(
   plot = fig_a1,
   filename = "output/figures/figure_A1.png",
-  width = 17,
-  height = 12,
+  width = 20,
+  height = 8,
   dpi = 300
 )

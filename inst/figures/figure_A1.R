@@ -2,17 +2,21 @@
 
 # ------------------------------------------------------------------------------
 #
-# Name: inst/figures/figure_A4.R
+# Name: inst/figures/figure_A1.R #nolint
 # Project: GBADS
 # Author: Gabriel Dennis <gabriel.dennis@csiro.au>
 #
-# Generates  Figure A4 for the livestock value manuscript
+# Generates  Figure A1 for the livestock value manuscript
+#
+# Shows the
+# Figure A.1: Global spatial distribution of the economic asset value by livestock type in 2018
+# in 2018 PPP adjusted Int. $
 #
 # For detail on descriptions of each figure
-# See:  output/figures/README.md#figure-descriptions
+# See: output/figures/README.md#figure-descriptions #nolint
 #
 # For details on the figure specifications used here
-# See: output/figures/README.md#figure-specifications
+# See: output/figures/README.md#figure-specifications #nolint
 # -------------------------------------------------------------------------
 
 
@@ -33,60 +37,70 @@ suppressPackageStartupMessages({
 })
 # -------------------------------------------------------------------------
 
-
-
-
-
-
-
 # Import output files -----------------------------------------------------
 config <- config::get()
 
 # -------------------------------------------------------------------------
-df_file <- config$data$output$livestock_values
-aqua_file <- config$data$output$aquaculture_values
-date <- 2018
-animals <- c("Cattle", "Sheep", "Goat", "Chicken", "Pig", "Aquaculture")
 
+#  Livestock Data file
+df_file <- config$data$output$livestock_values
+
+# Aquaculture File
+aqua_file <- config$data$output$aquaculture_values
+
+# Constants
+
+# Year to filter for
+date <- 2018
+
+
+# Animal categories to use,
+# with the addition of "Other Livestock"
+animals <- c("Cattle", "Sheep", "Goat", "Chicken", "Pig")
 
 
 # -------------------------------------------------------------------------
 
-
 # Load in the data
+
+# Select all items which have LCU/SLC stock values for the year in question
+# group by animals, and aggregate the selected item
 data <- arrow::read_parquet(df_file, as_data_frame = TRUE) |>
-  dplyr::filter(
-    year == date,
-    item != "stock",
-    gross_production_value_constant_2014_2016_thousand_us > 0
-  ) |>
-  dplyr::mutate(iso3_code = toupper(iso3_code)) |>
   dplyr::mutate(
     category = case_when(
       animal %in% tolower(animals) ~ stringr::str_to_title(animal),
       TRUE ~ "Other Livestock"
     )
-  ) |>
-  dplyr::group_by(iso3_code, category) |>
+  ) %>%
+  dplyr::filter(
+    year == date,
+    item == "stock",
+     (stock_value_slc > 0) # Using slc because in FAOSTAT SLC is equal to LCU for the conversion
+  ) %>%
+  dplyr::group_by(iso3_code, category) %>%
   dplyr::summarise(
-    value = sum(gross_production_value_constant_2014_2016_thousand_us, na.rm = TRUE) * 1000,
+    value_slc = sum(stock_value_slc, na.rm = TRUE),
     .groups = "drop"
   )
 
-# Aquaculture
-aqua_data <- aqua_file |>
-  arrow::read_parquet() |>
-  dplyr::filter(
-    year == date
-  ) |>
-  dplyr::group_by(iso3_code) |>
-  dplyr::summarise(value = sum(constant_2014_2016_usd_value, na.rm = TRUE), .groups = "drop") |>
-  dplyr::mutate(category = "Aquaculture")
-
-data <- dplyr::bind_rows(data, aqua_data)
+# PPP Conversion Tables
+# Contains LCU to Int. $ Conversion ratios
+ppp_conversion <- arrow::read_parquet(config$data$output$ppp_conversion) |>
+    dplyr::filter(year == date) |>
+    dplyr::select(
+        iso3_code,
+        ppp_conversion = value
+    )
 
 
-
+# Convert the SLC stock/Asset values to 2018 PPP Int. $
+data <- data |>
+    dplyr::left_join(
+        ppp_conversion, by = "iso3_code"
+    ) |>
+    dplyr::mutate(
+        value = value_slc/ppp_conversion
+    )
 
 # -------------------------------------------------------------------------
 
@@ -95,6 +109,8 @@ data <- dplyr::bind_rows(data, aqua_data)
 # Imports simple features for all countries in the world
 world <- ne_countries(scale = "medium", returnclass = "sf") %>%
   dplyr::rename(iso3_code = iso_a3)
+
+
 
 world_value <- world |>
   dplyr::left_join(data, by = "iso3_code") |>
@@ -110,6 +126,9 @@ cut_labels <- c(
   "500M-10B" = "#41B6C4",
   "&gt;10B" = "#225EA8"
 )
+
+
+# Bin into values
 world_value <- dplyr::select(world_value, name, iso3_code, category, value, geometry) %>%
   dplyr::mutate(
     value_bins = cut(value,
@@ -120,35 +139,47 @@ world_value <- dplyr::select(world_value, name, iso3_code, category, value, geom
     category = forcats::fct_reorder(category, value, sum, .desc = TRUE)
   )
 
-p <- ggplot(data = world) +
+
+
+# Figure A1 Plot ----------------------------------------------------------
+#https://stackoverflow.com/questions/34805506/adjust-title-vertically-to-inside-the-plot-vjust-not-working
+
+fig_a1 <- ggplot(data = world) +
   geom_sf(fill = "#808080", color = "#D5E4EB", size = 0.1) +
-  geom_sf(data = world_value, aes(fill = value_bins), color = "#D5E4EB", size = 0.1) +
-  coord_sf(ylim = c(-55, 78)) +
+  geom_sf(
+      data = world_value,
+      aes(fill = value_bins),
+      color = "#D5E4EB",
+      size = 0.1
+   ) +
+  coord_sf(
+      ylim = c(-55, 78),
+      xlim = c(-180, 180)
+  ) +
   scale_fill_manual(
     values = cut_labels
   ) +
-  facet_wrap(~category) +
+  facet_wrap(~category, nrow = 3) +
   labs(
-    title = paste0("Value Of Livestock And Aquaculture Outputs (", date, ")"),
-    fill = "USD ($)",
+    title = "Global spatial distribution of the economic asset value by livestock type in 2018",
+    fill = "Int. $",
     subtitle = "",
-    caption = "All values in constant 2014-2016 USD ($)"
   ) +
   guides(fill = guide_legend(nrow = 1)) +
   world_map_theme() +
   theme(
-    legend.position = c(0.6, 0.2),
+    plot.margin = margin(t  = 50, r = 25, l = 25, b = 25),
+    strip.text.x = element_text(size = 15, face = "italic", margin = margin(b = 20)),
+    plot.title = ggtext::element_markdown(face = "italic", margin = margin(t = 10, b = 30))
   )
 
 
 
 # Save  -------------------------------------------------------------------
 ggsave(
-    plot = p,
-    filename = "output/figures/figure_A4.png",
-    width = 20,
-    height = 12
+  plot = fig_a1,
+  filename = "output/figures/figure_A1.png",
+  width = 17,
+  height = 12,
+  dpi = 300
 )
-
-
-

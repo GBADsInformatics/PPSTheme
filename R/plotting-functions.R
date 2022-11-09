@@ -112,18 +112,11 @@ world_map_theme <- function() {
       axis.text.x = ggplot2::element_blank(),
       axis.ticks.x = ggplot2::element_blank(),
       panel.border = ggplot2::element_blank(),
-      strip.text.x = ggtext::element_markdown(
-        size = figure_spec$font_size,
-        family = figure_spec$family,
-        vjust = 1
-      ),
       legend.text = ggtext::element_markdown(
-        size = figure_spec$font_size,
-        family = figure_spec$family
+        size = 12
       ),
       legend.title = ggtext::element_markdown(
-        size = figure_spec$font_size,
-        family = figure_spec$family
+        size = 12
       ),
       panel.grid.major = ggplot2::element_blank(),
       axis.line.x = ggplot2::element_blank(),
@@ -135,8 +128,7 @@ world_map_theme <- function() {
       plot.title = ggtext::element_markdown(
         size = 18,
         family = "sans" ,
-        face = "italic",
-        vjust = 0, hjust = 0
+        face = "italic"
       ),
       plot.caption = ggtext::element_markdown(
         size = figure_spec$font_size,

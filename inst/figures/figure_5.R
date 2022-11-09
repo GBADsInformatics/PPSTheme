@@ -22,7 +22,7 @@
 # See:  output/figures/README.md#figure-descriptions
 #
 # For details on the figure specifications used here
-# See: output/figures/README.md#figure-specifications
+# See: output/figures/README.md#figure-specifications # nolint
 # -------------------------------------------------------------------------
 
 

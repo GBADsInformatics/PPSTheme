@@ -94,7 +94,6 @@ panel_plot_theme <- function() {
       axis.ticks = ggplot2::element_blank(),
       axis.title.x.bottom = ggplot2::element_blank(),
       plot.margin = margin(t = 25, r = 25, b = 10, l = 25)
-
     )
 }
 
@@ -127,7 +126,7 @@ world_map_theme <- function() {
       plot.title.position = "plot",
       plot.title = ggtext::element_markdown(
         size = 18,
-        family = "sans" ,
+        family = "sans",
         face = "italic"
       ),
       plot.caption = ggtext::element_markdown(

@@ -7,7 +7,7 @@ test:
 	R -q -e 'devtools::test()'
 
 format:
-	R -q -e 'styler::style_pkg()'
+	R -q -e 'styler::style_pkg()' 1>/dev/null &
 
 
 .PHONY: figures tables README
@@ -123,17 +123,17 @@ $(METADATA_DIR):
 #--------------------------------------
 # Figures and tables
 # -------------------------------------
-$(FIGURE_DIR)figure_2.png:
-	Rscript --vanilla $(SCRIPT_DIR)figures/figure_2.R 1>/dev/null &
+$(FIGURE_DIR)figure_2.png: $(SCRIPT_DIR)figures/figure_2.R 
+	Rscript $(SCRIPT_DIR)figures/figure_2.R 1>/dev/null &
 
-$(FIGURE_DIR)figure_3.png:
-	Rscript --vanilla $(SCRIPT_DIR)figures/figure_3.R 1>/dev/null &
+$(FIGURE_DIR)figure_3.png: $(SCRIPT_DIR)figures/figure_3.R
+	Rscript $(SCRIPT_DIR)figures/figure_3.R 1>/dev/null &
 
-$(FIGURE_DIR)figure_4.png:
-	Rscript --vanilla $(SCRIPT_DIR)figures/figure_4.R 1>/dev/null &
+$(FIGURE_DIR)figure_4.png: $(SCRIPT_DIR)figures/figure_4.R
+	Rscript $(SCRIPT_DIR)figures/figure_4.R 1>/dev/null &
 
-$(FIGURE_DIR)figure_5.png:
-	Rscript --vanilla $(SCRIPT_DIR)figures/figure_5.R 1>/dev/null &
+$(FIGURE_DIR)figure_5.png: $(SCRIPT_DIR)figures/figure_5.R
+	Rscript  $(SCRIPT_DIR)figures/figure_5.R 1>/dev/null &
 
 $(FIGURE_DIR)figure_6.png:
 	Rscript --vanilla $(SCRIPT_DIR)figures/figure_6.R 1>/dev/null &

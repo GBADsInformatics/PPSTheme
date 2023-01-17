@@ -1,0 +1,398 @@
+---- INFO ----
+
+This document provides a report of comparison between the weight table from FAO used for biomass and the FAOSTAT QCL data table.
+We compare the data available for a given country given a species as compared to FAOSTAT QCL.
+
+---- NUMBER OF RECORDS BY SPECIES IN WEIGHT TABLE ----
+
+The number of countries that report a species in the weight table.
+
+| species                |   iso3 |
+|:-----------------------|-------:|
+| Buffaloes              |     23 |
+| Camels                 |     31 |
+| Cattle                 |    187 |
+| Chickens               |    187 |
+| Ducks                  |      6 |
+| Geese and guinea fowls |      4 |
+| Goats                  |    155 |
+| Horses                 |     70 |
+| Pigs                   |    167 |
+| Rabbits and hares      |     50 |
+| Sheep                  |    175 |
+| Turkeys                |     56 |
+
+
+
+---- NUMBER OF Cattle RECORDS BY COUNTRY ----
+
+There are 196 countries reporting Cattle in FAOSTAT QCL compared to 187 countries in the weight table.
+
+10 records occur in FAOSTAT QCL pop table but not in the weight table for this species:
+
+{'SSD', 'HKG', 'TLS', 'TWN', 'PSE', 'LUX', 'FSM', 'FRO', 'SRB', 'MNE'}
+
+1 records occur in the weight table but not in the FAOSTAT QCL pop table for this species:
+
+{'FLK'}
+
+
+---- NUMBER OF OCCURENCES OF SPECIES Cattle BY COUNTRY BETWEEN BOTH DATA TABLES ----
+
+There are 186 common countries reporting Cattle. 
+
+The list of common countries: 
+['AFG' 'ALB' 'DZA' 'AGO' 'ATG' 'ARG' 'ARM' 'AUS' 'AUT' 'AZE' 'BHS' 'BHR'
+ 'BGD' 'BRB' 'BLR' 'BEL' 'BLZ' 'BEN' 'BTN' 'BOL' 'BIH' 'BWA' 'BRA' 'BRN'
+ 'BGR' 'BFA' 'BDI' 'CPV' 'KHM' 'CMR' 'CAN' 'CAF' 'TCD' 'CHL' 'CHN' 'COL'
+ 'COM' 'COG' 'COK' 'CRI' 'CIV' 'HRV' 'CUB' 'CYP' 'CZE' 'PRK' 'COD' 'DNK'
+ 'DJI' 'DMA' 'DOM' 'ECU' 'EGY' 'SLV' 'GNQ' 'ERI' 'EST' 'SWZ' 'ETH' 'FJI'
+ 'FIN' 'FRA' 'GUF' 'PYF' 'GAB' 'GMB' 'GEO' 'DEU' 'GHA' 'GRC' 'GRD' 'GLP'
+ 'GTM' 'GIN' 'GNB' 'GUY' 'HTI' 'HND' 'HUN' 'ISL' 'IND' 'IDN' 'IRN' 'IRQ'
+ 'IRL' 'ISR' 'ITA' 'JAM' 'JPN' 'JOR' 'KAZ' 'KEN' 'KWT' 'KGZ' 'LAO' 'LVA'
+ 'LBN' 'LSO' 'LBR' 'LBY' 'LTU' 'MDG' 'MWI' 'MLI' 'MYS' 'MLT' 'MTQ' 'MRT'
+ 'MUS' 'MEX' 'MNG' 'MAR' 'MOZ' 'MMR' 'NAM' 'NPL' 'NLD' 'NCL' 'NZL' 'NIC'
+ 'NER' 'NGA' 'NIU' 'MKD' 'NOR' 'OMN' 'PAK' 'PAN' 'PNG' 'PRY' 'PER' 'PHL'
+ 'POL' 'PRT' 'PRI' 'QAT' 'KOR' 'MDA' 'REU' 'ROU' 'RUS' 'RWA' 'KNA' 'LCA'
+ 'VCT' 'WSM' 'STP' 'SAU' 'SEN' 'SYC' 'SLE' 'SGP' 'SVK' 'SVN' 'SLB' 'SOM'
+ 'ZAF' 'ESP' 'LKA' 'SDN' 'SUR' 'SWE' 'CHE' 'SYR' 'TJK' 'TGO' 'THA' 'TON'
+ 'TTO' 'TUN' 'TUR' 'TKM' 'UGA' 'UKR' 'ARE' 'GBR' 'TZA' 'USA' 'URY' 'UZB'
+ 'VUT' 'VEN' 'VNM' 'YEM' 'ZMB' 'ZWE']
+
+
+
+----------------------------------------------------------------------------------
+
+---- NUMBER OF Sheep RECORDS BY COUNTRY ----
+
+There are 183 countries reporting Sheep in FAOSTAT QCL compared to 175 countries in the weight table.
+
+10 records occur in FAOSTAT QCL pop table but not in the weight table for this species:
+
+{'SSD', 'HKG', 'TLS', 'TWN', 'PSE', 'LUX', 'FRO', 'SRB', 'MNE', 'BRN'}
+
+2 records occur in the weight table but not in the FAOSTAT QCL pop table for this species:
+
+{'SGP', 'FLK'}
+
+
+---- NUMBER OF OCCURENCES OF SPECIES Sheep BY COUNTRY BETWEEN BOTH DATA TABLES ----
+
+There are 173 common countries reporting Sheep. 
+
+The list of common countries: 
+['AFG' 'ALB' 'DZA' 'AGO' 'ATG' 'ARG' 'ARM' 'AUS' 'AUT' 'AZE' 'BHS' 'BHR'
+ 'BGD' 'BRB' 'BLR' 'BEL' 'BLZ' 'BEN' 'BTN' 'BOL' 'BIH' 'BWA' 'BRA' 'BGR'
+ 'BFA' 'BDI' 'CPV' 'CMR' 'CAN' 'CAF' 'TCD' 'CHL' 'CHN' 'COL' 'COM' 'COG'
+ 'CRI' 'CIV' 'HRV' 'CUB' 'CYP' 'CZE' 'PRK' 'COD' 'DNK' 'DJI' 'DMA' 'DOM'
+ 'ECU' 'EGY' 'SLV' 'GNQ' 'ERI' 'EST' 'SWZ' 'ETH' 'FJI' 'FIN' 'FRA' 'GUF'
+ 'PYF' 'GAB' 'GMB' 'GEO' 'DEU' 'GHA' 'GRC' 'GRD' 'GLP' 'GTM' 'GIN' 'GNB'
+ 'GUY' 'HTI' 'HND' 'HUN' 'ISL' 'IND' 'IDN' 'IRN' 'IRQ' 'IRL' 'ISR' 'ITA'
+ 'JAM' 'JPN' 'JOR' 'KAZ' 'KEN' 'KWT' 'KGZ' 'LVA' 'LBN' 'LSO' 'LBR' 'LBY'
+ 'LTU' 'MDG' 'MWI' 'MYS' 'MLI' 'MLT' 'MTQ' 'MRT' 'MUS' 'MEX' 'MNG' 'MAR'
+ 'MOZ' 'MMR' 'NAM' 'NPL' 'NLD' 'NCL' 'NZL' 'NIC' 'NER' 'NGA' 'MKD' 'NOR'
+ 'OMN' 'PAK' 'PNG' 'PRY' 'PER' 'PHL' 'POL' 'PRT' 'PRI' 'QAT' 'KOR' 'MDA'
+ 'REU' 'ROU' 'RUS' 'RWA' 'KNA' 'LCA' 'VCT' 'STP' 'SAU' 'SEN' 'SLE' 'SVK'
+ 'SVN' 'SOM' 'ZAF' 'ESP' 'LKA' 'SDN' 'SUR' 'SWE' 'CHE' 'SYR' 'TJK' 'THA'
+ 'TGO' 'TTO' 'TUN' 'TUR' 'TKM' 'UGA' 'UKR' 'ARE' 'GBR' 'TZA' 'USA' 'URY'
+ 'UZB' 'VEN' 'YEM' 'ZMB' 'ZWE']
+
+
+
+----------------------------------------------------------------------------------
+
+---- NUMBER OF Goats RECORDS BY COUNTRY ----
+
+There are 192 countries reporting Goats in FAOSTAT QCL compared to 155 countries in the weight table.
+
+37 records occur in FAOSTAT QCL pop table but not in the weight table for this species:
+
+{'HUN', 'TUV', 'SSD', 'HKG', 'SGP', 'BEL', 'PSE', 'FSM', 'POL', 'DNK', 'FIN', 'SRB', 'LTU', 'TJK', 'GEO', 'MKD', 'MNE', 'BRN', 'SWE', 'MDA', 'EST', 'IRL', 'TWN', 'AZE', 'LUX', 'LVA', 'URY', 'PAN', 'CAN', 'GBR', 'ISL', 'TLS', 'USA', 'UZB', 'BLR', 'BIH', 'SVN'}
+
+0 records occur in the weight table but not in the FAOSTAT QCL pop table for this species:
+
+All occurences in weight table occur in FAOSTAT QCL
+
+
+---- NUMBER OF OCCURENCES OF SPECIES Goats BY COUNTRY BETWEEN BOTH DATA TABLES ----
+
+There are 155 common countries reporting Goats. 
+
+The list of common countries: 
+['AFG' 'ALB' 'DZA' 'AGO' 'ATG' 'ARM' 'ARG' 'AUS' 'AUT' 'BHS' 'BHR' 'BGD'
+ 'BRB' 'BLZ' 'BEN' 'BTN' 'BOL' 'BWA' 'BRA' 'BGR' 'BFA' 'BDI' 'CPV' 'CMR'
+ 'CAF' 'TCD' 'CHL' 'CHN' 'COL' 'COM' 'COG' 'COK' 'CRI' 'CIV' 'HRV' 'CUB'
+ 'CYP' 'CZE' 'PRK' 'COD' 'DJI' 'DMA' 'DOM' 'ECU' 'EGY' 'SLV' 'GNQ' 'ERI'
+ 'FJI' 'SWZ' 'ETH' 'FRA' 'GUF' 'PYF' 'GAB' 'GMB' 'DEU' 'GHA' 'GRC' 'GRD'
+ 'GLP' 'GTM' 'GIN' 'GNB' 'GUY' 'HTI' 'HND' 'IND' 'IDN' 'IRN' 'IRQ' 'ISR'
+ 'ITA' 'JAM' 'JPN' 'JOR' 'KAZ' 'KEN' 'KWT' 'KGZ' 'LAO' 'LBN' 'LSO' 'LBR'
+ 'LBY' 'MDG' 'MWI' 'MYS' 'MLI' 'MLT' 'MTQ' 'MRT' 'MUS' 'MEX' 'MNG' 'MAR'
+ 'MMR' 'MOZ' 'NAM' 'NPL' 'NLD' 'NCL' 'NZL' 'NIC' 'NER' 'NGA' 'NOR' 'OMN'
+ 'PAK' 'PNG' 'PRY' 'PER' 'PHL' 'PRT' 'PRI' 'QAT' 'KOR' 'REU' 'ROU' 'RUS'
+ 'RWA' 'KNA' 'LCA' 'VCT' 'STP' 'SAU' 'SEN' 'SYC' 'SLE' 'SVK' 'SOM' 'ZAF'
+ 'ESP' 'LKA' 'SDN' 'SUR' 'CHE' 'SYR' 'THA' 'TGO' 'TON' 'TTO' 'TUN' 'TUR'
+ 'TKM' 'UGA' 'UKR' 'ARE' 'TZA' 'VUT' 'VEN' 'VNM' 'YEM' 'ZMB' 'ZWE']
+
+
+
+----------------------------------------------------------------------------------
+
+---- NUMBER OF Pigs RECORDS BY COUNTRY ----
+
+There are 179 countries reporting Pigs in FAOSTAT QCL compared to 167 countries in the weight table.
+
+12 records occur in FAOSTAT QCL pop table but not in the weight table for this species:
+
+{'HKG', 'TLS', 'TKL', 'TWN', 'LUX', 'FSM', 'IRN', 'SRB', 'SLB', 'SYR', 'MNE', 'BRN'}
+
+0 records occur in the weight table but not in the FAOSTAT QCL pop table for this species:
+
+All occurences in weight table occur in FAOSTAT QCL
+
+
+---- NUMBER OF OCCURENCES OF SPECIES Pigs BY COUNTRY BETWEEN BOTH DATA TABLES ----
+
+There are 167 common countries reporting Pigs. 
+
+The list of common countries: 
+['ALB' 'DZA' 'AGO' 'ATG' 'ARG' 'ARM' 'AUS' 'AUT' 'AZE' 'BHS' 'BRB' 'BLR'
+ 'BEL' 'BLZ' 'BEN' 'BTN' 'BOL' 'BIH' 'BWA' 'BRA' 'BGR' 'BFA' 'BDI' 'CPV'
+ 'KHM' 'CMR' 'CAN' 'CAF' 'TCD' 'CHL' 'CHN' 'COL' 'COG' 'COK' 'CRI' 'CIV'
+ 'HRV' 'CUB' 'CYP' 'CZE' 'PRK' 'COD' 'DNK' 'DMA' 'DOM' 'ECU' 'EGY' 'SLV'
+ 'GNQ' 'EST' 'SWZ' 'ETH' 'FJI' 'FIN' 'FRA' 'GUF' 'PYF' 'GAB' 'GMB' 'GEO'
+ 'DEU' 'GHA' 'GRC' 'GRD' 'GLP' 'GTM' 'GIN' 'GNB' 'GUY' 'HTI' 'HND' 'HUN'
+ 'ISL' 'IND' 'IDN' 'IRL' 'ISR' 'ITA' 'JAM' 'JPN' 'KAZ' 'KEN' 'KIR' 'KGZ'
+ 'LAO' 'LVA' 'LBN' 'LSO' 'LBR' 'LTU' 'MDG' 'MWI' 'MYS' 'MLI' 'MLT' 'MTQ'
+ 'MUS' 'MEX' 'MNG' 'MAR' 'MOZ' 'MMR' 'NAM' 'NRU' 'NPL' 'NLD' 'NCL' 'NZL'
+ 'NIC' 'NER' 'NGA' 'NIU' 'MKD' 'NOR' 'PAN' 'PNG' 'PRY' 'PER' 'PHL' 'POL'
+ 'PRT' 'PRI' 'KOR' 'MDA' 'REU' 'ROU' 'RUS' 'RWA' 'KNA' 'LCA' 'WSM' 'VCT'
+ 'STP' 'SEN' 'SYC' 'SLE' 'SGP' 'SVK' 'SVN' 'SOM' 'ZAF' 'ESP' 'LKA' 'SUR'
+ 'SWE' 'CHE' 'TJK' 'THA' 'TGO' 'TON' 'TTO' 'TUN' 'TUR' 'TKM' 'TUV' 'UGA'
+ 'UKR' 'GBR' 'TZA' 'USA' 'URY' 'UZB' 'VUT' 'VEN' 'VNM' 'ZMB' 'ZWE']
+
+
+
+----------------------------------------------------------------------------------
+
+---- NUMBER OF Chickens RECORDS BY COUNTRY ----
+
+There are 199 countries reporting Chickens in FAOSTAT QCL compared to 187 countries in the weight table.
+
+13 records occur in FAOSTAT QCL pop table but not in the weight table for this species:
+
+{'SSD', 'HKG', 'TLS', 'TKL', 'TWN', 'PSE', 'LUX', 'FSM', 'SRB', 'MAC', 'SLB', 'MNE', 'BRN'}
+
+1 records occur in the weight table but not in the FAOSTAT QCL pop table for this species:
+
+{'FLK'}
+
+
+---- NUMBER OF OCCURENCES OF SPECIES Chickens BY COUNTRY BETWEEN BOTH DATA TABLES ----
+
+There are 186 common countries reporting Chickens. 
+
+The list of common countries: 
+['AFG' 'ALB' 'DZA' 'AGO' 'ATG' 'ARG' 'ARM' 'AUS' 'AUT' 'AZE' 'BHS' 'BHR'
+ 'BGD' 'BRB' 'BLR' 'BEL' 'BLZ' 'BEN' 'BTN' 'BOL' 'BIH' 'BWA' 'BRA' 'BGR'
+ 'BFA' 'BDI' 'CPV' 'KHM' 'CMR' 'CAN' 'CAF' 'TCD' 'CHL' 'CHN' 'COL' 'COM'
+ 'COG' 'COK' 'CRI' 'CIV' 'HRV' 'CUB' 'CYP' 'CZE' 'PRK' 'COD' 'DNK' 'DMA'
+ 'DOM' 'ECU' 'EGY' 'SLV' 'GNQ' 'ERI' 'EST' 'SWZ' 'ETH' 'FJI' 'FIN' 'FRA'
+ 'GUF' 'PYF' 'GAB' 'GMB' 'GEO' 'DEU' 'GHA' 'GRC' 'GRD' 'GLP' 'GTM' 'GIN'
+ 'GNB' 'GUY' 'HTI' 'HND' 'HUN' 'ISL' 'IND' 'IDN' 'IRN' 'IRQ' 'IRL' 'ISR'
+ 'ITA' 'JAM' 'JPN' 'JOR' 'KAZ' 'KEN' 'KIR' 'KWT' 'KGZ' 'LAO' 'LVA' 'LBN'
+ 'LSO' 'LBR' 'LBY' 'LTU' 'MDG' 'MWI' 'MYS' 'MLI' 'MLT' 'MTQ' 'MRT' 'MUS'
+ 'MEX' 'MNG' 'MAR' 'MOZ' 'MMR' 'NAM' 'NRU' 'NPL' 'NLD' 'NCL' 'NZL' 'NIC'
+ 'NER' 'NGA' 'NIU' 'MKD' 'NOR' 'OMN' 'PAK' 'PAN' 'PNG' 'PRY' 'PER' 'PHL'
+ 'POL' 'PRT' 'PRI' 'QAT' 'KOR' 'MDA' 'REU' 'ROU' 'RUS' 'RWA' 'KNA' 'LCA'
+ 'VCT' 'WSM' 'STP' 'SAU' 'SEN' 'SYC' 'SLE' 'SGP' 'SVK' 'SVN' 'SOM' 'ZAF'
+ 'ESP' 'LKA' 'SDN' 'SUR' 'SWE' 'CHE' 'SYR' 'TJK' 'THA' 'TGO' 'TON' 'TTO'
+ 'TUN' 'TUR' 'TKM' 'TUV' 'UGA' 'UKR' 'ARE' 'GBR' 'TZA' 'USA' 'URY' 'UZB'
+ 'VUT' 'VEN' 'VNM' 'YEM' 'ZMB' 'ZWE']
+
+
+
+----------------------------------------------------------------------------------
+
+---- NUMBER OF Turkeys RECORDS BY COUNTRY ----
+
+There are 86 countries reporting Turkeys in FAOSTAT QCL compared to 56 countries in the weight table.
+
+30 records occur in FAOSTAT QCL pop table but not in the weight table for this species:
+
+{'BDI', 'HKG', 'ALB', 'ROU', 'FIN', 'LBN', 'SRB', 'UKR', 'CHE', 'KOR', 'LTU', 'GEO', 'CHL', 'MOZ', 'BGR', 'EST', 'TWN', 'AZE', 'LVA', 'PAN', 'KGZ', 'BRB', 'ARM', 'RUS', 'NOR', 'MAR', 'KAZ', 'UZB', 'BLR', 'TKM'}
+
+0 records occur in the weight table but not in the FAOSTAT QCL pop table for this species:
+
+All occurences in weight table occur in FAOSTAT QCL
+
+
+---- NUMBER OF OCCURENCES OF SPECIES Turkeys BY COUNTRY BETWEEN BOTH DATA TABLES ----
+
+There are 56 common countries reporting Turkeys. 
+
+The list of common countries: 
+['DZA' 'ARG' 'AUS' 'AUT' 'BEL' 'BLZ' 'BOL' 'BIH' 'BRA' 'CAN' 'HRV' 'CYP'
+ 'CZE' 'DNK' 'ECU' 'EGY' 'FJI' 'FRA' 'DEU' 'GRC' 'GLP' 'HTI' 'HUN' 'IRN'
+ 'IRL' 'ISR' 'ITA' 'JPN' 'JOR' 'MDG' 'MLT' 'MUS' 'MEX' 'MMR' 'NLD' 'NZL'
+ 'PNG' 'PRY' 'PHL' 'POL' 'PRT' 'MDA' 'REU' 'STP' 'SVK' 'SVN' 'ZAF' 'ESP'
+ 'SWE' 'SYR' 'TUN' 'TUR' 'GBR' 'USA' 'URY' 'ZWE']
+
+
+
+----------------------------------------------------------------------------------
+
+---- NUMBER OF Horses RECORDS BY COUNTRY ----
+
+There are 168 countries reporting Horses in FAOSTAT QCL compared to 70 countries in the weight table.
+
+98 records occur in FAOSTAT QCL pop table but not in the weight table for this species:
+
+{'COK', 'HKG', 'MMR', 'MUS', 'ETH', 'DOM', 'SLV', 'SOM', 'SRB', 'SYR', 'IND', 'TJK', 'WSM', 'IRN', 'QAT', 'BRB', 'SAU', 'GNB', 'UZB', 'BIH', 'EGY', 'LCA', 'HUN', 'SSD', 'SUR', 'GUY', 'SWZ', 'KHM', 'AGO', 'GEO', 'MKD', 'GMB', 'IRQ', 'MWI', 'SLE', 'BGR', 'BHS', 'JOR', 'SLB', 'NGA', 'PER', 'TLS', 'PRK', 'KWT', 'ZWE', 'BLZ', 'BLR', 'SDN', 'ALB', 'GRD', 'BOL', 'LAO', 'ARE', 'NCL', 'CRI', 'TTO', 'ISR', 'GHA', 'THA', 'TWN', 'LUX', 'BEN', 'LBY', 'YEM', 'ARM', 'CYP', 'GUF', 'PYF', 'TKM', 'COG', 'KEN', 'VEN', 'AFG', 'LBN', 'CPV', 'LKA', 'GIN', 'KOR', 'TGO', 'COD', 'ECU', 'MNE', 'STP', 'LSO', 'EST', 'AZE', 'MTQ', 'ATG', 'PAN', 'MNG', 'BTN', 'FJI', 'PRI', 'NAM', 'PAK', 'RUS', 'TON', 'BWA'}
+
+0 records occur in the weight table but not in the FAOSTAT QCL pop table for this species:
+
+All occurences in weight table occur in FAOSTAT QCL
+
+
+---- NUMBER OF OCCURENCES OF SPECIES Horses BY COUNTRY BETWEEN BOTH DATA TABLES ----
+
+There are 70 common countries reporting Horses. 
+
+The list of common countries: 
+['DZA' 'ARG' 'AUS' 'AUT' 'BEL' 'BRA' 'BFA' 'CMR' 'CAN' 'TCD' 'CHL' 'CHN'
+ 'COL' 'HRV' 'CUB' 'CZE' 'DNK' 'FIN' 'FRA' 'DEU' 'GRC' 'GLP' 'GTM' 'HTI'
+ 'HND' 'ISL' 'IDN' 'IRL' 'ITA' 'JAM' 'JPN' 'KAZ' 'KGZ' 'LVA' 'LTU' 'MDG'
+ 'MYS' 'MLI' 'MLT' 'MRT' 'MEX' 'MAR' 'NLD' 'NZL' 'NIC' 'NER' 'NOR' 'PNG'
+ 'PRY' 'PHL' 'POL' 'PRT' 'MDA' 'REU' 'ROU' 'SEN' 'SVK' 'SVN' 'ZAF' 'ESP'
+ 'SWE' 'CHE' 'TUN' 'TUR' 'UKR' 'GBR' 'USA' 'URY' 'VUT' 'VNM']
+
+
+
+----------------------------------------------------------------------------------
+
+---- NUMBER OF Camels RECORDS BY COUNTRY ----
+
+There are 47 countries reporting Camels in FAOSTAT QCL compared to 31 countries in the weight table.
+
+16 records occur in FAOSTAT QCL pop table but not in the weight table for this species:
+
+{'NAM', 'IND', 'NGA', 'SSD', 'PAK', 'RUS', 'TJK', 'AZE', 'QAT', 'KAZ', 'UZB', 'MNG', 'LBN', 'KGZ', 'UKR', 'TKM'}
+
+0 records occur in the weight table but not in the FAOSTAT QCL pop table for this species:
+
+All occurences in weight table occur in FAOSTAT QCL
+
+
+---- NUMBER OF OCCURENCES OF SPECIES Camels BY COUNTRY BETWEEN BOTH DATA TABLES ----
+
+There are 31 common countries reporting Camels. 
+
+The list of common countries: 
+['AFG' 'DZA' 'BHR' 'BFA' 'TCD' 'CHN' 'DJI' 'EGY' 'ERI' 'ETH' 'IRN' 'IRQ'
+ 'ISR' 'JOR' 'KEN' 'KWT' 'LBY' 'MLI' 'MRT' 'MAR' 'NER' 'OMN' 'SEN' 'SAU'
+ 'SOM' 'SDN' 'SYR' 'TUN' 'TUR' 'ARE' 'YEM']
+
+
+
+----------------------------------------------------------------------------------
+
+---- NUMBER OF Rabbits and hares RECORDS BY COUNTRY ----
+
+There are 72 countries reporting Rabbits and hares in FAOSTAT QCL compared to 50 countries in the weight table.
+
+22 records occur in FAOSTAT QCL pop table but not in the weight table for this species:
+
+{'VEN', 'BEL', 'ARE', 'TTO', 'TJK', 'TGO', 'MOZ', 'SLE', 'TWN', 'LUX', 'LVA', 'PRI', 'NGA', 'NOR', 'ISL', 'NLD', 'PRK', 'UZB', 'BLR', 'BIH', 'PYF', 'SVN'}
+
+0 records occur in the weight table but not in the FAOSTAT QCL pop table for this species:
+
+All occurences in weight table occur in FAOSTAT QCL
+
+
+---- NUMBER OF OCCURENCES OF SPECIES Rabbits and hares BY COUNTRY BETWEEN BOTH DATA TABLES ----
+
+There are 50 common countries reporting Rabbits and hares. 
+
+The list of common countries: 
+['DZA' 'ARG' 'ARM' 'AUT' 'BOL' 'BWA' 'BRA' 'BGR' 'BDI' 'CMR' 'CHN' 'COL'
+ 'CYP' 'CZE' 'ECU' 'EGY' 'EST' 'FRA' 'GAB' 'GEO' 'DEU' 'GRC' 'GLP' 'HUN'
+ 'ITA' 'JOR' 'KAZ' 'KEN' 'KGZ' 'LTU' 'MDG' 'MLT' 'MTQ' 'MUS' 'MEX' 'PER'
+ 'POL' 'KOR' 'MDA' 'REU' 'ROU' 'RUS' 'RWA' 'SVK' 'ESP' 'CHE' 'SYR' 'TUR'
+ 'UKR' 'URY']
+
+
+
+----------------------------------------------------------------------------------
+
+---- NUMBER OF Buffaloes RECORDS BY COUNTRY ----
+
+There are 63 countries reporting Buffaloes in FAOSTAT QCL compared to 23 countries in the weight table.
+
+40 records occur in FAOSTAT QCL pop table but not in the weight table for this species:
+
+{'HUN', 'HKG', 'ALB', 'SGP', 'MUS', 'SUR', 'ESP', 'FSM', 'SVK', 'POL', 'ROU', 'DNK', 'FIN', 'TTO', 'BRA', 'GRC', 'LTU', 'TJK', 'GEO', 'MKD', 'PRT', 'SWE', 'EST', 'AZE', 'TWN', 'IRL', 'JOR', 'COL', 'LVA', 'LUX', 'AUS', 'ARM', 'CYP', 'MLT', 'CZE', 'RUS', 'TLS', 'KAZ', 'SVN', 'DEU'}
+
+0 records occur in the weight table but not in the FAOSTAT QCL pop table for this species:
+
+All occurences in weight table occur in FAOSTAT QCL
+
+
+---- NUMBER OF OCCURENCES OF SPECIES Buffaloes BY COUNTRY BETWEEN BOTH DATA TABLES ----
+
+There are 23 common countries reporting Buffaloes. 
+
+The list of common countries: 
+['BGD' 'BTN' 'BRN' 'BGR' 'KHM' 'CHN' 'EGY' 'IND' 'IDN' 'IRN' 'IRQ' 'ITA'
+ 'LAO' 'MYS' 'MMR' 'NPL' 'PAK' 'PHL' 'LKA' 'SYR' 'THA' 'TUR' 'VNM']
+
+
+
+----------------------------------------------------------------------------------
+
+---- NUMBER OF Ducks RECORDS BY COUNTRY ----
+
+There are 99 countries reporting Ducks in FAOSTAT QCL compared to 6 countries in the weight table.
+
+93 records occur in FAOSTAT QCL pop table but not in the weight table for this species:
+
+{'COK', 'HKG', 'ALB', 'BOL', 'MUS', 'BEL', 'ESP', 'FSM', 'HTI', 'FIN', 'CAF', 'ISR', 'BRA', 'SRB', 'UKR', 'PRY', 'SYR', 'MEX', 'CHE', 'IND', 'GRC', 'GLP', 'MDG', 'IDN', 'BRN', 'PRT', 'NZL', 'THA', 'DZA', 'IRL', 'TWN', 'URY', 'CHN', 'AUS', 'VNM', 'CYP', 'OMN', 'AUT', 'CZE', 'GUF', 'NOR', 'FRA', 'TUR', 'PNG', 'USA', 'BIH', 'EGY', 'PYF', 'SVN', 'DEU', 'HUN', 'NPL', 'GNQ', 'SGP', 'SUR', 'RWA', 'TZA', 'POL', 'BGD', 'ROU', 'DNK', 'ARG', 'REU', 'PHL', 'LKA', 'ZAF', 'KOR', 'LTU', 'KHM', 'HRV', 'CIV', 'ECU', 'MOZ', 'STP', 'SLE', 'BGR', 'EST', 'MTQ', 'JOR', 'SYC', 'PAN', 'KGZ', 'FJI', 'GBR', 'LBR', 'MLT', 'PAK', 'RUS', 'NLD', 'PRK', 'ZWE', 'BLZ', 'BLR'}
+
+0 records occur in the weight table but not in the FAOSTAT QCL pop table for this species:
+
+All occurences in weight table occur in FAOSTAT QCL
+
+
+---- NUMBER OF OCCURENCES OF SPECIES Ducks BY COUNTRY BETWEEN BOTH DATA TABLES ----
+
+There are 6 common countries reporting Ducks. 
+
+The list of common countries: 
+['CAN' 'IRN' 'LAO' 'MYS' 'MMR' 'SVK']
+
+
+
+----------------------------------------------------------------------------------
+
+---- NUMBER OF Geese and guinea fowls RECORDS BY COUNTRY ----
+
+There are 56 countries reporting Geese and guinea fowls in FAOSTAT QCL compared to 4 countries in the weight table.
+
+52 records occur in FAOSTAT QCL pop table but not in the weight table for this species:
+
+{'HUN', 'HKG', 'ALB', 'LAO', 'BEL', 'MUS', 'RWA', 'ESP', 'POL', 'ROU', 'HTI', 'DNK', 'ISR', 'ARG', 'REU', 'PHL', 'SRB', 'UKR', 'PRY', 'SYR', 'CHE', 'ZAF', 'KOR', 'GRC', 'LTU', 'MDG', 'ECU', 'HRV', 'MOZ', 'NZL', 'THA', 'DZA', 'BGR', 'EST', 'TWN', 'IRL', 'MTQ', 'JOR', 'URY', 'CHN', 'KGZ', 'GBR', 'CYP', 'AUT', 'CZE', 'RUS', 'FRA', 'TUR', 'BIH', 'EGY', 'SVN', 'DEU'}
+
+0 records occur in the weight table but not in the FAOSTAT QCL pop table for this species:
+
+All occurences in weight table occur in FAOSTAT QCL
+
+
+---- NUMBER OF OCCURENCES OF SPECIES Geese and guinea fowls BY COUNTRY BETWEEN BOTH DATA TABLES ----
+
+There are 4 common countries reporting Geese and guinea fowls. 
+
+The list of common countries: 
+['CAN' 'IRN' 'MMR' 'SVK']
+
+
+
+----------------------------------------------------------------------------------

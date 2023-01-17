@@ -9,17 +9,16 @@ import datetime
 class GBADsAPI: 
 
 	def make_url_table(base_url, table_name, format='csv'):
-		 return("%stable_name=%s&format=%s" % (base_url, table_name, format))
-
+		return("%stable_name=%s&format=%s" % (base_url, table_name, format))
 
 	def make_call(url): 
 		with requests.Session() as s:
-		    download = s.get(url)
+			download = s.get(url)
 
-		    decoded_content = download.content.decode('utf-8')
+			decoded_content = download.content.decode('utf-8')
 
-		    cr = csv.reader(decoded_content.splitlines(), delimiter=',')
-		    my_list = list(cr)	
+			cr = csv.reader(decoded_content.splitlines(), delimiter=',')
+			my_list = list(cr)	
 			
 		return(my_list)
 
@@ -125,7 +124,7 @@ if __name__ == '__main__':
 
 	# Ensure the categories are named the same 
 	for i in no_match: 
-	 	con_table = con_table.drop([i])
+		con_table = con_table.drop([i])
 
 	# Make df species title case
 	con_table["species"] = con_table["species"].str.title()

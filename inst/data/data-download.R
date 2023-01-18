@@ -25,7 +25,7 @@
 
 
 # Load Libraries ----------------------------------------------------------
-renv::activate(project = '.')
+renv::activate(project = ".")
 
 
 # Logging -----------------------------------------------------------------
@@ -38,11 +38,11 @@ config <- config::get()
 
 # Parse Command Line Arguments for different data sources -----------------
 parser <- argparse::ArgumentParser(
-    description = 'Downloads required datasets'
+    description = "Downloads required datasets"
 )
 
-parser$add_argument('-d', '--data',
-                    help = 'Name of which dataset to download.',
+parser$add_argument("-d", "--data",
+                    help = "Name of which dataset to download.",
                     choices = names(config$data$source$tables),
                     required = TRUE)
 
@@ -62,8 +62,8 @@ if (!dir.exists(destdir)) {
 }
 
 destfile <-  here::here(destdir,
-                        paste0(config$date,'_',
-                               args$data,'.',
+                        paste0(config$date, "_",
+                               args$data, ".",
                                table_config$type))
 
 ## Download files
@@ -84,7 +84,7 @@ error = function(err) {
 
 
 # Unzip and save to the data directory ------------------------------------
-if (table_config$type == 'zip') {
+if (table_config$type == "zip") {
     unzip(destfile,
           exdir = tools::file_path_sans_ext(destfile),
           junkpaths = TRUE
@@ -95,7 +95,7 @@ if (table_config$type == 'zip') {
 
 
 # If Faostat File - Read in and place in a Parquet File -------------------
-if (args$data != 'global_aquaculture_production') {
+if (args$data != "global_aquaculture_production") {
 
     # Data file should have normalized in the file path when from FAO
     # WDI has ^API at the start of the file name
@@ -109,13 +109,12 @@ if (args$data != 'global_aquaculture_production') {
                      skip = ifelse(grepl("API", csv_file),
                                    wb_row_skip,  0)) |>
         janitor::clean_names()
-    output_file <- here::here(paste0(gsub("source", "processed", table_config$dir),
-                                     ".parquet"))
+    output_file <- here::here(
+        paste0(gsub("source", "processed", table_config$dir), ".parquet"))
     if (!dir.exists(dirname(output_file))) {
         dir.create(dirname(output_file))
     }
-    arrow::write_parquet(data,output_file)
-
+    arrow::write_parquet(data, output_file)
 }
 
 
@@ -124,4 +123,3 @@ if (args$data != 'global_aquaculture_production') {
 # Exit --------------------------------------------------------------------
 logging::loginfo("Data Download Complete")
 quit(status = 0)
-

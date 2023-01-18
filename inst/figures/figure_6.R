@@ -1,8 +1,8 @@
 #!/usr/bin/Rscript --vanilla
 
 # ------------------------------------------------------------------------------
-#
-# Name: inst/figures/figure_6.R
+# nolint start
+# Name: "inst/figures/figure_6.R"
 # Project: GBADS
 # Author: Gabriel Dennis <gabriel.dennis@csiro.au>
 #
@@ -15,7 +15,7 @@
 # See: output/figures/README.md#figure-specifications
 #
 # Figure themes are added based on the figure specifications
-#
+# nolint end 
 # -------------------------------------------------------------------------
 
 
@@ -70,7 +70,15 @@ local({
 
 
   # Livestock Assets
-  pct_vec <- c("&lt; -2.5%", "-2.5% - 0%", "0% - 1%", "1% - 2.5%", "2.5% - 5%", "5% - 10%", "10%&lt;")
+  pct_vec <- c(
+    "&lt; -2.5%",
+    "-2.5% - 0%",
+    "0% - 1%",
+    "1% - 2.5%",
+    "2.5% - 5%",
+    "5% - 10%",
+    "10%&lt;")
+
   assets <- data |>
     dplyr::filter(
       head > 0,
@@ -89,8 +97,12 @@ local({
     dplyr::mutate(
       value_percap = value / population
     ) |>
-    dplyr::mutate(value = 100 * (value - lag(value)) / (lag(value)) / (year - lag(year))) %>%
-    dplyr::mutate(value_percap = 100 * (value_percap - lag(value_percap)) / (lag(value_percap)) / (year - lag(year))) %>%
+    dplyr::mutate(
+      value = 100 * (value - lag(value)) / (lag(value)) / (year - lag(year))
+    ) %>%
+    dplyr::mutate(
+      value_percap = 100 * (value_percap - lag(value_percap)) / (lag(value_percap)) / (year - lag(year))
+    ) %>%
     dplyr::summarise(
       avg_change = mean(value, na.rm = TRUE),
       avg_change_percap = mean(value_percap, na.rm = TRUE), .groups = "drop"
@@ -232,7 +244,13 @@ local({
 
 
   # Compute Outputs ---------------------------------------------------------
-  pct_vec <- c("&lt; -2.5%", "-2.5% - 0%", "0% - 1%", "1% - 2.5%", "2.5% - 5%", "5% - 10%", "10%&lt;")
+  pct_vec <- c(
+    "&lt; -2.5%",
+    "-2.5% - 0%",
+    "0% - 1%",
+    "1% - 2.5%",
+    "2.5% - 5%",
+    "5% - 10%", "10%&lt;")
 
   outputs <- bind_rows(data$livestock_outputs, data$aquaculture_outputs) |>
     dplyr::group_by(iso3_code, year) |>
@@ -246,8 +264,12 @@ local({
     dplyr::mutate(
       value_percap = value / population
     ) |>
-    dplyr::mutate(value = 100 * (value - lag(value)) / (lag(value)) / (year - lag(year))) %>%
-    dplyr::mutate(value_percap = 100 * (value_percap - lag(value_percap)) / (lag(value_percap)) / (year - lag(year))) %>%
+    dplyr::mutate(
+      value = 100 * (value - lag(value)) / (lag(value)) / (year - lag(year))
+    ) %>%
+    dplyr::mutate(
+      value_percap = 100 * (value_percap - lag(value_percap)) / (lag(value_percap)) / (year - lag(year))
+    ) %>%
     dplyr::summarise(
       avg_change = mean(value, na.rm = TRUE),
       avg_change_percap = mean(value_percap, na.rm = TRUE), .groups = "drop"
@@ -373,4 +395,14 @@ ggsave(
   width = 18,
   height = 12,
   dpi = 300
+)
+
+# Tiff
+ggsave(
+  plot = fig6,
+  filename = "output/figures/figure_6.tiff",
+  width = 18,
+  height = 12,
+  dpi = 300, 
+  device = "tiff"
 )

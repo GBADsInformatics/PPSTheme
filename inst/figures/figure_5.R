@@ -1,7 +1,7 @@
 #!/usr/bin/Rscript --vanilla
 # ------------------------------------------------------------------------------
 #
-# Name: inst/figures/figure_5.R
+# Name: inst/figures/figure_5.R # nolint
 # Project: GBADS
 # Author: Gabriel Dennis <gabriel.dennis@csiro.au>
 #
@@ -19,7 +19,7 @@
 #' B - Value Per capita (PPP Adjusted Int ($))
 #'
 # For detail on descriptions of each figure
-# See:  output/figures/README.md#figure-descriptions
+# See:  output/figures/README.md#figure-descriptions # nolint
 #
 # For details on the figure specifications used here
 # See: output/figures/README.md#figure-specifications # nolint
@@ -64,7 +64,9 @@ prep_data <- function() {
 
 
   # Output Datasets
-  df_list <- config$data$output[c("crop_values", "aquaculture_values", "livestock_values", "ppp_conversion")]
+  df_list <- config$data$output[
+    c("crop_values", "aquaculture_values", "livestock_values", "ppp_conversion")
+  ]
 
   # Load in the data
   data <- purrr::map(df_list, ~ arrow::read_parquet(.x, as_data_frame = TRUE) |>
@@ -126,7 +128,10 @@ prep_data <- function() {
     dplyr::bind_rows(data$aquaculture_outputs) |>
     dplyr::group_by(iso3_code) |>
     dplyr::summarise(value = sum(value, na.rm = TRUE)) |>
-    dplyr::left_join(data$ppp_conversion, by = c("iso3_code"), suffix = c("", "_ppp")) |>
+    dplyr::left_join(
+      data$ppp_conversion,
+      by = c("iso3_code"), suffix = c("", "_ppp")
+    ) |>
     dplyr::mutate(
       value = value / value_ppp
     ) |>
@@ -139,7 +144,10 @@ prep_data <- function() {
   data$livestock_assets <- data$livestock_assets |>
     dplyr::group_by(iso3_code) |>
     dplyr::summarise(value = sum(value, na.rm = TRUE)) |>
-    dplyr::left_join(data$ppp_conversion, by = c("iso3_code"), suffix = c("", "_ppp")) |>
+    dplyr::left_join(
+      data$ppp_conversion,
+      by = c("iso3_code"), suffix = c("", "_ppp")
+    ) |>
     dplyr::mutate(
       value = value / value_ppp
     ) |>
@@ -213,7 +221,8 @@ break_labels_percap <- c("&lt;150", "150-500", "500-1000", "&gt; 1000")
 break_vals_percap <- c(0, 150, 500, 1000, 1e9)
 break_label_na_percap <- c(break_labels_percap, "NA")
 cpal_percap <- setNames(
-  rev(c("#808080", "#225EA8", "#41B6C4", "#A1DAB4", "#FFFFCC")), break_label_na_percap
+  rev(c("#808080", "#225EA8", "#41B6C4", "#A1DAB4", "#FFFFCC")),
+  break_label_na_percap
 )
 
 
@@ -253,12 +262,33 @@ plot_data <- function(df, value_col, fill_title, break_vals, break_labels, cpall
 
 
 # Total Values
-p11 <- plot_data(world_asset_value, value, "Int.  $", break_vals, break_labels, cpal)
-p12 <- plot_data(world_output_value, value, "Int.   $", break_vals, break_labels, cpal)
+p11 <- plot_data(world_asset_value,
+  value,
+  "Int.  $",
+  break_vals,
+  break_labels,
+  cpal)
+p12 <- plot_data(world_output_value,
+  value,
+  "Int.   $",
+  break_vals,
+  break_labels,
+  cpal)
 
 # Per capita
-p21 <- plot_data(world_asset_value, value_percap, "Int. $  per   capita", break_vals_percap, break_labels_percap, cpal_percap)
-p22 <- plot_data(world_output_value, value_percap, "Int.  $  per   capita", break_vals_percap, break_labels_percap, cpal_percap)
+p21 <- plot_data(world_asset_value,
+  value_percap,
+  "Int. $  per   capita",
+  break_vals_percap,
+  break_labels_percap,
+  cpal_percap)
+
+p22 <- plot_data(world_output_value,
+  value_percap,
+  "Int.  $  per   capita",
+  break_vals_percap,
+  break_labels_percap,
+  cpal_percap)
 
 
 
@@ -296,10 +326,21 @@ fig5 <- ggpubr::ggarrange(
 
 
 # Save the png ------------------------------------------------------------
+
 ggsave(
   plot = fig5,
   filename = "output/figures/figure_5.png",
   width = 16,
   height = 10,
   dpi = 300
+)
+
+# Tiff
+ggsave(
+  plot = fig5,
+  filename = "output/figures/figure_5.tiff",
+  width = 16,
+  height = 10,
+  dpi = 300,
+  device  = "tiff"
 )

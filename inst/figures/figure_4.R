@@ -266,7 +266,10 @@ p <- ggpubr::ggarrange(
   legend = "bottom",
   labels = c(
     "A - Global Value of Livestock and Aquaculture (2018) (PPP Int ($))",
-    "B - Global Value of Livestock and Aquaculture (2018) (PPP Int ($) per capita)"
+    paste0(
+      "B - Global Value of Livestock and Aquaculture (2018)",
+      " (PPP Int ($) per capita)"
+      )
   ),
   hjust = c(-0.7, -0.6),
   font.label = list(
@@ -284,5 +287,16 @@ ggsave(
   filename = "output/figures/figure_4.png",
   width = 16,
   height = 12,
-  dpi = 300
+  dpi = 300,
+  device = "png"
+)
+
+# Tiff 
+ggsave(
+  plot = p,
+  filename = "output/figures/figure_4.tiff",
+  width = 16,
+  height = 12,
+  dpi = 300,
+  device = "tiff"
 )

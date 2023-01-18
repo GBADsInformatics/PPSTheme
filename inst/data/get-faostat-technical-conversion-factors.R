@@ -1,6 +1,7 @@
 #! /usr/bin/env Rscript --vanilla
 
 ## --------------------------------------------
+# nolint start
 # Project: GBADS: Global Burden of Animal Disease
 #
 # Author: Gabriel Dennis
@@ -53,6 +54,7 @@
 # init file             [NONE]
 #
 # Report bugs to:       https://github.com/soimort/translate-shell/issues
+# nolint end 
 ## --------------------------------------------
 
 renv::activate(project = ".")
@@ -60,10 +62,12 @@ renv::activate(project = ".")
 library(dplyr)
 library(countrycode)
 library(glue)
+
 # Config ------------------------------------------------------------------
 
-# DELETE:
-tcf_file <- "data/processed/faostat/faostat_technical_conversion_factors/faostat_technical_conversion_factors_translated.txt"
+tcf_file <- file.path("data", "processed", "faostat",
+  "faostat_technical_conversion_factors",
+  "faostat_technical_conversion_factors_translated.txt")
 
 
 
@@ -158,12 +162,12 @@ df <- bind_rows(df_list)
 na_counts <- which(rowSums(is.na(df)) == 2)
 small_animals <- c("ducks", "rabbits", "geese", "turkeys", "chicken")
 for (na_row in na_counts) {
-  if (!is.na(df$average_live_weight[na_row]) &
+  if (!is.na(df$average_live_weight[na_row]) &&
     df$animal[na_row] %in% small_animals) {
     val <- df$average_live_weight[na_row]
     df$average_live_weight[na_row] <- NA
     df$carcass_weight_kg_gr[na_row] <- val
-  } else if (is.na(df$average_live_weight[na_row]) &
+  } else if (is.na(df$average_live_weight[na_row]) &&
     !is.na(df$carcass_weight_kg_gr[na_row])) {
     val <- df$carcass_weight_kg_gr[na_row]
     df$average_live_weight[na_row] <- val
@@ -193,12 +197,13 @@ df <- dplyr::filter(df, carcass_pct <= 100)
 # Attach ISO3 codes -------------------------------------------------------
 
 df$iso3_code <- countrycode::countrycode(df$country, "country.name.en", "iso3c")
-#
+# nolint start
 # Warning message:
-#     In countrycode_convert(sourcevar = sourcevar, origin = origin, destination = dest,  :
+# In countrycode_convert(sourcevar = sourcevar, origin = origin, destination = dest,  :
 #    Some values were not matched unambiguously: belgium-luxembourg,
 #    benign, cap-vert, meeting, netherlands antille, rep. central african,
 #    suisse, the savior, yugoslavia,fed.rep.
+# nolint end 
 
 
 # Fix these countries that were translated incorrectly
@@ -286,7 +291,13 @@ df <- df |>
 
 # Get different dataframes for each column of interest
 live_weight <- df |>
-  dplyr::select(iso3_code, country, animal, live_weight_kg, region_23, continent) |>
+  dplyr::select(
+    iso3_code,
+    country,
+    animal,
+    live_weight_kg,
+    region_23,
+    continent) |>
   tidyr::spread(animal, live_weight_kg) |>
   tidyr::gather(
     key = "animal", value = "live_weight_kg",
@@ -294,7 +305,12 @@ live_weight <- df |>
   )
 
 carcass_weight <- df |>
-  dplyr::select(iso3_code, country, animal, carcass_weight_kg, region_23, continent) |>
+  dplyr::select(iso3_code,
+    country,
+    animal,
+    carcass_weight_kg,
+    region_23,
+    continent) |>
   tidyr::spread(animal, carcass_weight_kg) |>
   tidyr::gather(
     key = "animal", value = "carcass_weight_kg",
@@ -302,7 +318,12 @@ carcass_weight <- df |>
   )
 
 carcass_pct <- df |>
-  dplyr::select(iso3_code, country, animal, carcass_pct, region_23, continent) |>
+  dplyr::select(iso3_code,
+    country,
+    animal,
+    carcass_pct,
+    region_23,
+    continent) |>
   tidyr::spread(animal, carcass_pct) |>
   tidyr::gather(
     key = "animal", value = "carcass_pct",
@@ -347,7 +368,8 @@ carcass_pct_imp <- carcass_pct |>
       !is.na(carcass_pct_region_23_median) ~
         sprintf("Imputed region 23 median %.2f", carcass_pct_region_23_median),
       !is.na(carcass_pct_continent_median) ~
-        sprintf("Imputed continental median %.2f", carcass_pct_continent_median),
+        sprintf("Imputed continental median %.2f",
+        carcass_pct_continent_median),
       TRUE ~ sprintf("Imputed global median %.2f", carcass_pct_global_median)
     )
   )
@@ -369,9 +391,11 @@ live_weight_imp <- live_weight |>
     live_weight_kg_notes = case_when(
       !is.na(live_weight_kg) ~ "",
       !is.na(live_weight_kg_region_23_median) ~
-        sprintf("Imputed region 23 median %.2f", live_weight_kg_region_23_median),
+        sprintf("Imputed region 23 median %.2f",
+        live_weight_kg_region_23_median),
       !is.na(live_weight_kg_continent_median) ~
-        sprintf("Imputed continental median %.2f", live_weight_kg_continent_median),
+        sprintf("Imputed continental median %.2f",
+        live_weight_kg_continent_median),
       TRUE ~ sprintf("Imputed global median %.2f", live_weight_kg_global_median)
     )
   )
@@ -394,10 +418,13 @@ carcass_weight_imp <- carcass_weight |>
     carcass_weight_kg_notes = case_when(
       !is.na(carcass_weight_kg) ~ "",
       !is.na(carcass_weight_kg_region_23_median) ~
-        sprintf("Imputed region 23 median %.2f", carcass_weight_kg_region_23_median),
+        sprintf("Imputed region 23 median %.2f",
+        carcass_weight_kg_region_23_median),
       !is.na(carcass_weight_kg_continent_median) ~
-        sprintf("Imputed continental median %.2f", carcass_weight_kg_continent_median),
-      TRUE ~ sprintf("Imputed global median %.2f", carcass_weight_kg_global_median)
+        sprintf("Imputed continental median %.2f",
+        carcass_weight_kg_continent_median),
+      TRUE ~ sprintf("Imputed global median %.2f",
+        carcass_weight_kg_global_median)
     )
   )
 

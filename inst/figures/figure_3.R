@@ -2,17 +2,17 @@
 
 # ------------------------------------------------------------------------------
 #
-# Name: inst/figures/generate-figures.R
+# Name: "inst/figures/generate-figures.R" # nolint
 # Project: GBADS
 # Author: Gabriel Dennis <gabriel.dennis@csiro.au>
 #
 # Generates  Figure 2 for the livestock value manuscript
 #
 # For detail on descriptions of each figure
-# See:  output/figures/README.md#figure-descriptions
+# See:  output/figures/README.md#figure-descriptions # nolint
 #
 # For details on the figure specifications used here
-# See: output/figures/README.md#figure-specifications
+# See: output/figures/README.md#figure-specifications # nolint
 # -------------------------------------------------------------------------
 
 
@@ -48,25 +48,28 @@ config <- config::get()
 
 # Function to prepare data for initial plots
 prep_data <- function() {
-    df_list <- purrr::keep(config$data$output, ~ grepl("values", .x, ignore.case = TRUE))
+    df_list <- purrr::keep(
+        config$data$output,
+        ~ grepl("values", .x, ignore.case = TRUE)
+    )
     data <- list()
     livestock_value <- df_list$livestock_values |>
         arrow::read_parquet() |>
         dplyr::mutate(
-            gross_production_value_constant_2014_2016_usd = gross_production_value_constant_2014_2016_thousand_us * 1e3
+            gross_production_value_constant_2014_2016_usd = gross_production_value_constant_2014_2016_thousand_us * 1e3 # nolint
         )
 
     livestock_value <- df_list$livestock_values |>
         arrow::read_parquet() |>
         dplyr::mutate(
-            gross_production_value_constant_2014_2016_usd = gross_production_value_constant_2014_2016_thousand_us * 1e3
+            gross_production_value_constant_2014_2016_usd = gross_production_value_constant_2014_2016_thousand_us * 1e3 # nolint
         )
 
     data$livestock_asset <- get_livestock_asset_output_value(livestock_value)
 
     data$livestock_output <- get_livestock_asset_output_value(
         livestock_value,
-        gross_production_value_constant_2014_2016_usd
+        gross_production_value_constant_2014_2016_usd # nolint
     )
 
     data$aquaculture_value <- df_list$aquaculture_values |>
@@ -77,7 +80,7 @@ prep_data <- function() {
     data$crop_value <- df_list$crop_values |>
         arrow::read_parquet() |>
         dplyr::mutate(
-            gross_production_value_constant_2014_2016_usd = gross_production_value_constant_2014_2016_thousand_us * 1e3
+            gross_production_value_constant_2014_2016_usd = gross_production_value_constant_2014_2016_thousand_us * 1e3 # nolint
         ) |>
         get_crop_value()
 
@@ -97,7 +100,7 @@ data <- prep_data()
 # Function to get the total value
 get_total_df <- function(df, value_col) {
     df |>
-        dplyr::group_by(year) |>
+        dplyr::group_by(year) |> # nolint
         dplyr::summarise(
             value = sum({{ value_col }}, na.rm = TRUE),
             .groups = "drop"
@@ -150,7 +153,13 @@ text_locations <- df |>
   mutate(
     x = year,
     y = ifelse(type == "market", value + 0.8e11, value + 0.8e11),
-    label = scales::dollar(value, accuracy = 0.01, scale = 1e-12, suffix = "T", prefix = "$ ")
+    label = scales::dollar(
+            value,
+            accuracy = 0.01,
+            scale = 1e-12,
+            suffix = "T",
+            prefix = "$ "
+        )
   )
 
 
@@ -170,7 +179,7 @@ fig3 <- df |>
   ggplot(aes(x = year, y = value, color = type)) +
   geom_ribbon(
     data = df_ribbon,
-    aes(x = year, ymin = `market`, ymax = `direct+market`), inherit.aes = F,
+    aes(x = year, ymin = `market`, ymax = `direct+market`), inherit.aes = FALSE,
     alpha = 0.1,
     color = csiro_blue
   ) +
@@ -266,7 +275,11 @@ fig3 <- df |>
     legend.position = "none",
     plot.margin = margin(50, 50, 50, 50),
     plot.title = element_text(face = "italic"),
-    axis.title.x.bottom = element_text(size = 12, face = "italic", vjust = -1.5),
+    axis.title.x.bottom = element_text(
+        size = 12,
+        face = "italic",
+        vjust = -1.5
+    ),
     axis.text = element_text(size = 12),
     axis.title.y = element_text(vjust = 3)
   )
@@ -281,3 +294,12 @@ ggsave(
     device = "png"
 )
 
+# Tiff file
+ggsave(
+    plot = fig3,
+    filename = "output/figures/figure_3.tiff",
+    width = 16,
+    height = 10,
+    dpi = 300,
+    device = "tiff"
+)

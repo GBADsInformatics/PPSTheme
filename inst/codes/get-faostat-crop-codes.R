@@ -1,7 +1,7 @@
 #!/usr/bin/Rscript --vanilla
 
 # ------------------------------------------------------------------------------
-#
+# nolint start
 # Project: GBADS: Global Burden of Animal Disease
 #
 # Author: Gabriel Dennis
@@ -42,7 +42,7 @@
 # - data/codes/faostat/CPCtoFCL_codes.xlsx
 #
 # Which can be re-downloaded using a Makefile recipe and target
-#
+# nolint end 
 # ------------------------------------------------------------------------------
 
 
@@ -72,7 +72,9 @@ config <- config::get()
 
 # The Food groups don't match perfectly
 #  - USE the CPC groupings given by
-#  https://www.fao.org/fileadmin/templates/ess/classifications/Correspondence_CPCtoFCL.xlsx
+# nolint start
+# https://www.fao.org/fileadmin/templates/ess/classifications/Correspondence_CPCtoFCL.xlsx
+# nolint end
 
 food_groups <- tribble(
   ~group, ~code,

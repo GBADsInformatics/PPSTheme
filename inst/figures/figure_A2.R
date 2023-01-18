@@ -198,7 +198,10 @@ fig_a2  <- ggplot(data = world) +
   ) +
   facet_wrap(~category) +
   labs(
-    title = "Global spatial distribution of the economic value of direct farmed animal outputs (e.g., meat, milk, eggs, fish) in 2018",
+    title = paste0(
+    "Global spatial distribution of the economic value", 
+    " of direct farmed animal outputs (e.g., meat, milk, eggs, fish) in 2018"
+  ),
     fill = "Int. $",
     subtitle = "",
   ) +
@@ -221,4 +224,13 @@ ggplot2::ggsave(
   width = 18,
   height = 11,
   dpi = 300
+)
+
+ggplot2::ggsave(
+  plot = fig_a2,
+  filename = "output/figures/figure_A2.tiff",
+  width = 18,
+  height = 11,
+  dpi = 300, 
+  device = "tiff"
 )

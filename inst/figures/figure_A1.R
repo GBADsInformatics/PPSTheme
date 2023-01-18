@@ -9,7 +9,7 @@
 # Generates  Figure A1 for the livestock value manuscript
 #
 # Shows the
-# Figure A.1: Global spatial distribution of the economic asset value by livestock type in 2018
+# Figure A.1: Global spatial distribution of the economic asset value by livestock type in 2018 # nolint
 # in 2018 PPP adjusted Int. $
 #
 # For detail on descriptions of each figure
@@ -75,7 +75,8 @@ data <- arrow::read_parquet(df_file, as_data_frame = TRUE) |>
   dplyr::filter(
     year == date,
     item == "stock",
-     (stock_value_slc > 0) # Using slc because in FAOSTAT SLC is equal to LCU for the conversion
+     # Using slc because in FAOSTAT SLC is equal to LCU for the conversion
+     (stock_value_slc > 0)
   ) %>%
   dplyr::group_by(iso3_code, category) %>%
   dplyr::summarise(
@@ -99,7 +100,7 @@ data <- data |>
         ppp_conversion, by = "iso3_code"
     ) |>
     dplyr::mutate(
-        value = value_slc/ppp_conversion
+        value = value_slc / ppp_conversion
     )
 
 # -------------------------------------------------------------------------
@@ -129,7 +130,14 @@ cut_labels <- c(
 
 
 # Bin into values
-world_value <- dplyr::select(world_value, name, iso3_code, category, value, geometry) %>%
+world_value <- dplyr::select(
+  world_value,
+  name,
+  iso3_code,
+  category,
+  value,
+  geometry
+) %>%
   dplyr::mutate(
     value_bins = cut(value,
       breaks = c(0, 50e6, 500e6, 10e9, Inf),
@@ -142,7 +150,7 @@ world_value <- dplyr::select(world_value, name, iso3_code, category, value, geom
 
 
 # Figure A1 Plot ----------------------------------------------------------
-#https://stackoverflow.com/questions/34805506/adjust-title-vertically-to-inside-the-plot-vjust-not-working
+#https://stackoverflow.com/questions/34805506/adjust-title-vertically-to-inside-the-plot-vjust-not-working # nolint
 
 fig_a1 <- ggplot(data = world) +
   geom_sf(fill = "#808080", color = "#D5E4EB", size = 0.1) +
@@ -169,8 +177,10 @@ fig_a1 <- ggplot(data = world) +
   world_map_theme() +
   theme(
     plot.margin = margin(t  = 50, r = 25, l = 25, b = 25),
-    strip.text.x = element_text(size = 15, face = "italic", margin = margin(b = 20)),
-    plot.title = ggtext::element_markdown(face = "italic", margin = margin(t = 10, b = 30))
+    strip.text.x = element_text(
+        size = 15, face = "italic", margin = margin(b = 20)),
+    plot.title = ggtext::element_markdown(
+      face = "italic", margin = margin(t = 10, b = 30))
   )
 
 
@@ -181,5 +191,15 @@ ggsave(
   filename = "output/figures/figure_A1.png",
   width = 20,
   height = 8,
-  dpi = 300
+  dpi = 300, 
+  device = "png"
+)
+
+ggsave(
+  plot = fig_a1,
+  filename = "output/figures/figure_A1.tiff",
+  width = 20,
+  height = 8,
+  dpi = 300, 
+  device = "tiff"
 )

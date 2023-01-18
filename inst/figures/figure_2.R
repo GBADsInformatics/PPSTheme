@@ -1,7 +1,7 @@
 #!/usr/bin/Rscript --vanilla
 
 # ------------------------------------------------------------------------------
-#
+# nolint start
 # Name: inst/figures/generate-figures.R
 # Project: GBADS
 # Author: Gabriel Dennis <gabriel.dennis@csiro.au>
@@ -13,6 +13,7 @@
 #
 # For details on the figure specifications used here
 # See: output/figures/README.md#figure-specifications
+# nolint end 
 # -------------------------------------------------------------------------
 
 
@@ -52,7 +53,10 @@ config <- config::get()
 prep_data <- function() {
 
   # List of data frames
-  df_list <- purrr::keep(config$data$output, ~ grepl("values", .x, ignore.case = TRUE))
+  df_list <- purrr::keep(
+    config$data$output,
+    ~ grepl("values", .x, ignore.case = TRUE)
+  )
 
   # List to store outputs
   data <- list()
@@ -61,7 +65,7 @@ prep_data <- function() {
   livestock_value <- df_list$livestock_values |>
     arrow::read_parquet() |>
     dplyr::mutate(
-      gross_production_value_constant_2014_2016_usd = gross_production_value_constant_2014_2016_thousand_us * 1e3
+      gross_production_value_constant_2014_2016_usd = gross_production_value_constant_2014_2016_thousand_us * 1e3 # nolint
     )
 
   # Livestock Asset Value
@@ -97,7 +101,7 @@ prep_data <- function() {
   data$crop_value <- df_list$crop_values |>
     arrow::read_parquet() |>
     dplyr::mutate(
-      gross_production_value_constant_2014_2016_usd = gross_production_value_constant_2014_2016_thousand_us * 1e3
+      gross_production_value_constant_2014_2016_usd = gross_production_value_constant_2014_2016_thousand_us * 1e3 # nolint
     ) |>
     get_crop_value()
 
@@ -319,7 +323,7 @@ plot_panel_col_2 <- function(df,
         label = scale_fun(value)
       ),
       position = position_stack(vjust = 1 + total_offset),
-      inherit.aes = F,
+      inherit.aes = FALSE,
       size = total_text_size,
       fontface = "italic"
     ) +
@@ -333,7 +337,7 @@ plot_panel_col_2 <- function(df,
       fill = "black",
       color = "white",
       size = 3,
-      inherit.aes = F
+      inherit.aes = FALSE
     ) +
     scale_x_continuous(breaks = years) +
     scale_y_continuous(
@@ -349,9 +353,9 @@ plot_panel_col_2 <- function(df,
       aes(x = year, y = population / coef),
       size = 1,
       shape = 4,
-      show.legend = F,
+      show.legend = FALSE,
       color = "black",
-      inherit.aes = F
+      inherit.aes = FALSE
     ) +
     scale_fill_manual(
       values = fill_values
@@ -376,13 +380,15 @@ plot_panel_col_2 <- function(df,
   x_range <- ggplot_build(p)$layout$panel_scales_x[[1]]$range$range
   y_range <- ggplot_build(p)$layout$panel_scales_y[[1]]$range$range
 
-
-  p <- p + # Add on the custom Population Legend Annotation in the Top Left Corner
+# Add on the custom Population Legend Annotation in the Top Left Corner
+  p <- p + 
     annotation_custom(
       grob = grid::gTree(
         children = gList(
           grid::rectGrob(width = 1.2, height = 0.8),
-          grid::textGrob(label = "Human Population - x", gp = gpar(fontface = "italic", fontsize = 10))
+          grid::textGrob(
+          label = "Human Population - x",
+          gp = gpar(fontface = "italic", fontsize = 10))
         )
       ),
       xmin = min(x_range),
@@ -487,4 +493,13 @@ ggsave(
   height = 10,
   dpi = 300,
   device = "png"
+)
+
+ggsave(
+  plot = fig2,
+  filename = "output/figures/figure_2.tiff",
+  width = 16,
+  height = 10,
+  dpi = 300,
+  device = "tiff"
 )

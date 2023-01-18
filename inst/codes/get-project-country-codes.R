@@ -1,6 +1,7 @@
 #!/usr/bin/Rscript --vanilla
 
 ###################################################
+# nolint start
 # Project: GBADS: Global Burden of Animal Disease
 #
 # Author: Gabriel Dennis
@@ -38,6 +39,7 @@
 # - conf/config.yml
 # and the dependencies are contained within the Makefile recipe
 # to rebuild the output file.
+# nolint end 
 ####################################
 
 

@@ -11,6 +11,9 @@
 *.zip
 *.xlsx
 
+# dirs
+reports/*
+notes/*
 
 # renv project library
 # only commit the renv.lock and renv/activate.R files
@@ -42,3 +45,4 @@ docs/*
 *.log
 *.bbl
 *.csl
+*.html

@@ -486,6 +486,8 @@ fig2 <- ggpubr::ggarrange(
 
 
 # Save Output -------------------------------------------------------------
+
+# PNG 
 ggsave(
   plot = fig2,
   filename = "output/figures/figure_2.png",
@@ -495,6 +497,7 @@ ggsave(
   device = "png"
 )
 
+# Tiff
 ggsave(
   plot = fig2,
   filename = "output/figures/figure_2.tiff",

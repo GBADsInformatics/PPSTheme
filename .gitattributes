@@ -1,1 +1,8 @@
 *.parquet filter=lfs diff=lfs merge=lfs -text
+output/figures/figure_3.tiff filter=lfs diff=lfs merge=lfs -text
+output/figures/figure_4.tiff filter=lfs diff=lfs merge=lfs -text
+output/figures/figure_5.tiff filter=lfs diff=lfs merge=lfs -text
+output/figures/figure_6.tiff filter=lfs diff=lfs merge=lfs -text
+output/figures/figure_A1.tiff filter=lfs diff=lfs merge=lfs -text
+output/figures/figure_A2.tiff filter=lfs diff=lfs merge=lfs -text
+output/figures/figure_2.tiff filter=lfs diff=lfs merge=lfs -text

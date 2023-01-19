@@ -136,21 +136,35 @@ $(FIGURE_DIR)figure_5.png: $(SCRIPT_DIR)figures/figure_5.R
 	Rscript  $(SCRIPT_DIR)figures/figure_5.R 1>/dev/null &
 
 $(FIGURE_DIR)figure_6.png:
-	Rscript --vanilla $(SCRIPT_DIR)figures/figure_6.R 1>/dev/null &
+	Rscript $(SCRIPT_DIR)figures/figure_6.R 1>/dev/null &
 
 $(FIGURE_DIR)figure_7.png:
-	Rscript --vanilla $(SCRIPT_DIR)figures/figure_7.R 1>/dev/null &
+	Rscript $(SCRIPT_DIR)figures/figure_7.R 1>/dev/null &
 
 $(FIGURE_DIR)figure_A1.png:
-	Rscript --vanilla $(SCRIPT_DIR)figures/figure_A1.R 1>/dev/null &
+	Rscript $(SCRIPT_DIR)figures/figure_A1.R 1>/dev/null &
 
 $(FIGURE_DIR)figure_A2.png:
-	Rscript --vanilla $(SCRIPT_DIR)figures/figure_A2.R 1>/dev/null &
+	Rscript $(SCRIPT_DIR)figures/figure_A2.R 1>/dev/null &
 
 
 # Make all figure
 figures:
-	make $(FIGURE_DIR)figure_2.png $(FIGURE_DIR)figure_3.png $(FIGURE_DIR)figure_6.png $(FIGURE_DIR)figure_7.png $(FIGURE_DIR)figure_4.png $(FIGURE_DIR)figure_A2.png $(FIGURE_DIR)figure_A1.png $(FIGURE_DIR)figure_5.png
+	$(FIGURE_DIR)figure_2.png  \
+		$(FIGURE_DIR)figure_3.png     \
+		$(FIGURE_DIR)figure_6.png     \
+		$(FIGURE_DIR)figure_7.png     \
+		$(FIGURE_DIR)figure_4.png     \
+		$(FIGURE_DIR)figure_A2.png    \
+		$(FIGURE_DIR)figure_A1.png    \
+		$(FIGURE_DIR)figure_5.png     
+
+.PHONY: export_figures
+export_figures: 
+	@echo "Exporting figures to png and tiff files --------------"
+	@find output/figures -maxdepth 1 -name "figure*[png|tiff]" | xargs zip -vj exported_figures.zip
+	@echo "Finished Exporting ------------------------------------"
+
 
 
 # Make tables

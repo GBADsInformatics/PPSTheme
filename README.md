@@ -31,10 +31,14 @@ Data cleaning and biomass calculations were coded in python to assist in the ing
 
 Name of file: `20210831_biomassUsingFAOSTAT.R`
 
-Description: 
+Description: livestock biomass was calculated for countries and different years. The Tier 1 method was used in this and the formula is: biomass = population*average liveweight. The population of a species in a country was downloaded from FAOSTAT. The averaged liveweight of species were estimated using two ways. The first one was from the TLU concept: every species has a conversion ratio to 1 TLU and 1TLU = 250kg. The second one was from FAO: https://www.fao.org/economic/the-statistics-division-ess/methodology/methodology-systems/technical-conversion-factors-for-agricultural-commodities/en/. Here the slaughter weights of species were used. 
 
-Use: 
-
+### Use
+* `/data`
+	* `<date>_liveWeightFAO.csv` is the original csv file that provides live weights for livestock animals according to: https://www.fao.org/economic/the-statistics-division-ess/methodology/methodology-systems/technical-conversion-factors-for-agricultural-commodities/en/.  This dataset was not used in the R code and can be deleted. 
+	* `<date>_liveWeightFAO_cleaned.csv` is the cleaned livestock live weights. Information about cleaning and rational can be found in `/data`. This dataset was not used in the R code and can be deleted. 
+	* `<date>_biomass_liveWeight_faostat.csv` is the output file that has all biomass estimates calculated using the GBADs API. Information about the API call can be found in `src/BiomassCalc.py`. This dataset was an output, not used in the R code and can be deleted. 
+* `/src`
 ## Biomass calculations in R: 
 
 Name of file: `20210818_YinBiomassCalculation.R`

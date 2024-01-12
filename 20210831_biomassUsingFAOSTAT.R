@@ -1,4 +1,6 @@
-# this is a quick estimation of global livestock biomass using FAOSTAT 
+# this is a quick estimation of global livestock biomass using population data from FAOSTAT and two different sources of liveweight of species.
+# One source of liveweight was the TLU concepts: each species has a conversion rate for 1 TLU and I TLU was considered as 250kg; Another source of liveweight was the 
+# slaugther weight from FAO. These slaughter weights were national-specific and were updated in different years (not for all countries). 
 
 #==== Packages and====
 sessionInfo()
@@ -129,7 +131,7 @@ livestock = mutate(livestock, value.new = ifelse(livestock$unit == "1000 Head", 
 #----* conversion ratios for specie only----
 unique(livestock$item)
 tlu.ratio <- data.frame(item = unique(livestock$item), ratio = c(0.5, 1, 0.7, 0.01, 0.1, 0.8, 0.7, 0.1, 0.7, 0.01, 0.1, NA, NA, NA, NA, 0.2, NA, NA, NA, NA))
-# the ratio were from paper: doi: 10.3389/fvets.2020.556788. Assuming: cattle and buffaloes = cattle = 0.7 TLU, poultry birds = chicken =.01; 
+# Here is the source of TLU ratio: doi: 10.3389/fvets.2020.556788. Assuming: cattle and buffaloes = cattle = 0.7 TLU, poultry birds = chicken =.01; 
 # NO ratio for these species:                   
 # [13] "Buffaloes"              "Ducks"                 
 # [15] "Geese and guinea fowls"   "Beehives"               
@@ -141,7 +143,7 @@ tlu.ratio <- data.frame(item = unique(livestock$item), ratio = c(0.5, 1, 0.7, 0.
 
 #----* conversion ratios for specie and country----
 # OIE is using a conversion table for livestock in different continents
-# Here is a conversion table from FAO, Gabriel downloaded and cleaned from FAOSTAT
+# Here is a conversion table from FAO, Gabriel downloaded and cleaned from FAOSTAT. The source of this table: https://www.fao.org/economic/the-statistics-division-ess/methodology/methodology-systems/technical-conversion-factors-for-agricultural-commodities/en/
 fao.bodyweight <- read.csv(file = "C:/Users/li292/OneDrive - CSIRO/duty work(1)/study/R skills/animal health modeling in R/GBADs/data/faostat_conversions.csv",
                            header = T, stringsAsFactors = FALSE,na.strings=c("", "*", "-", "?")) # blank values and "*" "-" were marked as na
 str(fao.bodyweight)
